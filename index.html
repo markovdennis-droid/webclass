@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вебкласс</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #eef3ff, #f8fbff);
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: #ffffff;
+            border-radius: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            padding: 24px 28px 28px;
+        }
+
+        .header { text-align: center; margin-bottom: 24px; }
+        .logo { font-size: 26px; font-weight: 700; letter-spacing: 0.03em; }
+        .logo span { color: #3b82f6; }
+        .subtitle { margin-top: 6px; color: #6b7280; font-size: 14px; }
+
+        .panels {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .panel {
+            border-radius: 16px;
+            border: 1px solid #e5e7eb;
+            padding: 18px 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .panel.teacher { background: linear-gradient(135deg, #eff6ff, #ffffff); }
+        .panel.student { background: linear-gradient(135deg, #ecfdf5, #ffffff); }
+
+        .panel-title { font-size: 18px; font-weight: 600; display: flex; align-items: center; }
+        .badge { font-size: 11px; padding: 2px 7px; border-radius: 999px; margin-left: 8px; font-weight: 600; }
+        .badge.teacher { background: #dbeafe; color: #1d4ed8; }
+        .badge.student { background: #dcfce7; color: #15803d; }
+        label { font-size: 12px; font-weight: 500; color: #374151; }
+
+        input[type="text"] {
+            margin-top: 4px;
+            width: 100%;
+            padding: 9px 10px;
+            border-radius: 10px;
+            border: 1px solid #d1d5db;
+            font-size: 14px;
+        }
+
+        .btn {
+            margin-top: 10px;
+            padding: 9px 12px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-teacher { background: #2563eb; color: #ffffff; }
+        .btn-student { background: #16a34a; color: #ffffff; }
+
+        @media (max-width: 640px) {
+            .panels { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="header">
+        <div class="logo">Веб<span>класс</span></div>
+        <div class="subtitle">Простое онлайн-пространство для уроков</div>
+    </div>
+
+    <div class="panels">
+
+        <!-- УЧИТЕЛЬ -->
+        <div class="panel teacher">
+            <div class="panel-title">Учитель <span class="badge teacher">режим</span></div>
+
+            <label>Имя учителя</label>
+            <input id="teacherName" type="text" placeholder="Например: Денис">
+
+            <label>Название комнаты</label>
+            <input id="teacherRoom" type="text" placeholder="Например: english1">
+
+            <button class="btn btn-teacher" onclick="enter('teacher')">Войти как учитель →</button>
+        </div>
+
+        <!-- УЧЕНИК -->
+        <div class="panel student">
+            <div class="panel-title">Ученик <span class="badge student">режим</span></div>
+
+            <label>Имя ученика</label>
+            <input id="studentName" type="text" placeholder="Например: Ваня">
+
+            <label>Название комнаты</label>
+            <input id="studentRoom" type="text" placeholder="Например: english1">
+
+            <button class="btn btn-student" onclick="enter('student')">Войти как ученик →</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function enter(role) {
+    const nameInput = document.getElementById(role === 'teacher' ? 'teacherName' : 'studentName');
+    const roomInput = document.getElementById(role === 'teacher' ? 'teacherRoom' : 'studentRoom');
+
+    const name = nameInput.value.trim();
+    const room = roomInput.value.trim();
+
+    if (!name) { alert("Введите имя"); return; }
+    if (!room) { alert("Введите название комнаты"); return; }
+
+    const target = role === 'teacher' ? 'teacher.html' : 'student.html';
+
+    // Переход в кабинет
+    window.location.href = `${target}?name=${encodeURIComponent(name)}&room=${encodeURIComponent(room)}`;
+}
+</script>
+
+</body>
+</html>
