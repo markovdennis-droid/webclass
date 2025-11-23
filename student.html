@@ -63,7 +63,19 @@
         .debug {
             font-size: 12px;
             color: #6b7280;
+            margin-bottom: 4px;
+        }
+
+        .log {
+            font-size: 11px;
+            color: #4b5563;
+            background: #e5e7eb;
+            border-radius: 6px;
+            padding: 6px 8px;
+            max-height: 120px;
+            overflow-y: auto;
             margin-bottom: 20px;
+            white-space: pre-line;
         }
 
         .grid {
@@ -112,6 +124,7 @@
         <span id="statusText" class="value status-wait">ждём учителя…</span>
     </div>
     <div id="debugText" class="debug">ICE: -, PC: -</div>
+    <div id="logBox" class="log"></div>
 
     <div class="grid">
         <div class="video-box">
@@ -135,6 +148,7 @@
 
     const statusText = document.getElementById("statusText");
     const debugText = document.getElementById("debugText");
+    const logBox = document.getElementById("logBox");
 
     function setStatus(text, type = "wait") {
         statusText.textContent = text;
@@ -148,6 +162,12 @@
         debugText.textContent = `ICE: ${ice} | PC: ${pc}`;
     }
 
+    function log(msg) {
+        const time = new Date().toLocaleTimeString();
+        logBox.textContent += `[${time}] ${msg}\n`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
     const localVideo = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
 
@@ -158,19 +178,23 @@
 
     async function initMedia() {
         try {
+            log("Запрашиваем камеру/микрофон…");
             localStream = await navigator.mediaDevices.getUserMedia({
                 video: true,
                 audio: true
             });
             localVideo.srcObject = localStream;
+            log("Камера/микрофон получены");
         } catch (err) {
-            console.error("Ошибка доступа к камере/микрофону:", err);
+            console.error(err);
+            log("ОШИБКА getUserMedia: " + err.message);
             setStatus("нет доступа к камере/микрофону", "error");
             throw err;
         }
     }
 
     function createPeerConnection() {
+        log("Создаём RTCPeerConnection…");
         const config = {
             iceServers: [
                 { urls: "stun:stun.l.google.com:19302" }
@@ -184,10 +208,14 @@
             localStream.getTracks().forEach(track => {
                 pc.addTrack(track, localStream);
             });
+            log("Добавили треки в PeerConnection");
+        } else {
+            log("ВНИМАНИЕ: localStream пустой при создании PC");
         }
 
         pc.onicecandidate = event => {
             if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
+                log("Отправляем ICE-кандидата на сервер");
                 ws.send(JSON.stringify({
                     type: "ice-candidate",
                     room,
@@ -197,66 +225,92 @@
             }
         };
 
-        pc.ontrack = event => {
-            if (!hasRemoteStream) {
-                hasRemoteStream = true;
-                setStatus("учитель на связи", "ok");
-            }
-            remoteVideo.srcObject = event.streams[0];
-        };
-
         pc.oniceconnectionstatechange = () => {
+            log("ICE state → " + pc.iceConnectionState);
             setDebug(pc.iceConnectionState, pc.connectionState);
-            console.log("ICE state:", pc.iceConnectionState);
         };
 
         pc.onconnectionstatechange = () => {
+            log("PC state → " + pc.connectionState);
             setDebug(pc.iceConnectionState, pc.connectionState);
-            console.log("PC state:", pc.connectionState);
             if (pc.connectionState === "connected") {
                 setStatus("соединение установлено", "ok");
             } else if (pc.connectionState === "failed") {
                 setStatus("соединение WebRTC оборвалось", "error");
             }
         };
+
+        pc.ontrack = event => {
+            if (!hasRemoteStream) {
+                hasRemoteStream = true;
+                setStatus("учитель на связи", "ok");
+                log("Получен первый медиатрек от учителя");
+            }
+            remoteVideo.srcObject = event.streams[0];
+        };
     }
 
     async function handleOffer(offer) {
-        if (!pc) createPeerConnection();
-        await pc.setRemoteDescription(new RTCSessionDescription(offer));
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        ws.send(JSON.stringify({
-            type: "answer",
-            room,
-            role: ROLE,
-            answer
-        }));
-        setStatus("отправили ответ учителю…", "wait");
+        try {
+            if (!pc) createPeerConnection();
+            log("Получен offer, ставим remoteDescription…");
+            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+            const answer = await pc.createAnswer();
+            log("Answer создан, ставим localDescription…");
+            await pc.setLocalDescription(answer);
+            log("Отправляем answer через WS");
+            ws.send(JSON.stringify({
+                type: "answer",
+                room,
+                role: ROLE,
+                answer
+            }));
+            setStatus("отправили ответ учителю…", "wait");
+        } catch (err) {
+            console.error(err);
+            log("ОШИБКА handleOffer: " + err.message);
+            setStatus("ошибка при обработке offer", "error");
+        }
     }
 
     async function handleAnswer(answer) {
-        if (!pc) return;
-        await pc.setRemoteDescription(new RTCSessionDescription(answer));
-        setStatus("соединяемся с учителем…", "wait");
+        try {
+            if (!pc) {
+                log("ВНИМАНИЕ: answer пришёл, но pc ещё нет — создаём");
+                createPeerConnection();
+            }
+            log("Получен answer, ставим remoteDescription…");
+            await pc.setRemoteDescription(new RTCSessionDescription(answer));
+            setStatus("соединяемся с учителем…", "wait");
+        } catch (err) {
+            console.error(err);
+            log("ОШИБКА handleAnswer: " + err.message);
+            setStatus("ошибка при обработке answer", "error");
+        }
     }
 
     async function handleIceCandidate(candidate) {
-        if (!pc) createPeerConnection();
         try {
+            if (!pc) {
+                log("ВНИМАНИЕ: candidate пришёл, но pc ещё нет — создаём");
+                createPeerConnection();
+            }
+            log("Добавляем ICE-кандидата из WS…");
             await pc.addIceCandidate(new RTCIceCandidate(candidate));
         } catch (err) {
-            console.error("Ошибка ICE:", err);
+            console.error(err);
+            log("ОШИБКА addIceCandidate: " + err.message);
         }
     }
 
     function connectWebSocket() {
         setStatus("подключаемся к серверу…", "wait");
+        log("Открываем WebSocket…");
 
         ws = new WebSocket("wss://webclass-backend-g3uh.onrender.com/ws");
 
         ws.onopen = () => {
-            console.log("WS open");
+            log("WS открыт, отправляем join");
             setStatus("соединение с сервером установлено, ждём учителя…", "wait");
             ws.send(JSON.stringify({
                 type: "join",
@@ -268,7 +322,7 @@
 
         ws.onmessage = async (event) => {
             const msg = JSON.parse(event.data);
-            console.log("WS message:", msg);
+            log("WS message: " + JSON.stringify(msg));
 
             switch (msg.type) {
                 case "joined":
@@ -300,12 +354,13 @@
         };
 
         ws.onerror = (err) => {
-            console.error("WS error:", err);
+            console.error(err);
+            log("WS ERROR: " + err.message);
             setStatus("ошибка соединения с сервером", "error");
         };
 
         ws.onclose = () => {
-            console.log("WS closed");
+            log("WS закрыт");
             if (!hasRemoteStream) {
                 setStatus("соединение с сервером закрыто", "error");
             }
@@ -319,8 +374,10 @@
             connectWebSocket();
         } catch (e) {
             console.error(e);
+            log("КРИТИЧЕСКАЯ ОШИБКА: " + e.message);
         }
     })();
 </script>
 </body>
 </html>
+
