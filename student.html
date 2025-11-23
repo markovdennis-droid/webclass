@@ -201,19 +201,6 @@
         };
     }
 
-    async function createOfferAndSend() {
-        if (!pc) createPeerConnection();
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        ws.send(JSON.stringify({
-            type: "offer",
-            room,
-            role: ROLE,
-            offer
-        }));
-        setStatus("отправили приглашение учителю…", "wait");
-    }
-
     async function handleOffer(offer) {
         if (!pc) createPeerConnection();
         await pc.setRemoteDescription(new RTCSessionDescription(offer));
@@ -225,7 +212,7 @@
             role: ROLE,
             answer
         }));
-        setStatus("отправили ответ…", "wait");
+        setStatus("отправили ответ учителю…", "wait");
     }
 
     async function handleAnswer(answer) {
@@ -265,32 +252,30 @@
 
             switch (msg.type) {
                 case "joined":
-                    // ученик может быть инициатором, если вошёл первым
-                    if (ROLE === "student") {
-                        await createOfferAndSend();
-                    }
+                    // Ученик НЕ создаёт offer, только ждёт приглашение от учителя
+                    setStatus("ждём приглашение от учителя…", "wait");
                     break;
 
                 case "offer":
-                    if (msg.role !== ROLE) {
+                    if (msg.role !== ROLE && msg.offer) {
                         await handleOffer(msg.offer);
                     }
                     break;
 
                 case "answer":
-                    if (msg.role !== ROLE) {
+                    if (msg.role !== ROLE && msg.answer) {
                         await handleAnswer(msg.answer);
                     }
                     break;
 
                 case "ice-candidate":
-                    if (msg.role !== ROLE) {
+                    if (msg.role !== ROLE && msg.candidate) {
                         await handleIceCandidate(msg.candidate);
                     }
                     break;
 
                 case "info":
-                    setStatus(msg.text || "сообщение сервера", "wait");
+                    setStatus(msg.text || "сообщение от сервера…", "wait");
                     break;
             }
         };
