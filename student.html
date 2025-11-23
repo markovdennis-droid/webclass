@@ -8,164 +8,316 @@
         body {
             margin: 0;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #ecfdf5;
+            background: #eef2ff;
+            color: #111827;
         }
-        .container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 16px 16px 24px;
-        }
-        header { margin-bottom: 12px; }
-        h1 { font-size: 22px; margin: 0; }
-        .subtitle { font-size: 13px; color: #6b7280; }
-        #welcome { margin-top: 6px; font-size: 14px; font-weight: 500; }
 
-        .videos {
-            margin-top: 14px;
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
+        .page {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
         }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 4px;
+            font-size: 24px;
+        }
+
+        .subtitle {
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .hello {
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .status {
+            margin-bottom: 24px;
+            font-size: 15px;
+        }
+
+        .status span.label {
+            font-weight: 600;
+        }
+
+        .status span.value {
+            font-weight: 600;
+        }
+
+        .status-ok {
+            color: #16a34a;
+        }
+
+        .status-wait {
+            color: #f97316;
+        }
+
+        .status-error {
+            color: #dc2626;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 24px;
+        }
+
+        .video-box {
+            background: #0f172a;
+            border-radius: 18px;
+            padding: 8px;
+            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .video-title {
+            color: #e5e7eb;
+            font-size: 14px;
+            margin-bottom: 4px;
+            padding: 0 4px;
+        }
+
         video {
             width: 100%;
-            background: #000;
             border-radius: 14px;
+            background: #020617;
         }
-        .status {
-            margin-top: 10px;
-            font-size: 13px;
-            color: #4b5563;
-        }
-        .status strong { color: #111827; }
-        @media (max-width: 768px) {
-            .videos { grid-template-columns: 1fr; }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <header>
-        <h1>Комната ученика</h1>
-        <div class="subtitle">Подключение к онлайн-уроку</div>
-        <p id="welcome"></p>
-        <div class="status" id="status">Статус: <strong>подключаемся…</strong></div>
-    </header>
+<div class="page">
+    <h1>Комната ученика</h1>
+    <div class="subtitle">Видеозвонок с преподавателем</div>
+    <div class="hello" id="helloText">Здравствуйте!</div>
 
-    <div class="videos">
-        <div>
-            <div class="subtitle">Моё видео</div>
+    <div class="status">
+        <span class="label">Статус:</span>
+        <span id="statusText" class="value status-wait">ждём учителя…</span>
+    </div>
+
+    <div class="grid">
+        <div class="video-box">
+            <div class="video-title">Моё видео</div>
             <video id="localVideo" autoplay playsinline muted></video>
         </div>
-        <div>
-            <div class="subtitle">Видео учителя</div>
+        <div class="video-box">
+            <div class="video-title">Видео учителя</div>
             <video id="remoteVideo" autoplay playsinline></video>
         </div>
     </div>
 </div>
 
 <script>
-    const SIGNALING_URL = "wss://webclass-backend-g3uh.onrender.com/ws/";
-
+    // -------- ПАРАМЕТРЫ ИНТЕРФЕЙСА --------
+    const ROLE = "student";
     const params = new URLSearchParams(window.location.search);
-    const name = (params.get("name") || "Ученик").trim();
-    const room = (params.get("room") || "default-room").trim();
+    const name = params.get("name") || "Ученик";
+    const room = params.get("room") || "default";
 
-    document.getElementById("welcome").innerText = "Привет, " + name + "!";
-    const statusEl = document.getElementById("status");
+    document.getElementById("helloText").textContent = `Здравствуйте, ${name.toUpperCase()}!`;
 
+    const statusText = document.getElementById("statusText");
+    function setStatus(text, type = "wait") {
+        statusText.textContent = text;
+        statusText.classList.remove("status-ok", "status-wait", "status-error");
+        if (type === "ok") statusText.classList.add("status-ok");
+        else if (type === "error") statusText.classList.add("status-error");
+        else statusText.classList.add("status-wait");
+    }
+
+    // -------- WebRTC / WebSocket --------
     const localVideo = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
 
-    let pc;
-    let ws;
+    let localStream = null;
+    let pc = null;
+    let ws = null;
+    let hasRemoteStream = false;
 
-    async function start() {
-        statusEl.innerHTML = "Статус: <strong>запрашиваем камеру и микрофон…</strong>";
-
-        const localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-        });
-        localVideo.srcObject = localStream;
-
-        pc = createPeerConnection();
-        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-        connectWebSocket();
+    async function initMedia() {
+        try {
+            localStream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true
+            });
+            localVideo.srcObject = localStream;
+        } catch (err) {
+            console.error("Ошибка доступа к камере/микрофону:", err);
+            setStatus("нет доступа к камере/микрофону", "error");
+            throw err;
+        }
     }
 
     function createPeerConnection() {
-        const configuration = {
+        const config = {
             iceServers: [
                 { urls: "stun:stun.l.google.com:19302" }
             ]
         };
 
-        const peer = new RTCPeerConnection(configuration);
+        pc = new RTCPeerConnection(config);
 
-        peer.onicecandidate = event => {
+        if (localStream) {
+            localStream.getTracks().forEach(track => {
+                pc.addTrack(track, localStream);
+            });
+        }
+
+        pc.onicecandidate = event => {
             if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({ type: "ice", candidate: event.candidate }));
+                ws.send(JSON.stringify({
+                    type: "ice-candidate",
+                    room,
+                    role: ROLE,
+                    candidate: event.candidate
+                }));
             }
         };
 
-        peer.ontrack = event => {
-            if (!remoteVideo.srcObject) {
-                remoteVideo.srcObject = event.streams[0];
+        pc.ontrack = event => {
+            if (!hasRemoteStream) {
+                hasRemoteStream = true;
+                setStatus("учитель на связи", "ok");
+            }
+            remoteVideo.srcObject = event.streams[0];
+        };
+
+        pc.onconnectionstatechange = () => {
+            console.log("PC state:", pc.connectionState);
+            if (pc.connectionState === "failed") {
+                setStatus("соединение WebRTC оборвалось", "error");
             }
         };
+    }
 
-        peer.onconnectionstatechange = () => {
-            statusEl.innerHTML = "Статус: <strong>" + peer.connectionState + "</strong>";
-        };
+    async function createOfferAndSend() {
+        if (!pc) createPeerConnection();
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        ws.send(JSON.stringify({
+            type: "offer",
+            room,
+            role: ROLE,
+            offer
+        }));
+        setStatus("отправили приглашение учителю…", "wait");
+    }
 
-        return peer;
+    async function handleOffer(offer) {
+        if (!pc) createPeerConnection();
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        ws.send(JSON.stringify({
+            type: "answer",
+            room,
+            role: ROLE,
+            answer
+        }));
+        setStatus("отправили ответ…", "wait");
+    }
+
+    async function handleAnswer(answer) {
+        if (!pc) return;
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+        setStatus("соединяемся с учителем…", "wait");
+    }
+
+    async function handleIceCandidate(candidate) {
+        if (!pc) createPeerConnection();
+        try {
+            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+        } catch (err) {
+            console.error("Ошибка ICE:", err);
+        }
     }
 
     function connectWebSocket() {
-        statusEl.innerHTML = "Статус: <strong>подключаемся к серверу…</strong>";
-        ws = new WebSocket(SIGNALING_URL + encodeURIComponent(room));
+        setStatus("подключаемся к серверу…", "wait");
+
+        ws = new WebSocket("wss://webclass-backend-g3uh.onrender.com/ws");
 
         ws.onopen = () => {
-            statusEl.innerHTML = "Статус: <strong>ждём учителя…</strong>";
+            console.log("WS open");
+            setStatus("соединение с сервером установлено, ждём учителя…", "wait");
+            ws.send(JSON.stringify({
+                type: "join",
+                room,
+                role: ROLE,
+                name
+            }));
         };
 
         ws.onmessage = async (event) => {
             const msg = JSON.parse(event.data);
+            console.log("WS message:", msg);
 
-            if (msg.type === "offer" && msg.sdp) {
-                statusEl.innerHTML = "Статус: <strong>учитель на связи, принимаем звонок…</strong>";
-                const remoteDesc = new RTCSessionDescription({
-                    type: "offer",
-                    sdp: msg.sdp
-                });
-                await pc.setRemoteDescription(remoteDesc);
+            switch (msg.type) {
+                case "joined":
+                    // ученик может быть инициатором, если вошёл первым
+                    if (ROLE === "student") {
+                        await createOfferAndSend();
+                    }
+                    break;
 
-                const answer = await pc.createAnswer();
-                await pc.setLocalDescription(answer);
-                ws.send(JSON.stringify({ type: "answer", sdp: answer.sdp }));
-            } else if (msg.type === "ice" && msg.candidate) {
-                try {
-                    await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-                } catch (e) {
-                    console.error("Ошибка ICE:", e);
-                }
+                case "offer":
+                    if (msg.role !== ROLE) {
+                        await handleOffer(msg.offer);
+                    }
+                    break;
+
+                case "answer":
+                    if (msg.role !== ROLE) {
+                        await handleAnswer(msg.answer);
+                    }
+                    break;
+
+                case "ice-candidate":
+                    if (msg.role !== ROLE) {
+                        await handleIceCandidate(msg.candidate);
+                    }
+                    break;
+
+                case "info":
+                    setStatus(msg.text || "сообщение сервера", "wait");
+                    break;
             }
         };
 
-        ws.onclose = () => {
-            statusEl.innerHTML = "Статус: <strong>соединение с сервером закрыто</strong>";
+        ws.onerror = (err) => {
+            console.error("WS error:", err);
+            setStatus("ошибка соединения с сервером", "error");
         };
 
-        ws.onerror = () => {
-            statusEl.innerHTML = "Статус: <strong>ошибка подключения к серверу</strong>";
+        ws.onclose = () => {
+            console.log("WS closed");
+            if (!hasRemoteStream) {
+                setStatus("соединение с сервером закрыто", "error");
+            }
         };
     }
 
-    start().catch(err => {
-        console.error(err);
-        statusEl.innerHTML = "Ошибка: " + err.message;
-    });
+    // -------- СТАРТ --------
+    (async () => {
+        try {
+            await initMedia();
+            createPeerConnection();
+            connectWebSocket();
+        } catch (e) {
+            console.error(e);
+        }
+    })();
 </script>
 </body>
 </html>
