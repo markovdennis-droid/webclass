@@ -36,7 +36,7 @@
         }
 
         .status {
-            margin-bottom: 24px;
+            margin-bottom: 4px;
             font-size: 15px;
         }
 
@@ -58,6 +58,12 @@
 
         .status-error {
             color: #dc2626;
+        }
+
+        .debug {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 20px;
         }
 
         .grid {
@@ -105,6 +111,7 @@
         <span class="label">Статус:</span>
         <span id="statusText" class="value status-wait">подключаемся…</span>
     </div>
+    <div id="debugText" class="debug">ICE: -, PC: -</div>
 
     <div class="grid">
         <div class="video-box">
@@ -128,12 +135,18 @@
     document.getElementById("helloText").textContent = `Здравствуйте, ${name.toUpperCase()}!`;
 
     const statusText = document.getElementById("statusText");
+    const debugText = document.getElementById("debugText");
+
     function setStatus(text, type = "wait") {
         statusText.textContent = text;
         statusText.classList.remove("status-ok", "status-wait", "status-error");
         if (type === "ok") statusText.classList.add("status-ok");
         else if (type === "error") statusText.classList.add("status-error");
         else statusText.classList.add("status-wait");
+    }
+
+    function setDebug(ice, pc) {
+        debugText.textContent = `ICE: ${ice} | PC: ${pc}`;
     }
 
     // -------- WebRTC / WebSocket --------
@@ -206,7 +219,13 @@
             remoteVideo.srcObject = event.streams[0];
         };
 
+        pc.oniceconnectionstatechange = () => {
+            setDebug(pc.iceConnectionState, pc.connectionState);
+            console.log("ICE state:", pc.iceConnectionState);
+        };
+
         pc.onconnectionstatechange = () => {
+            setDebug(pc.iceConnectionState, pc.connectionState);
             console.log("PC state:", pc.connectionState);
             if (pc.connectionState === "connected") {
                 setStatus("соединение установлено", "ok");
@@ -280,7 +299,6 @@
 
             switch (msg.type) {
                 case "joined":
-                    // учитель инициатор — создаёт offer
                     await createOfferAndSend();
                     break;
 
@@ -321,7 +339,6 @@
         };
     }
 
-    // -------- СТАРТ --------
     (async () => {
         try {
             await initMedia();
