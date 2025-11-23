@@ -48,17 +48,9 @@
             font-weight: 600;
         }
 
-        .status-ok {
-            color: #16a34a;
-        }
-
-        .status-wait {
-            color: #f97316;
-        }
-
-        .status-error {
-            color: #dc2626;
-        }
+        .status-ok   { color: #16a34a; }
+        .status-wait { color: #f97316; }
+        .status-error{ color: #dc2626; }
 
         .debug {
             font-size: 12px;
@@ -147,15 +139,15 @@
     document.getElementById("helloText").textContent = `Здравствуйте, ${name.toUpperCase()}!`;
 
     const statusText = document.getElementById("statusText");
-    const debugText = document.getElementById("debugText");
-    const logBox = document.getElementById("logBox");
+    const debugText  = document.getElementById("debugText");
+    const logBox     = document.getElementById("logBox");
 
     function setStatus(text, type = "wait") {
         statusText.textContent = text;
         statusText.classList.remove("status-ok", "status-wait", "status-error");
-        if (type === "ok") statusText.classList.add("status-ok");
+        if (type === "ok")      statusText.classList.add("status-ok");
         else if (type === "error") statusText.classList.add("status-error");
-        else statusText.classList.add("status-wait");
+        else                    statusText.classList.add("status-wait");
     }
 
     function setDebug(ice, pc) {
@@ -168,12 +160,12 @@
         logBox.scrollTop = logBox.scrollHeight;
     }
 
-    const localVideo = document.getElementById("localVideo");
+    const localVideo  = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
 
-    let localStream = null;
-    let pc = null;
-    let ws = null;
+    let localStream   = null;
+    let pc            = null;
+    let ws            = null;
     let hasRemoteStream = false;
 
     async function initMedia() {
@@ -194,11 +186,29 @@
     }
 
     function createPeerConnection() {
-        log("Создаём RTCPeerConnection…");
+        log("Создаём RTCPeerConnection (с TURN Xirsys)…");
         const config = {
             iceServers: [
-                { urls: "stun:stun.l.google.com:19302" }
-            ]
+                {
+                    urls: [
+                        "stun:fr-turn4.xirsys.com",
+                        "stun:stun.l.google.com:19302"
+                    ]
+                },
+                {
+                    username: "SbW8Rnpqh1htOMYUh2YIoB67iO9KSTyAFc55y_yISl2exds__kZpJxVzcjElsxBKAAAAAGkjfIpkZW5uaXNNYXJrb3Y=",
+                    credential: "625c7f26-c8b3-11f0-9366-5ec4b59bd929",
+                    urls: [
+                        "turn:fr-turn4.xirsys.com:80?transport=udp",
+                        "turn:fr-turn4.xirsys.com:3478?transport=udp",
+                        "turn:fr-turn4.xirsys.com:80?transport=tcp",
+                        "turn:fr-turn4.xirsys.com:3478?transport=tcp",
+                        "turns:fr-turn4.xirsys.com:443?transport=tcp",
+                        "turns:fr-turn4.xirsys.com:5349?transport=tcp"
+                    ]
+                }
+            ],
+            iceTransportPolicy: "relay"   // ВСЁ через TURN
         };
 
         pc = new RTCPeerConnection(config);
