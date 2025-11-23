@@ -162,7 +162,20 @@
     function createPeerConnection() {
         const config = {
             iceServers: [
-                { urls: "stun:stun.l.google.com:19302" }
+                { urls: "stun:stun.l.google.com:19302" },
+                { urls: [ "stun:fr-turn4.xirsys.com" ] },
+                {
+                    username: "SbW8Rnpqh1htOMYUh2YIoB67iO9KSTyAFc55y_yISl2exds__kZpJxVzcjElsxBKAAAAAGkjfIpkZW5uaXNNYXJrb3Y=",
+                    credential: "625c7f26-c8b3-11f0-9366-5ec4b59bd929",
+                    urls: [
+                        "turn:fr-turn4.xirsys.com:80?transport=udp",
+                        "turn:fr-turn4.xirsys.com:3478?transport=udp",
+                        "turn:fr-turn4.xirsys.com:80?transport=tcp",
+                        "turn:fr-turn4.xirsys.com:3478?transport=tcp",
+                        "turns:fr-turn4.xirsys.com:443?transport=tcp",
+                        "turns:fr-turn4.xirsys.com:5349?transport=tcp"
+                    ]
+                }
             ]
         };
 
@@ -195,7 +208,9 @@
 
         pc.onconnectionstatechange = () => {
             console.log("PC state:", pc.connectionState);
-            if (pc.connectionState === "failed") {
+            if (pc.connectionState === "connected") {
+                setStatus("соединение установлено", "ok");
+            } else if (pc.connectionState === "failed") {
                 setStatus("соединение WebRTC оборвалось", "error");
             }
         };
@@ -265,32 +280,29 @@
 
             switch (msg.type) {
                 case "joined":
-                    // учитель обычно инициатор — создаёт offer
-                    if (ROLE === "teacher") {
-                        await createOfferAndSend();
-                    }
+                    // учитель инициатор — создаёт offer
+                    await createOfferAndSend();
                     break;
 
                 case "offer":
-                    if (msg.role !== ROLE) {
+                    if (msg.role !== ROLE && msg.offer) {
                         await handleOffer(msg.offer);
                     }
                     break;
 
                 case "answer":
-                    if (msg.role !== ROLE) {
+                    if (msg.role !== ROLE && msg.answer) {
                         await handleAnswer(msg.answer);
                     }
                     break;
 
                 case "ice-candidate":
-                    if (msg.role !== ROLE) {
+                    if (msg.role !== ROLE && msg.candidate) {
                         await handleIceCandidate(msg.candidate);
                     }
                     break;
 
                 case "info":
-                    // произвольные текстовые сообщения сервера
                     setStatus(msg.text || "сообщение сервера", "wait");
                     break;
             }
