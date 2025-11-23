@@ -36,7 +36,7 @@
         }
 
         .status {
-            margin-bottom: 24px;
+            margin-bottom: 4px;
             font-size: 15px;
         }
 
@@ -58,6 +58,12 @@
 
         .status-error {
             color: #dc2626;
+        }
+
+        .debug {
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 20px;
         }
 
         .grid {
@@ -105,6 +111,7 @@
         <span class="label">Статус:</span>
         <span id="statusText" class="value status-wait">ждём учителя…</span>
     </div>
+    <div id="debugText" class="debug">ICE: -, PC: -</div>
 
     <div class="grid">
         <div class="video-box">
@@ -119,7 +126,6 @@
 </div>
 
 <script>
-    // -------- ПАРАМЕТРЫ ИНТЕРФЕЙСА --------
     const ROLE = "student";
     const params = new URLSearchParams(window.location.search);
     const name = params.get("name") || "Ученик";
@@ -128,6 +134,8 @@
     document.getElementById("helloText").textContent = `Здравствуйте, ${name.toUpperCase()}!`;
 
     const statusText = document.getElementById("statusText");
+    const debugText = document.getElementById("debugText");
+
     function setStatus(text, type = "wait") {
         statusText.textContent = text;
         statusText.classList.remove("status-ok", "status-wait", "status-error");
@@ -136,7 +144,10 @@
         else statusText.classList.add("status-wait");
     }
 
-    // -------- WebRTC / WebSocket --------
+    function setDebug(ice, pc) {
+        debugText.textContent = `ICE: ${ice} | PC: ${pc}`;
+    }
+
     const localVideo = document.getElementById("localVideo");
     const remoteVideo = document.getElementById("remoteVideo");
 
@@ -206,7 +217,13 @@
             remoteVideo.srcObject = event.streams[0];
         };
 
+        pc.oniceconnectionstatechange = () => {
+            setDebug(pc.iceConnectionState, pc.connectionState);
+            console.log("ICE state:", pc.iceConnectionState);
+        };
+
         pc.onconnectionstatechange = () => {
+            setDebug(pc.iceConnectionState, pc.connectionState);
             console.log("PC state:", pc.connectionState);
             if (pc.connectionState === "connected") {
                 setStatus("соединение установлено", "ok");
@@ -267,7 +284,6 @@
 
             switch (msg.type) {
                 case "joined":
-                    // Ученик не создаёт offer, только ждёт
                     setStatus("ждём приглашение от учителя…", "wait");
                     break;
 
@@ -308,7 +324,6 @@
         };
     }
 
-    // -------- СТАРТ --------
     (async () => {
         try {
             await initMedia();
