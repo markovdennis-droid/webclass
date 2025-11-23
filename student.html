@@ -174,7 +174,7 @@
         const config = {
             iceServers: [
                 { urls: "stun:stun.l.google.com:19302" },
-                { urls: [ "stun:fr-turn4.xirsys.com" ] },
+                { urls: ["stun:fr-turn4.xirsys.com"] },
                 {
                     username: "SbW8Rnpqh1htOMYUh2YIoB67iO9KSTyAFc55y_yISl2exds__kZpJxVzcjElsxBKAAAAAGkjfIpkZW5uaXNNYXJrb3Y=",
                     credential: "625c7f26-c8b3-11f0-9366-5ec4b59bd929",
@@ -187,10 +187,12 @@
                         "turns:fr-turn4.xirsys.com:5349?transport=tcp"
                     ]
                 }
-            ]
+            ],
+            iceTransportPolicy: "relay"
         };
 
         pc = new RTCPeerConnection(config);
+        setDebug(pc.iceConnectionState, pc.connectionState);
 
         if (localStream) {
             localStream.getTracks().forEach(track => {
