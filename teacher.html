@@ -15,28 +15,30 @@
             margin: 0 auto;
             padding: 16px 16px 24px;
         }
-        header {
-            margin-bottom: 12px;
+        header { margin-bottom: 12px; }
+        h1 { font-size: 22px; margin: 0; }
+        .subtitle { font-size: 13px; color: #6b7280; }
+        #welcome { margin-top: 6px; font-size: 14px; font-weight: 500; }
+
+        .videos {
+            margin-top: 14px;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
         }
-        h1 {
-            font-size: 22px;
-            margin: 0;
-        }
-        .subtitle {
-            font-size: 13px;
-            color: #6b7280;
-        }
-        #welcome {
-            margin-top: 6px;
-            font-size: 14px;
-            font-weight: 500;
-        }
-        iframe {
+        video {
             width: 100%;
-            height: 75vh;
-            border: 0;
+            background: #000;
             border-radius: 14px;
-            overflow: hidden;
+        }
+        .status {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #4b5563;
+        }
+        .status strong { color: #111827; }
+        @media (max-width: 768px) {
+            .videos { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -46,22 +48,124 @@
         <h1>Комната преподавателя</h1>
         <div class="subtitle">Видеозвонок и общение с учениками</div>
         <p id="welcome"></p>
+        <div class="status" id="status">Статус: <strong>подключаемся…</strong></div>
     </header>
 
-    <iframe id="videoFrame" allow="camera; microphone; fullscreen; display-capture"></iframe>
+    <div class="videos">
+        <div>
+            <div class="subtitle">Моё видео</div>
+            <video id="localVideo" autoplay playsinline muted></video>
+        </div>
+        <div>
+            <div class="subtitle">Видео ученика</div>
+            <video id="remoteVideo" autoplay playsinline></video>
+        </div>
+    </div>
 </div>
 
 <script>
+    // наш сигнальный сервер
+    const SIGNALING_URL = "wss://webclass-backend-g3uh.onrender.com/ws/";
+
     const params = new URLSearchParams(window.location.search);
-    const name = params.get("name") || "Учитель";
-    const room = params.get("room") || "default-room";
+    const name = (params.get("name") || "Учитель").trim();
+    const room = (params.get("room") || "default-room").trim();
 
     document.getElementById("welcome").innerText = "Здравствуйте, " + name + "!";
+    const statusEl = document.getElementById("status");
 
-    // Генерируем ссылку на видеокомнату
-    const link = "https://meet.jit.si/WebClassRoom_" + encodeURIComponent(room);
+    const localVideo = document.getElementById("localVideo");
+    const remoteVideo = document.getElementById("remoteVideo");
 
-    document.getElementById("videoFrame").src = link;
+    let pc;
+    let ws;
+
+    async function start() {
+        statusEl.innerHTML = "Статус: <strong>запрашиваем камеру и микрофон…</strong>";
+
+        const localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+        });
+        localVideo.srcObject = localStream;
+
+        pc = createPeerConnection();
+        localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+        connectWebSocket();
+    }
+
+    function createPeerConnection() {
+        const configuration = {
+            iceServers: [
+                { urls: "stun:stun.l.google.com:19302" }
+            ]
+        };
+
+        const peer = new RTCPeerConnection(configuration);
+
+        peer.onicecandidate = event => {
+            if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: "ice", candidate: event.candidate }));
+            }
+        };
+
+        peer.ontrack = event => {
+            if (!remoteVideo.srcObject) {
+                remoteVideo.srcObject = event.streams[0];
+            }
+        };
+
+        peer.onconnectionstatechange = () => {
+            statusEl.innerHTML = "Статус: <strong>" + peer.connectionState + "</strong>";
+        };
+
+        return peer;
+    }
+
+    function connectWebSocket() {
+        statusEl.innerHTML = "Статус: <strong>подключаемся к серверу…</strong>";
+        ws = new WebSocket(SIGNALING_URL + encodeURIComponent(room));
+
+        ws.onopen = async () => {
+            statusEl.innerHTML = "Статус: <strong>сервер подключен, создаём звонок…</strong>";
+            // Учитель — инициатор: создаёт offer
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            ws.send(JSON.stringify({ type: "offer", sdp: offer.sdp }));
+        };
+
+        ws.onmessage = async (event) => {
+            const msg = JSON.parse(event.data);
+
+            if (msg.type === "answer" && msg.sdp) {
+                const remoteDesc = new RTCSessionDescription({
+                    type: "answer",
+                    sdp: msg.sdp
+                });
+                await pc.setRemoteDescription(remoteDesc);
+            } else if (msg.type === "ice" && msg.candidate) {
+                try {
+                    await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                } catch (e) {
+                    console.error("Ошибка ICE:", e);
+                }
+            }
+        };
+
+        ws.onclose = () => {
+            statusEl.innerHTML = "Статус: <strong>соединение с сервером закрыто</strong>";
+        };
+
+        ws.onerror = () => {
+            statusEl.innerHTML = "Статус: <strong>ошибка подключения к серверу</strong>";
+        };
+    }
+
+    start().catch(err => {
+        console.error(err);
+        statusEl.innerHTML = "Ошибка: " + err.message;
+    });
 </script>
 </body>
 </html>
