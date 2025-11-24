@@ -6,62 +6,150 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: system-ui, sans-serif;
-            background: #0f172a;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #020617;
             color: #e2e8f0;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+            min-height: 100vh;
         }
 
         header {
-            background: #1e293b;
-            padding: 14px 22px;
+            background: #020617;
+            border-bottom: 1px solid #1f2937;
+            padding: 12px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        header .left {
+            font-size: 14px;
+        }
+
+        header .left span {
+            font-weight: 600;
         }
 
         .btn {
-            background: #4f46e5;
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-size: 14px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            padding: 9px 16px;
+            border-radius: 999px;
+            font-size: 13px;
             color: white;
             border: none;
             cursor: pointer;
-            transition: 0.2s;
+            transition: 0.15s ease;
+            white-space: nowrap;
         }
 
-        .btn:hover {
-            background: #4338ca;
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: default;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.5);
+        }
+
+        .page {
+            padding: 12px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         #status {
-            font-size: 14px;
+            font-size: 13px;
             color: #a5b4fc;
         }
 
-        #videoTeacher, #videoStudent {
-            width: 100%;
-            max-height: 45vh;
-            background: black;
-        }
-
-        .container {
-            padding: 16px;
-        }
-
-        .linkbox {
-            margin-top: 12px;
-            padding: 12px;
-            background: #1e293b;
-            border-radius: 10px;
+        h3 {
+            margin: 10px 0 6px;
             font-size: 14px;
-            word-break: break-all;
+        }
+
+        .video-wrapper {
+            background: #020617;
+            border-radius: 18px;
+            padding: 10px;
+            border: 1px solid #1f2937;
+        }
+
+        video {
+            width: 100%;
+            max-height: 40vh;
+            background: black;
+            border-radius: 12px;
+        }
+
+        .link-block {
+            margin-top: 10px;
+            background: #020617;
+            border-radius: 16px;
+            padding: 10px 12px 12px;
+            border: 1px solid #1f2937;
+            font-size: 13px;
+        }
+
+        .link-label {
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        #studentLink {
+            width: 100%;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid #374151;
+            background: #020617;
+            color: #e5e7eb;
+            font-size: 12px;
+        }
+
+        #studentLink:focus {
+            outline: none;
+            border-color: #6366f1;
+        }
+
+        .hint {
+            margin-top: 5px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .toast {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            background: #22c55e;
+            color: #022c22;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: 0.2s ease;
+            z-index: 50;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
         }
     </style>
 </head>
@@ -69,32 +157,44 @@
 <body>
 
 <header>
-    <div>
+    <div class="left">
         👨‍🏫 Учитель: <span id="teacherName">—</span>
     </div>
     <button class="btn" id="copyBtn">Скопировать ссылку ученику</button>
 </header>
 
-<div class="container">
-    <div id="status">Статус: подключение…</div>
+<div class="page">
+    <div id="status">Статус: запрашиваем доступ к камере…</div>
 
-    <h3>Ваше видео:</h3>
-    <video id="videoTeacher" autoplay playsinline muted></video>
+    <div class="video-wrapper">
+        <h3>Ваше видео</h3>
+        <video id="videoTeacher" autoplay playsinline muted></video>
+    </div>
 
-    <h3>Видео ученика:</h3>
-    <video id="videoStudent" autoplay playsinline></video>
+    <div class="video-wrapper">
+        <h3>Видео ученика</h3>
+        <video id="videoStudent" autoplay playsinline></video>
+    </div>
 
-    <div class="linkbox" id="studentLinkBox">
-        Ссылка ученику появится здесь…
+    <div class="link-block">
+        <div class="link-label">Ссылка для ученика</div>
+        <input id="studentLink" type="text" readonly value="Генерируем ссылку…">
+        <div class="hint">
+            Нажмите кнопку «Скопировать ссылку ученику» сверху — ссылка скопируется в буфер обмена, затем просто вставьте её в мессенджер.
+        </div>
     </div>
 </div>
+
+<div id="toast" class="toast">Ссылка скопирована</div>
 
 <script>
     const teacherVideo = document.getElementById("videoTeacher");
     const studentVideo = document.getElementById("videoStudent");
     const statusDiv = document.getElementById("status");
     const nameSpan = document.getElementById("teacherName");
-    const linkBox = document.getElementById("studentLinkBox");
+    const linkInput = document.getElementById("studentLink");
+    const copyBtn = document.getElementById("copyBtn");
+    const toast = document.getElementById("toast");
 
     const params = new URLSearchParams(window.location.search);
     const teacherName = params.get("name") || "Учитель";
@@ -103,16 +203,42 @@
     nameSpan.textContent = teacherName;
 
     const studentURL =
-        `${window.location.origin}/student.html?name=Ученик&room=${room}`;
+        `${window.location.origin}/student.html?name=${encodeURIComponent("Ученик")}&room=${encodeURIComponent(room)}`;
 
-    linkBox.textContent = studentURL;
+    linkInput.value = studentURL;
 
-    document.getElementById("copyBtn").onclick = () => {
-        navigator.clipboard.writeText(studentURL);
-        alert("Ссылка скопирована!");
-    };
+    // При клике по полю — выделяем всю ссылку
+    linkInput.addEventListener("click", function () {
+        this.select();
+    });
 
-    // WebRTC
+    function showToast() {
+        toast.style.opacity = "1";
+        toast.style.transform = "translateY(0)";
+        setTimeout(() => {
+            toast.style.opacity = "0";
+            toast.style.transform = "translateY(-6px)";
+        }, 1600);
+    }
+
+    copyBtn.addEventListener("click", async () => {
+        try {
+            await navigator.clipboard.writeText(studentURL);
+            copyBtn.textContent = "Ссылка скопирована ✓";
+            copyBtn.disabled = true;
+            showToast();
+            setTimeout(() => {
+                copyBtn.textContent = "Скопировать ссылку ученику";
+                copyBtn.disabled = false;
+            }, 2000);
+        } catch (e) {
+            console.error("Clipboard error", e);
+            alert("Не удалось скопировать ссылку. Скопируйте её вручную из поля ниже.");
+        }
+    });
+
+    // --- WebRTC + WebSocket ---
+
     const pc = new RTCPeerConnection({
         iceServers: [
             { urls: ["stun:fr-turn4.xirsys.com"] },
@@ -132,7 +258,7 @@
     });
 
     const ws = new WebSocket(
-        "wss://webclass-backend-g3uh.onrender.com/ws?room=" + room + "&role=teacher"
+        "wss://webclass-backend-g3uh.onrender.com/ws?room=" + encodeURIComponent(room) + "&role=teacher"
     );
 
     ws.onopen = () => {
@@ -143,16 +269,17 @@
         const data = JSON.parse(msg.data);
 
         if (data.type === "offer") {
-            await pc.setRemoteDescription(data.offer);
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-
-            ws.send(
-                JSON.stringify({ type: "answer", answer: answer })
-            );
+            try {
+                await pc.setRemoteDescription(data.offer);
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+                ws.send(JSON.stringify({ type: "answer", answer: answer }));
+            } catch (e) {
+                console.error("Ошибка при обработке offer/answer", e);
+            }
         }
 
-        if (data.type === "ice-candidate") {
+        if (data.type === "ice-candidate" && data.candidate) {
             try {
                 await pc.addIceCandidate(data.candidate);
             } catch (e) {
@@ -161,17 +288,31 @@
         }
     };
 
+    ws.onclose = () => {
+        statusDiv.textContent = "Статус: соединение с сервером закрыто";
+    };
+
     pc.onicecandidate = (event) => {
         if (event.candidate) {
-            ws.send(
-                JSON.stringify({ type: "ice-candidate", candidate: event.candidate })
-            );
+            ws.send(JSON.stringify({ type: "ice-candidate", candidate: event.candidate }));
         }
     };
 
     pc.ontrack = (event) => {
-        studentVideo.srcObject = event.streams[0];
-        statusDiv.textContent = "Статус: ученик подключён!";
+        if (!studentVideo.srcObject) {
+            studentVideo.srcObject = event.streams[0];
+        }
+        statusDiv.textContent = "Статус: ученик подключён";
+    };
+
+    pc.oniceconnectionstatechange = () => {
+        const s = pc.iceConnectionState;
+        if (s === "disconnected" || s === "failed") {
+            statusDiv.textContent = "Статус: соединение прервано";
+        }
+        if (s === "connected" || s === "completed") {
+            statusDiv.textContent = "Статус: соединение установлено";
+        }
     };
 
     async function startCamera() {
@@ -181,11 +322,12 @@
                 audio: true,
             });
             teacherVideo.srcObject = stream;
-
             stream.getTracks().forEach((t) => pc.addTrack(t, stream));
+            statusDiv.textContent = "Статус: ждём ученика…";
         } catch (e) {
-            alert("Не удалось открыть камеру/микрофон");
             console.error(e);
+            statusDiv.textContent = "Не удалось открыть камеру/микрофон";
+            alert("Не удалось открыть камеру/микрофон");
         }
     }
 
