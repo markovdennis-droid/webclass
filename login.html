@@ -2,101 +2,72 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вход для учителей – WebClass</title>
+    <title>WebClass — вход</title>
     <style>
         body {
-            margin: 0;
-            font-family: system-ui, sans-serif;
-            background: radial-gradient(circle at top, #4f46e5 0, #0f172a 55%, #020617 100%);
-            color: #e5e7eb;
+            margin: 0; padding: 0;
+            background: #eef1ff;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            height: 100vh;
         }
-
         .card {
-            background: rgba(15, 23, 42, 0.8);
-            padding: 32px;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
-
-        h2 {
-            margin-top: 0;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 360px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
             text-align: center;
         }
-
-        label {
-            display: block;
-            margin: 12px 0 6px;
-            font-size: 14px;
-            color: #cbd5f6;
-        }
-
         input {
-            width: 100%;
+            width: 90%;
             padding: 12px;
-            border-radius: 12px;
-            border: none;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            font-size: 15px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
         }
-
-        .btn {
-            display: block;
-            width: 100%;
-            text-align: center;
-            margin-top: 24px;
-            padding: 12px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
+        button {
+            padding: 12px 25px;
+            background: #3b5bff;
             color: white;
-            border-radius: 12px;
-            text-decoration: none;
+            border: none;
+            border-radius: 8px;
             font-size: 16px;
-            font-weight: 500;
-            box-shadow: 0 8px 24px rgba(99,102,241,0.6);
-            transition: 0.15s;
+            cursor: pointer;
+            margin-top: 10px;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .link {
-            margin-top: 18px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        .link a {
-            color: #c7d2fe;
-            text-decoration: none;
-        }
+        button:hover { background: #2e46d9; }
     </style>
 </head>
+
 <body>
-
 <div class="card">
-    <h2>Вход для учителей</h2>
+    <h2>WebClass</h2>
+    <p>Введите ваше имя</p>
 
-    <label>Email</label>
-    <input type="email" id="email" placeholder="teacher@example.com">
+    <input id="teacherName" placeholder="Ваше имя (например: Денис)">
 
-    <label>Пароль</label>
-    <input type="password" id="password" placeholder="Введите пароль">
-
-    <a href="#" class="btn">Войти</a>
-
-    <div class="link">
-        Нет аккаунта? <a href="register.html">Создать</a>
-    </div>
+    <button onclick="startLesson()">Начать урок</button>
 </div>
+
+<script>
+    function generateRoomID() {
+        return "room_" + Math.random().toString(36).substring(2, 10);
+    }
+
+    function startLesson() {
+        let name = document.getElementById("teacherName").value.trim();
+        if (!name) {
+            alert("Введите имя!");
+            return;
+        }
+
+        const room = generateRoomID();
+        window.location.href = `teacher.html?name=${encodeURIComponent(name)}&room=${room}`;
+    }
+</script>
 
 </body>
 </html>
