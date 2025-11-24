@@ -1,406 +1,196 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>Вебкласс — Учитель</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <title>WebClass — Учитель</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <style>
         body {
             margin: 0;
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #eef2ff;
-            color: #111827;
-        }
-
-        .page {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 24px;
-        }
-
-        h1 {
-            margin-top: 0;
-            margin-bottom: 4px;
-            font-size: 24px;
-        }
-
-        .subtitle {
-            margin-bottom: 4px;
-            font-size: 16px;
-        }
-
-        .hello {
-            margin-bottom: 12px;
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .status {
-            margin-bottom: 16px;
-            font-size: 15px;
-        }
-
-        .status span.label {
-            font-weight: 600;
-        }
-
-        .status span.value {
-            font-weight: 600;
-        }
-
-        .status-ok   { color: #16a34a; }
-        .status-wait { color: #f97316; }
-        .status-error{ color: #dc2626; }
-
-        /* отладка скрыта */
-        .debug,
-        .log {
-            display: none;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 24px;
-        }
-
-        .video-box {
+            font-family: system-ui, sans-serif;
             background: #0f172a;
-            border-radius: 18px;
-            padding: 8px;
-            box-shadow: 0 10px 25px rgba(15, 23, 42, 0.35);
+            color: #e2e8f0;
             display: flex;
             flex-direction: column;
+            height: 100vh;
         }
 
-        .video-title {
-            color: #e5e7eb;
+        header {
+            background: #1e293b;
+            padding: 14px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+
+        .btn {
+            background: #4f46e5;
+            padding: 10px 18px;
+            border-radius: 10px;
             font-size: 14px;
-            margin-bottom: 4px;
-            padding: 0 4px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
         }
 
-        video {
+        .btn:hover {
+            background: #4338ca;
+        }
+
+        #status {
+            font-size: 14px;
+            color: #a5b4fc;
+        }
+
+        #videoTeacher, #videoStudent {
             width: 100%;
-            border-radius: 14px;
-            background: #020617;
+            max-height: 45vh;
+            background: black;
         }
 
-        @media (max-width: 900px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
+        .container {
+            padding: 16px;
+        }
+
+        .linkbox {
+            margin-top: 12px;
+            padding: 12px;
+            background: #1e293b;
+            border-radius: 10px;
+            font-size: 14px;
+            word-break: break-all;
         }
     </style>
 </head>
+
 <body>
-<div class="page">
-    <h1>Комната преподавателя</h1>
-    <div class="subtitle">Видеозвонок и общение с учениками</div>
-    <div class="hello" id="helloText">Здравствуйте!</div>
 
-    <div class="status">
-        <span class="label">Статус:</span>
-        <span id="statusText" class="value status-wait">подключаемся…</span>
+<header>
+    <div>
+        👨‍🏫 Учитель: <span id="teacherName">—</span>
     </div>
+    <button class="btn" id="copyBtn">Скопировать ссылку ученику</button>
+</header>
 
-    <!-- скрытые технички, чтобы при желании можно было включить -->
-    <div id="debugText" class="debug">ICE: -, PC: -</div>
-    <div id="logBox" class="log"></div>
+<div class="container">
+    <div id="status">Статус: подключение…</div>
 
-    <div class="grid">
-        <div class="video-box">
-            <div class="video-title">Моё видео</div>
-            <video id="localVideo" autoplay playsinline muted></video>
-        </div>
-        <div class="video-box">
-            <div class="video-title">Видео ученика</div>
-            <video id="remoteVideo" autoplay playsinline></video>
-        </div>
+    <h3>Ваше видео:</h3>
+    <video id="videoTeacher" autoplay playsinline muted></video>
+
+    <h3>Видео ученика:</h3>
+    <video id="videoStudent" autoplay playsinline></video>
+
+    <div class="linkbox" id="studentLinkBox">
+        Ссылка ученику появится здесь…
     </div>
 </div>
 
 <script>
-    const ROLE = "teacher";
+    const teacherVideo = document.getElementById("videoTeacher");
+    const studentVideo = document.getElementById("videoStudent");
+    const statusDiv = document.getElementById("status");
+    const nameSpan = document.getElementById("teacherName");
+    const linkBox = document.getElementById("studentLinkBox");
+
     const params = new URLSearchParams(window.location.search);
-    const name = params.get("name") || "Учитель";
-    const room = params.get("room") || "default";
+    const teacherName = params.get("name") || "Учитель";
+    const room = params.get("room") || "test";
 
-    document.getElementById("helloText").textContent =
-        `Здравствуйте, ${name.toUpperCase()}!`;
+    nameSpan.textContent = teacherName;
 
-    const statusText = document.getElementById("statusText");
-    const debugText  = document.getElementById("debugText");
-    const logBox     = document.getElementById("logBox");
+    const studentURL =
+        `${window.location.origin}/student.html?name=Ученик&room=${room}`;
 
-    function setStatus(text, type = "wait") {
-        statusText.textContent = text;
-        statusText.classList.remove("status-ok", "status-wait", "status-error");
-        if (type === "ok")      statusText.classList.add("status-ok");
-        else if (type === "error") statusText.classList.add("status-error");
-        else                    statusText.classList.add("status-wait");
-    }
+    linkBox.textContent = studentURL;
 
-    function setDebug(ice, pc) {
-        debugText.textContent = `ICE: ${ice} | PC: ${pc}`;
-    }
+    document.getElementById("copyBtn").onclick = () => {
+        navigator.clipboard.writeText(studentURL);
+        alert("Ссылка скопирована!");
+    };
 
-    function log(msg) {
-        const time = new Date().toLocaleTimeString();
-        logBox.textContent += `[${time}] ${msg}\n`;
-        logBox.scrollTop = logBox.scrollHeight;
-        console.log("[teacher]", msg);
-    }
-
-    const localVideo  = document.getElementById("localVideo");
-    const remoteVideo = document.getElementById("remoteVideo");
-
-    let localStream   = null;
-    let pc            = null;
-    let ws            = null;
-    let hasRemoteStream = false;
-
-    async function initMedia() {
-        try {
-            log("Запрашиваем камеру/микрофон…");
-            localStream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true
-            });
-            localVideo.srcObject = localStream;
-            log("Камера/микрофон получены");
-        } catch (err) {
-            console.error(err);
-            log("ОШИБКА getUserMedia: " + err.message);
-            setStatus("нет доступа к камере/микрофону", "error");
-            throw err;
-        }
-    }
-
-    function createPeerConnection() {
-        log("Создаём RTCPeerConnection (с TURN Xirsys)…");
-        const config = {
-            iceServers: [
-                {
-                    urls: [
-                        "stun:fr-turn4.xirsys.com",
-                        "stun:stun.l.google.com:19302"
-                    ]
-                },
-                {
-                    username: "SbW8Rnpqh1htOMYUh2YIoB67iO9KSTyAFc55y_yISl2exds__kZpJxVzcjElsxBKAAAAAGkjfIpkZW5uaXNNYXJrb3Y=",
-                    credential: "625c7f26-c8b3-11f0-9366-5ec4b59bd929",
-                    urls: [
-                        "turn:fr-turn4.xirsys.com:80?transport=udp",
-                        "turn:fr-turn4.xirsys.com:3478?transport=udp",
-                        "turn:fr-turn4.xirsys.com:80?transport=tcp",
-                        "turn:fr-turn4.xirsys.com:3478?transport=tcp",
-                        "turns:fr-turn4.xirsys.com:443?transport=tcp",
-                        "turns:fr-turn4.xirsys.com:5349?transport=tcp"
-                    ]
-                }
-            ],
-            iceTransportPolicy: "relay"
-        };
-
-        pc = new RTCPeerConnection(config);
-        setDebug(pc.iceConnectionState, pc.connectionState);
-
-        if (localStream) {
-            localStream.getTracks().forEach(track => {
-                pc.addTrack(track, localStream);
-            });
-            log("Добавили треки в PeerConnection");
-        } else {
-            log("ВНИМАНИЕ: localStream пустой при создании PC");
-        }
-
-        pc.onicecandidate = event => {
-            if (event.candidate && ws && ws.readyState === WebSocket.OPEN) {
-                log("Отправляем ICE-кандидата на сервер");
-                ws.send(JSON.stringify({
-                    type: "ice-candidate",
-                    room,
-                    role: ROLE,
-                    candidate: event.candidate
-                }));
+    // WebRTC
+    const pc = new RTCPeerConnection({
+        iceServers: [
+            { urls: ["stun:fr-turn4.xirsys.com"] },
+            {
+                username: "SbW8Rnpqh1htOMYUh2YIoB67iO9KSTyAFc55y_yISl2exds__kZpJxVzcjElsxBKAAAAAGkjfIpkZW5uaXNNYXJrb3Y=",
+                credential: "625c7f26-c8b3-11f0-9366-5ec4b59bd929",
+                urls: [
+                    "turn:fr-turn4.xirsys.com:80?transport=udp",
+                    "turn:fr-turn4.xirsys.com:3478?transport=udp",
+                    "turn:fr-turn4.xirsys.com:80?transport=tcp",
+                    "turn:fr-turn4.xirsys.com:3478?transport=tcp",
+                    "turns:fr-turn4.xirsys.com:443?transport=tcp",
+                    "turns:fr-turn4.xirsys.com:5349?transport=tcp"
+                ]
             }
-        };
+        ]
+    });
 
-        pc.oniceconnectionstatechange = () => {
-            log("ICE state → " + pc.iceConnectionState);
-            setDebug(pc.iceConnectionState, pc.connectionState);
-        };
+    const ws = new WebSocket(
+        "wss://webclass-backend-g3uh.onrender.com/ws?room=" + room + "&role=teacher"
+    );
 
-        pc.onconnectionstatechange = () => {
-            log("PC state → " + pc.connectionState);
-            setDebug(pc.iceConnectionState, pc.connectionState);
-            if (pc.connectionState === "connected") {
-                setStatus("соединение установлено", "ok");
-            } else if (pc.connectionState === "failed") {
-                setStatus("соединение WebRTC оборвалось", "error");
-            }
-        };
+    ws.onopen = () => {
+        statusDiv.textContent = "Статус: ждём ученика…";
+    };
 
-        pc.ontrack = event => {
-            if (!hasRemoteStream) {
-                hasRemoteStream = true;
-                setStatus("ученик на связи", "ok");
-                log("Получен первый медиатрек от ученика");
-            }
-            remoteVideo.srcObject = event.streams[0];
-        };
-    }
+    ws.onmessage = async (msg) => {
+        const data = JSON.parse(msg.data);
 
-    async function createOfferAndSend() {
-        try {
-            if (!pc) createPeerConnection();
-            log("Создаём offer…");
-            const offer = await pc.createOffer();
-            log("Offer создан, устанавливаем localDescription…");
-            await pc.setLocalDescription(offer);
-            log("LocalDescription установлена, отправляем offer через WS");
-            ws.send(JSON.stringify({
-                type: "offer",
-                room,
-                role: ROLE,
-                offer
-            }));
-            setStatus("отправили приглашение ученику…", "wait");
-        } catch (err) {
-            console.error(err);
-            log("ОШИБКА createOffer/setLocalDescription: " + err.message);
-            setStatus("ошибка при создании соединения", "error");
-        }
-    }
-
-    async function handleOffer(offer) {
-        try {
-            if (!pc) createPeerConnection();
-            log("Получен offer от ученика, ставим remoteDescription…");
-            await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        if (data.type === "offer") {
+            await pc.setRemoteDescription(data.offer);
             const answer = await pc.createAnswer();
-            log("Answer создан, ставим localDescription…");
             await pc.setLocalDescription(answer);
-            log("Отправляем answer через WS");
-            ws.send(JSON.stringify({
-                type: "answer",
-                room,
-                role: ROLE,
-                answer
-            }));
-            setStatus("отправили ответ…", "wait");
-        } catch (err) {
-            console.error(err);
-            log("ОШИБКА handleOffer: " + err.message);
-            setStatus("ошибка при обработке offer", "error");
+
+            ws.send(
+                JSON.stringify({ type: "answer", answer: answer })
+            );
         }
-    }
 
-    async function handleAnswer(answer) {
-        try {
-            if (!pc) {
-                log("ВНИМАНИЕ: answer пришёл, но pc ещё нет — создаём");
-                createPeerConnection();
+        if (data.type === "ice-candidate") {
+            try {
+                await pc.addIceCandidate(data.candidate);
+            } catch (e) {
+                console.error("ICE ошибка", e);
             }
-            log("Получен answer, ставим remoteDescription…");
-            await pc.setRemoteDescription(new RTCSessionDescription(answer));
-            setStatus("соединяемся с учеником…", "wait");
-        } catch (err) {
-            console.error(err);
-            log("ОШИБКА handleAnswer: " + err.message);
-            setStatus("ошибка при обработке answer", "error");
         }
-    }
+    };
 
-    async function handleIceCandidate(candidate) {
-        try {
-            if (!pc) {
-                log("ВНИМАНИЕ: candidate пришёл, но pc ещё нет — создаём");
-                createPeerConnection();
-            }
-            log("Добавляем ICE-кандидата из WS…");
-            await pc.addIceCandidate(new RTCIceCandidate(candidate));
-        } catch (err) {
-            console.error(err);
-            log("ОШИБКА addIceCandidate: " + err.message);
+    pc.onicecandidate = (event) => {
+        if (event.candidate) {
+            ws.send(
+                JSON.stringify({ type: "ice-candidate", candidate: event.candidate })
+            );
         }
-    }
+    };
 
-    function connectWebSocket() {
-        setStatus("подключаемся к серверу…", "wait");
-        log("Открываем WebSocket…");
+    pc.ontrack = (event) => {
+        studentVideo.srcObject = event.streams[0];
+        statusDiv.textContent = "Статус: ученик подключён!";
+    };
 
-        ws = new WebSocket("wss://webclass-backend-g3uh.onrender.com/ws");
-
-        ws.onopen = () => {
-            log("WS открыт, отправляем join");
-            setStatus("соединение с сервером установлено, ждём ученика…", "wait");
-            ws.send(JSON.stringify({
-                type: "join",
-                room,
-                role: ROLE,
-                name
-            }));
-        };
-
-        ws.onmessage = async (event) => {
-            const msg = JSON.parse(event.data);
-            log("WS message: " + JSON.stringify(msg));
-
-            switch (msg.type) {
-                case "joined":
-                    await createOfferAndSend();
-                    break;
-
-                case "offer":
-                    if (msg.role !== ROLE && msg.offer) {
-                        await handleOffer(msg.offer);
-                    }
-                    break;
-
-                case "answer":
-                    if (msg.role !== ROLE && msg.answer) {
-                        await handleAnswer(msg.answer);
-                    }
-                    break;
-
-                case "ice-candidate":
-                    if (msg.role !== ROLE && msg.candidate) {
-                        await handleIceCandidate(msg.candidate);
-                    }
-                    break;
-
-                case "info":
-                    setStatus(msg.text || "сообщение сервера", "wait");
-                    break;
-            }
-        };
-
-        ws.onerror = (err) => {
-            console.error(err);
-            log("WS ERROR: " + err.message);
-            setStatus("ошибка соединения с сервером", "error");
-        };
-
-        ws.onclose = () => {
-            log("WS закрыт");
-            if (!hasRemoteStream) {
-                setStatus("соединение с сервером закрыто", "error");
-            }
-        };
-    }
-
-    (async () => {
+    async function startCamera() {
         try {
-            await initMedia();
-            createPeerConnection();
-            connectWebSocket();
+            let stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+                audio: true,
+            });
+            teacherVideo.srcObject = stream;
+
+            stream.getTracks().forEach((t) => pc.addTrack(t, stream));
         } catch (e) {
+            alert("Не удалось открыть камеру/микрофон");
             console.error(e);
-            log("КРИТИЧЕСКАЯ ОШИБКА: " + e.message);
         }
-    })();
+    }
+
+    startCamera();
 </script>
+
 </body>
 </html>
