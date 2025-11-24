@@ -7,110 +7,496 @@
 
     <style>
         body {
-    margin: 0;
-    padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-
-    background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
-    background-attachment: fixed; /* красивый эффект */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.1);
-            width: 380px;
-            text-align: center;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #f9fafb;
         }
 
-        h2 {
-            margin-top: 0;
+        .container {
+            background: rgba(15, 23, 42, 0.96);
+            padding: 22px 22px 24px;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            width: 1100px;
+            max-width: 96vw;
+        }
+
+        .top-row {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .link-block {
+            flex: 1.5;
+        }
+
+        .link-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .room-label {
+            font-size: 13px;
+            color: #9ca3af;
+            margin-bottom: 8px;
+        }
+
+        .link-input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         input {
-            width: 100%;
-            padding: 10px 14px;
-            border: 1px solid #d0d0d0;
-            border-radius: 8px;
-            font-size: 15px;
-            margin-bottom: 14px;
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid #4b5563;
+            font-size: 14px;
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
         }
 
         button {
-            width: 100%;
-            background-color: #3b82f6;
-            color: white;
-            padding: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
             border: none;
-            border-radius: 8px;
-            font-size: 15px;
+            background-color: #4f46e5;
+            color: white;
+            font-size: 14px;
             cursor: pointer;
-            transition: background .2s;
+            white-space: nowrap;
+            transition: background .2s, transform .05s;
         }
 
         button:hover {
-            background-color: #2563eb;
+            background-color: #4338ca;
+            transform: translateY(-1px);
         }
 
         .link-field {
-            margin-top: 18px;
-            font-size: 14px;
-            color: #444;
-            text-align: left;
+            font-size: 13px;
+            color: #e5e7eb;
             user-select: all;
             cursor: pointer;
-            background: #f7f7f7;
-            padding: 10px;
-            border-radius: 6px;
-            border: 1px solid #d4d4d4;
+            background: #020617;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px dashed #374151;
+            word-break: break-all;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .teacher-info {
+            flex: 1;
+            font-size: 13px;
+            color: #9ca3af;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid #1e293b;
+            background: rgba(15,23,42,0.9);
+        }
+
+        .teacher-info b {
+            color: #e5e7eb;
+        }
+
+        .bottom-row {
+            display: flex;
+            gap: 18px;
+            align-items: stretch;
+        }
+
+        .video-area {
+            flex: 2;
+            background: #020617;
+            border-radius: 16px;
+            padding: 14px;
+            border: 1px solid #312e81;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .room-title {
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: radial-gradient(circle at top, #1d4ed8, #020617 60%);
+            padding: 12px;
+            min-height: 230px;
+        }
+
+        .remote-box {
+            border-radius: 12px;
+            background: rgba(15,23,42,0.85);
+            border: 1px solid rgba(129,140,248,0.5);
+            height: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #e5e7eb;
+            font-size: 14px;
+        }
+
+        .remote-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            opacity: 0.7;
+            margin-bottom: 6px;
+        }
+
+        .remote-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .remote-sub {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        .self-box {
+            position: absolute;
+            right: 14px;
+            bottom: 14px;
+            width: 28%;
+            min-width: 140px;
+            border-radius: 10px;
+            background: rgba(15,23,42,0.95);
+            border: 1px solid rgba(148,163,184,0.8);
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            font-size: 12px;
+            color: #e5e7eb;
+        }
+
+        .self-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        .self-tag {
+            font-weight: 600;
+        }
+
+        .self-preview {
+            margin-top: 4px;
+            border-radius: 7px;
+            background: linear-gradient(135deg, #1d4ed8, #22c55e);
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: #f9fafb;
+        }
+
+        /* CHAT PANEL */
+        .chat-panel {
+            flex: 1;
+            background: #020617;
+            border-radius: 16px;
+            border: 1px solid #1f2937;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .chat-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .chat-status {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .chat-messages {
+            flex: 1;
+            background: #020617;
+            border-radius: 10px;
+            border: 1px solid #111827;
+            padding: 8px;
+            overflow-y: auto;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .chat-empty {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 18px;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 2px;
+        }
+
+        .chat-input-row input {
+            background: #020617;
+            border-radius: 10px;
+            border: 1px solid #374151;
+            font-size: 13px;
+            color: #e5e7eb;
+            padding: 8px 10px;
+        }
+
+        .chat-input-row input::placeholder {
+            color: #6b7280;
+        }
+
+        .chat-send-btn {
+            background: #16a34a;
+            font-size: 13px;
+            padding: 8px 10px;
+        }
+
+        .chat-send-btn:hover {
+            background: #15803d;
+        }
+
+        .msg {
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        .msg-you {
+            text-align: right;
+        }
+
+        .msg-author {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .msg-bubble {
+            display: inline-block;
+            margin-top: 1px;
+            padding: 6px 9px;
+            border-radius: 9px;
+            background: #111827;
+        }
+
+        .msg-you .msg-bubble {
+            background: #1d4ed8;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                width: 100%;
+                margin: 8px;
+                padding: 14px;
+            }
+            .top-row {
+                flex-direction: column;
+            }
+            .bottom-row {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Ссылка на урок</h2>
+    <div class="top-row">
+        <div class="link-block">
+            <div class="link-title">Ссылка для ученика</div>
+            <div id="roomInfo" class="room-label"></div>
 
-    <input id="lessonLink" type="text" readonly>
-    <button id="copyBtn">Скопировать ссылку</button>
+            <div class="link-input-row">
+                <input id="lessonLink" type="text" readonly>
+                <button id="copyBtn">Скопировать</button>
+            </div>
 
-    <div id="clickSelect" class="link-field"></div>
+            <div id="clickSelect" class="link-field"></div>
+            <div class="hint">Нажмите на поле ниже, чтобы выделить ссылку целиком. Отправьте её ученику в любой мессенджер.</div>
+        </div>
+
+        <div class="teacher-info">
+            <div><b>Учитель:</b> <span id="teacherNameLabel">—</span></div>
+            <div><b>Комната:</b> <span id="roomShort">—</span></div>
+            <div style="margin-top:6px;">
+                После того как ученик перейдёт по ссылке, он увидит вас в большом окне. Сейчас мы показываем только макет комнаты,
+                позже сюда добавим живое видео и общий чат.
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-row">
+        <!-- ВИДЕО-СЕКЦИЯ -->
+        <div class="video-area">
+            <div class="room-title">Комната урока</div>
+            <div class="video-wrapper">
+                <!-- БОЛЬШОЕ ОКНО УЧЕНИКА -->
+                <div class="remote-box">
+                    <div class="remote-label">Окно ученика</div>
+                    <div class="remote-name" id="remoteNameLabel">Ученик</div>
+                    <div class="remote-sub">Здесь позже появится видео ученика.</div>
+                </div>
+
+                <!-- МАЛЕНЬКОЕ ОКНО УЧИТЕЛЯ -->
+                <div class="self-box">
+                    <div class="self-header">
+                        <span class="self-tag">Вы (учитель)</span>
+                        <span>предпросмотр</span>
+                    </div>
+                    <div class="self-preview">
+                        Здесь будет ваше видео
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ЧАТ СПРАВА -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <div class="chat-title">Чат урока</div>
+                <div class="chat-status">Пока сообщения видите только вы</div>
+            </div>
+            <div id="chatMessagesTeacher" class="chat-messages">
+                <div class="chat-empty">Сообщений пока нет. Напишите что-нибудь ученику.</div>
+            </div>
+            <div class="chat-input-row">
+                <input id="chatInputTeacher" type="text" placeholder="Напишите сообщение...">
+                <button id="chatSendTeacher" class="chat-send-btn">Отправить</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-    const link = `${window.location.origin}/student.html`;
+    // читаем параметры из URL
+    const params = new URLSearchParams(window.location.search);
+    const room = params.get("room") || "demo-room";
+    const name = params.get("name") || "Учитель";
+
+    const studentLink = `${window.location.origin}/student.html?room=${encodeURIComponent(room)}`;
+
     const input = document.getElementById("lessonLink");
     const field = document.getElementById("clickSelect");
     const btn = document.getElementById("copyBtn");
+    const roomInfo = document.getElementById("roomInfo");
+    const teacherNameLabel = document.getElementById("teacherNameLabel");
+    const roomShort = document.getElementById("roomShort");
 
-    input.value = link;
-    field.textContent = link;
+    input.value = studentLink;
+    field.textContent = studentLink;
 
-    // при клике — выделить
+    roomInfo.textContent = `Комната: ${room}`;
+    teacherNameLabel.textContent = name;
+    roomShort.textContent = room;
+
+    // выделение ссылки
     field.onclick = function () {
         const range = document.createRange();
         range.selectNode(field);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
     };
 
+    // копирование ссылки
     btn.onclick = function () {
-        navigator.clipboard.writeText(link).then(() => {
+        navigator.clipboard.writeText(studentLink).then(() => {
             btn.textContent = "Скопировано ✓";
-            btn.style.backgroundColor = "#16a34a";
+            btn.style.backgroundColor = "#22c55e";
 
             setTimeout(() => {
-                btn.textContent = "Скопировать ссылку";
-                btn.style.backgroundColor = "#3b82f6";
+                btn.textContent = "Скопировать";
+                btn.style.backgroundColor = "#4f46e5";
             }, 2000);
         });
     };
+
+    // ЛОКАЛЬНЫЙ ЧАТ ДЛЯ УЧИТЕЛЯ
+    const chatMessagesT = document.getElementById("chatMessagesTeacher");
+    const chatInputT = document.getElementById("chatInputTeacher");
+    const chatSendT = document.getElementById("chatSendTeacher");
+
+    function addTeacherMessage(text) {
+        if (!text.trim()) return;
+
+        // убираем заглушку
+        const empty = chatMessagesT.querySelector(".chat-empty");
+        if (empty) empty.remove();
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "msg msg-you";
+
+        const author = document.createElement("div");
+        author.className = "msg-author";
+        author.textContent = "Вы";
+
+        const bubble = document.createElement("div");
+        bubble.className = "msg-bubble";
+        bubble.textContent = text;
+
+        wrapper.appendChild(author);
+        wrapper.appendChild(bubble);
+        chatMessagesT.appendChild(wrapper);
+
+        chatMessagesT.scrollTop = chatMessagesT.scrollHeight;
+    }
+
+    chatSendT.addEventListener("click", () => {
+        addTeacherMessage(chatInputT.value);
+        chatInputT.value = "";
+        chatInputT.focus();
+    });
+
+    chatInputT.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            addTeacherMessage(chatInputT.value);
+            chatInputT.value = "";
+        }
+    });
 </script>
 
 </body>
