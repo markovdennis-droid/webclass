@@ -171,6 +171,17 @@ h2 {
     color: #e5e7eb;
 }
 
+/* режим PiP при fullscreen */
+.self-box.pip {
+    position: fixed !important;
+    right: 16px;
+    bottom: 16px;
+    z-index: 10000;
+    width: 22vw;
+    max-width: 260px;
+    min-width: 140px;
+}
+
 .self-header {
     display: flex;
     justify-content: space-between;
@@ -380,6 +391,9 @@ h2 {
         align-items: flex-start;
         gap: 6px;
     }
+    .self-box.pip {
+        width: 40vw;
+    }
 }
 </style>
 </head>
@@ -534,11 +548,11 @@ function toggleFullscreen(btn) {
 
     if (!isFull) {
         remoteBox.classList.add("fullscreen");
-        if (selfBox) selfBox.style.display = "none";
+        if (selfBox) selfBox.classList.add("pip");
         btn.textContent = "⤡";
     } else {
         remoteBox.classList.remove("fullscreen");
-        if (selfBox) selfBox.style.display = "flex";
+        if (selfBox) selfBox.classList.remove("pip");
         btn.textContent = "⤢";
     }
 }
@@ -552,7 +566,7 @@ document.addEventListener("keydown", (e) => {
             const wrapper = full.closest(".video-wrapper");
             const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
             full.classList.remove("fullscreen");
-            if (selfBox) selfBox.style.display = "flex";
+            if (selfBox) selfBox.classList.remove("pip");
             if (btn) btn.textContent = "⤢";
         }
     }
