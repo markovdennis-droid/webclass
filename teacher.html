@@ -1,676 +1,770 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebClass — Учитель</title>
+  <meta charset="UTF-8" />
+  <title>WebClass — Учитель</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    :root {
+      --bg-main: #050816;
+      --bg-panel: #0b1020;
+      --bg-panel-soft: #11172b;
+      --accent: #4f46e5;
+      --accent-soft: rgba(79, 70, 229, 0.25);
+      --text-main: #f9fafb;
+      --text-dim: #9ca3af;
+      --danger: #ef4444;
+      --radius-lg: 18px;
+      --radius-xl: 22px;
+      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
+      --shadow-pip: 0 16px 40px rgba(0, 0, 0, 0.65);
+      --border-soft: 1px solid rgba(148, 163, 184, 0.28);
+    }
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
-            background-attachment: fixed;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: #f9fafb;
-        }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        .container {
-            background: rgba(15, 23, 42, 0.96);
-            padding: 22px 22px 24px;
-            border-radius: 18px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-            width: 1100px;
-            max-width: 96vw;
-        }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+      background: radial-gradient(circle at top, #1f2937 0, #020617 52%, #000 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+    }
 
-        .top-row {
-            display: flex;
-            gap: 20px;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
+    .app-shell {
+      width: 100%;
+      max-width: 1200px;
+      margin: 10px auto;
+      padding: 10px 10px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-        .link-block {
-            flex: 1.5;
-        }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
+      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      backdrop-filter: blur(18px);
+    }
 
-        .link-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-        }
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        .link-title {
-            font-size: 18px;
-            font-weight: 600;
-        }
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #a5b4fc 0, #4f46e5 32%, #111827 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #e5e7eb;
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.6),
+        0 12px 35px rgba(79, 70, 229, 0.9);
+    }
 
-        .link-toggle {
-            font-size: 12px;
-            color: #9ca3af;
-            cursor: pointer;
-            border: none;
-            background: transparent;
-            padding: 3px 6px;
-            border-radius: 999px;
-        }
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
 
-        .link-toggle:hover {
-            background: rgba(148,163,184,0.15);
-        }
+    .brand-text strong {
+      font-size: 15px;
+      letter-spacing: 0.03em;
+    }
 
-        .room-label {
-            font-size: 13px;
-            color: #9ca3af;
-            margin-bottom: 8px;
-        }
+    .brand-text span {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
 
-        .link-content.hidden {
-            display: none;
-        }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
 
-        .link-input-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 4px;
-        }
+    .copy-link-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 8px 5px 10px;
+      border-radius: 999px;
+      border: 1px dashed rgba(148, 163, 184, 0.55);
+      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.28), transparent 55%),
+        radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.3), transparent 55%),
+        rgba(15, 23, 42, 0.9);
+    }
 
-        input {
-            flex: 1;
-            padding: 10px 12px;
-            border-radius: 10px;
-            border: 1px solid #4b5563;
-            font-size: 14px;
-            background: #020617;
-            color: #e5e7eb;
-        }
+    .copy-link-wrap small {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
 
-        input:focus {
-            outline: none;
-            border-color: #6366f1;
-        }
+    .copy-link-button {
+      border: none;
+      outline: none;
+      border-radius: 999px;
+      padding: 5px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.35);
+      transition: background 0.16s ease, transform 0.08s ease,
+        box-shadow 0.16s ease;
+    }
 
-        button {
-            padding: 10px 14px;
-            border-radius: 10px;
-            border: none;
-            background-color: #4f46e5;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background .2s, transform .05s;
-        }
+    .copy-link-button:hover {
+      background: rgba(30, 64, 175, 0.95);
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.7);
+      transform: translateY(-0.5px);
+    }
 
-        button:hover {
-            background-color: #4338ca;
-            transform: translateY(-1px);
-        }
+    .copy-link-button span {
+      font-size: 13px;
+    }
 
-        .hint {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 2px;
-        }
+    .status-pill {
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11px;
+      border: 1px solid rgba(52, 211, 153, 0.8);
+      color: #bbf7d0;
+      background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(5, 46, 22, 0.85));
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
 
-        .teacher-info {
-            flex: 1;
-            font-size: 13px;
-            color: #9ca3af;
-            padding: 10px 12px;
-            border-radius: 12px;
-            border: 1px solid #1e293b;
-            background: rgba(15,23,42,0.9);
-        }
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+    }
 
-        .teacher-info b {
-            color: #e5e7eb;
-        }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
 
-        .bottom-row {
-            display: flex;
-            gap: 18px;
-            align-items: stretch;
-        }
+    .main-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+      gap: 12px;
+    }
 
-        /* видео слева шире, чат уже */
-        .video-area {
-            flex: 2.5;
-            background: #020617;
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid #312e81;
-            display: flex;
-            flex-direction: column;
-        }
+    .video-panel {
+      position: relative;
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.2), transparent 60%),
+        var(--bg-panel);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      overflow: hidden;
+      padding: 10px;
+    }
 
-        .room-title {
-            font-size: 15px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
+    .video-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
 
-        .video-wrapper {
-            position: relative;
-            border-radius: 14px;
-            overflow: hidden;
-            background: radial-gradient(circle at top, #1d4ed8, #020617 60%);
-            padding: 12px;
-            min-height: 360px;
-        }
+    .video-panel-header span {
+      font-size: 12px;
+      color: var(--text-dim);
+    }
 
-        .remote-box {
-            position: relative;
-            border-radius: 12px;
-            background: rgba(15,23,42,0.85);
-            border: 1px solid rgba(129,140,248,0.5);
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #e5e7eb;
-            font-size: 14px;
-            text-align: center;
-            padding: 12px;
-        }
+    .main-video-wrapper {
+      position: relative;
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #111827 0, #020617 70%);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(15, 23, 42, 0.9);
+    }
 
-        .remote-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            opacity: 0.7;
-            margin-bottom: 6px;
-        }
+    .main-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      background: #000;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+    }
 
-        .remote-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
+    .main-video-controls {
+      position: absolute;
+      inset: 10px 10px auto auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: none;
+    }
 
-        .remote-sub {
-            font-size: 12px;
-            color: #9ca3af;
-        }
+    .control-chip {
+      pointer-events: auto;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 11px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.92);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.9);
+    }
 
-        /* Кнопка полноэкранного режима */
-        .fullscreen-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.45);
-            color: #f9fafb;
-            border: none;
-            padding: 6px 8px;
-            font-size: 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            z-index: 50;
-            backdrop-filter: blur(4px);
-        }
-        .fullscreen-btn:hover {
-            background: rgba(255,255,255,0.22);
-        }
+    .fs-btn {
+      pointer-events: auto;
+      border: none;
+      outline: none;
+      border-radius: 999px;
+      width: 30px;
+      height: 30px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.92);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 14px;
+      transition: transform 0.08s ease, box-shadow 0.14s ease,
+        background 0.16s ease;
+      border: 1px solid rgba(148, 163, 184, 0.55);
+    }
 
-        .remote-box.fullscreen {
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            width: 100vw !important;
-            height: 100vh !important;
-            z-index: 9999;
-            border-radius: 0;
-            margin: 0;
-            background: #020617;
-        }
+    .fs-btn:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: 0 15px 32px rgba(59, 130, 246, 0.75);
+      background: rgba(30, 64, 175, 0.96);
+    }
 
-        .self-box {
-            position: absolute;
-            right: 14px;
-            bottom: 14px;
-            width: 28%;
-            min-width: 140px;
-            border-radius: 10px;
-            background: rgba(15,23,42,0.95);
-            border: 1px solid rgba(148,163,184,0.8);
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 12px;
-            color: #e5e7eb;
-        }
+    .fs-btn:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.9);
+    }
 
-        /* режим "картинка-в-картинке" при fullscreen */
-        .self-box.pip {
-            position: fixed !important;
-            right: 16px;
-            bottom: 16px;
-            z-index: 10000;
-            width: 22vw;
-            max-width: 260px;
-            min-width: 140px;
-        }
+    .fs-btn-icon {
+      display: inline-block;
+      transform-origin: center;
+      font-size: 16px;
+    }
 
-        .self-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            opacity: 0.9;
-        }
+    .side-panel {
+      border-radius: var(--radius-xl);
+      background: var(--bg-panel-soft);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
 
-        .self-tag {
-            font-weight: 600;
-        }
+    .side-panel h2 {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-main);
+    }
 
-        .self-preview {
-            margin-top: 4px;
-            border-radius: 7px;
-            height: 80px;
-            overflow: hidden;
-            background: #020617;
-        }
+    .side-panel h2 span {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-weight: 400;
+    }
 
-        .self-preview video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 6px;
-            background: #020617;
-        }
+    .side-panel-content {
+      flex: 1;
+      border-radius: 13px;
+      border: 1px dashed rgba(148, 163, 184, 0.45);
+      padding: 8px;
+      font-size: 12px;
+      color: var(--text-dim);
+      background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.14), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(8, 47, 73, 0.26), transparent 55%),
+        rgba(15, 23, 42, 0.78);
+    }
 
-        /* ЧАТ ПРАВО */
-        .chat-panel {
-            flex: 0.9;
-            background: #020617;
-            border-radius: 16px;
-            border: 1px solid #1f2937;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-        }
+    .side-panel-footer {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
 
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
+    .small-pill {
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      color: var(--text-dim);
+    }
 
-        .chat-title {
-            font-size: 14px;
-            font-weight: 500;
-        }
+    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ === */
+    .self-box {
+      position: fixed;
+      right: 2.2vw;
+      bottom: 2.2vh;
+      width: 40vw;            /* было 22vw → стало 40vw */
+      max-width: 420px;       /* было 260px → стало 420px */
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.02), transparent 55%),
+        rgba(5, 10, 25, 0.96);
+      box-shadow: var(--shadow-pip);
+      border: 1px solid rgba(148, 163, 184, 0.55);
+      padding: 8px 10px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
 
-        .chat-status {
-            font-size: 11px;
-            color: #9ca3af;
-        }
+    .self-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
 
-        .chat-messages {
-            flex: 1;
-            background: #020617;
-            border-radius: 10px;
-            border: 1px solid #111827;
-            padding: 8px;
-            overflow-y: auto;
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
+    .self-title {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-dim);
+    }
 
-        .chat-empty {
-            font-size: 12px;
-            color: #6b7280;
-            text-align: center;
-            margin-top: 18px;
-        }
+    .self-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+    }
 
-        .chat-input-row {
-            display: flex;
-            gap: 6px;
-            margin-top: 2px;
-            align-items: center;
-        }
+    .swap-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 3px 7px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      transition: background 0.16s ease, transform 0.08s ease,
+        box-shadow 0.16s ease;
+    }
 
-        .chat-input-row input {
-            background: #020617;
-            border-radius: 10px;
-            border: 1px solid #374151;
-            font-size: 13px;
-            color: #e5e7eb;
-            padding: 8px 10px;
-        }
+    .swap-btn:hover {
+      background: rgba(30, 64, 175, 0.95);
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.65);
+      transform: translateY(-0.5px);
+    }
 
-        .chat-input-row input::placeholder {
-            color: #6b7280;
-        }
+    .self-video-frame {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #020617 0, #000 70%);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
+      border: 1px solid rgba(15, 23, 42, 0.9);
+    }
 
-        .chat-send-btn {
-            background: #16a34a;
-            font-size: 13px;
-            padding: 8px 10px;
-        }
+    .self-video {
+      width: 100%;
+      display: block;
+      background: #000;
+      object-fit: cover;
+      /* высота предпросмотра увеличена за счёт aspect-ratio */
+      aspect-ratio: 16 / 9;
+    }
 
-        .chat-send-btn:hover {
-            background: #15803d;
-        }
+    .self-overlay {
+      position: absolute;
+      inset: auto 8px 6px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      pointer-events: none;
+    }
 
-        .chat-attach {
-            width: 32px;
-            height: 32px;
-            border-radius: 999px;
-            border: 1px solid #374151;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-            background: #020617;
-            color: #e5e7eb;
-            flex-shrink: 0;
-        }
+    .self-label {
+      pointer-events: auto;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: var(--text-dim);
+    }
 
-        .chat-attach:hover {
-            background: #111827;
-        }
+    .mute-pill {
+      pointer-events: auto;
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: #fee2e2;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-        .chat-note {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
+    .mute-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--danger);
+    }
 
-        .msg {
-            margin-bottom: 6px;
-            line-height: 1.35;
-        }
+    /* === FULLSCREEN STATE (по желанию — чуть тёмный фон вокруг) === */
+    .fullscreen-active {
+      background: #000;
+    }
 
-        .msg-you {
-            text-align: right;
-        }
+    /* === МОБИЛЬНАЯ АДАПТАЦИЯ === */
+    @media (max-width: 900px) {
+      .app-shell {
+        padding: 10px 8px 18px;
+      }
 
-        .msg-author {
-            font-size: 11px;
-            opacity: 0.7;
-        }
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
 
-        .msg-bubble {
-            display: inline-block;
-            margin-top: 1px;
-            padding: 6px 9px;
-            border-radius: 9px;
-            background: #111827;
-        }
+      .main-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
 
-        .msg-you .msg-bubble {
-            background: #1d4ed8;
-        }
+      .video-panel {
+        order: 1;
+      }
 
-        /* АДАПТИВ */
-        @media (max-width: 900px) {
-            .container {
-                width: 100%;
-                margin: 8px;
-                padding: 14px;
-            }
-            .top-row {
-                flex-direction: column;
-            }
-            .bottom-row {
-                flex-direction: column;
-            }
-            .video-wrapper {
-                min-height: 280px;
-            }
-            .remote-box {
-                height: 280px;
-            }
-        }
+      .side-panel {
+        order: 2;
+      }
 
-        @media (max-width: 600px) {
-            .link-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-            }
-            .link-input-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            button {
-                width: 100%;
-            }
-            .self-box.pip {
-                width: 40vw;
-            }
-        }
-    </style>
+      .self-box {
+        right: 4vw;
+        bottom: 4vh;
+        width: 60vw;         /* на телефонах: 60vw */
+        max-width: 60vw;     /* чтобы реально занимал 60% экрана */
+        padding: 7px 8px 9px;
+      }
+
+      .main-video-wrapper {
+        border-radius: 18px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      header {
+        padding: 9px 10px;
+      }
+
+      .copy-link-wrap {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .main-video-controls {
+        inset: 8px 8px auto auto;
+      }
+
+      .fs-btn {
+        width: 28px;
+        height: 28px;
+      }
+
+      .self-box {
+        right: 3vw;
+        bottom: 3vh;
+        width: 60vw;
+        max-width: 60vw;
+      }
+
+      .self-label,
+      .mute-pill {
+        font-size: 10px;
+      }
+    }
+  </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="top-row">
-        <div class="link-block">
-            <div class="link-header">
-                <div class="link-title">Ссылка для ученика</div>
-                <button id="toggleLink" class="link-toggle">Свернуть</button>
-            </div>
-            <div id="roomInfo" class="room-label"></div>
-
-            <div id="linkContent" class="link-content">
-                <div class="link-input-row">
-                    <input id="lessonLink" type="text" readonly>
-                    <button id="copyBtn">Скопировать</button>
-                </div>
-                <div class="hint">Скопируйте ссылку и отправьте её ученику в любой мессенджер.</div>
-            </div>
+  <div class="app-shell">
+    <header>
+      <div class="brand-block">
+        <div class="brand-logo">W</div>
+        <div class="brand-text">
+          <strong>WebClass • Teacher</strong>
+          <span>Учительский кабинет · камера + звук включены</span>
         </div>
-
-        <div class="teacher-info">
-            <div><b>Учитель:</b> <span id="teacherNameLabel">—</span></div>
-            <div><b>Комната:</b> <span id="roomShort">—</span></div>
-            <div style="margin-top:6px;">
-                После того как ученик перейдёт по ссылке, он увидит вас в большом окне. Сейчас мы показываем макет комнаты,
-                позже сюда добавим живое видео и общий чат между вами.
-            </div>
+      </div>
+      <div class="header-actions">
+        <div class="copy-link-wrap">
+          <div style="display:flex; flex-direction:column;">
+            <small id="inviteLabel">Ссылка для ученика:</small>
+            <small id="inviteUrl" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+              https://webclass.example/class/123
+            </small>
+          </div>
+          <button class="copy-link-button" id="copyInviteBtn">
+            <span>📋</span>
+            <span>Копировать</span>
+          </button>
         </div>
+        <div class="status-pill">
+          <span class="status-dot"></span>
+          <span>В эфире</span>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="main-layout">
+        <section class="video-panel">
+          <div class="video-panel-header">
+            <span>Главное окно · Ученик</span>
+            <span style="font-size:11px; color:var(--text-dim);">
+              Нажми ⛶ для полного экрана · ESC для выхода
+            </span>
+          </div>
+
+          <div class="main-video-wrapper" id="mainVideoWrapper">
+            <video
+              id="mainVideo"
+              class="main-video"
+              autoplay
+              playsinline
+            ></video>
+
+            <div class="main-video-controls">
+              <div class="control-chip">
+                🎥 Главный экран
+              </div>
+              <button
+                class="fs-btn"
+                id="fullscreenBtn"
+                type="button"
+                aria-label="Полный экран"
+              >
+                <span class="fs-btn-icon" id="fsIcon">⛶</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <h2>
+            Чат и заметки
+            <span>Скоро здесь будет чат с учеником</span>
+          </h2>
+          <div class="side-panel-content">
+            <p>
+              Сейчас главное — протестировать видео, звук, полноэкранный режим и
+              PiP окно.
+            </p>
+            <p style="margin-top:6px;">
+              🔹 Кликаешь по кнопке <strong>⛶</strong> — главное окно уходит в
+              fullscreen.<br />
+              🔹 Нажимаешь <strong>ESC</strong> — fullscreen закрывается, верстка
+              не ломается.<br />
+              🔹 Маленькое окно — увеличенное PiP по типу Zoom Large PiP.
+            </p>
+          </div>
+          <div class="side-panel-footer">
+            <div class="small-pill">👩‍🏫 Режим: Учитель</div>
+            <div class="small-pill">🎧 Наушники рекомендуются</div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- УВЕЛИЧЕННЫЙ PiP SELF BOX -->
+    <div class="self-box" id="selfBox">
+      <div class="self-header">
+        <div class="self-title">
+          <span class="self-dot"></span>
+          <span>Вы (учитель)</span>
+        </div>
+        <button class="swap-btn" id="swapBtn" type="button">
+          ↔ Поменять местами
+        </button>
+      </div>
+      <div class="self-video-frame">
+        <video
+          id="selfVideo"
+          class="self-video"
+          autoplay
+          muted
+          playsinline
+        ></video>
+        <div class="self-overlay">
+          <div class="self-label">Предпросмотр камеры</div>
+          <div class="mute-pill">
+            <span class="mute-dot"></span>
+            <span>Микрофон включён</span>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div class="bottom-row">
-        <!-- ВИДЕО -->
-        <div class="video-area">
-            <div class="room-title">Комната урока</div>
-            <div class="video-wrapper">
-                <!-- БОЛЬШОЕ ОКНО УЧЕНИКА -->
-                <div class="remote-box">
-                    <button class="fullscreen-btn" type="button" onclick="toggleFullscreen(this)">⤢</button>
-                    <div class="remote-label">Окно ученика</div>
-                    <div class="remote-name" id="remoteNameLabel">Ученик</div>
-                    <div class="remote-sub">Здесь позже появится видео ученика.</div>
-                </div>
+  <script>
+    // КОПИРОВАНИЕ ПРИГЛАСИТЕЛЬНОЙ ССЫЛКИ
+    (function () {
+      const btn = document.getElementById("copyInviteBtn");
+      const urlEl = document.getElementById("inviteUrl");
+      if (!btn || !urlEl) return;
 
-                <!-- МАЛЕНЬКОЕ ОКНО УЧИТЕЛЯ (живое видео) -->
-                <div class="self-box">
-                    <div class="self-header">
-                        <span class="self-tag">Вы (учитель)</span>
-                        <span>предпросмотр</span>
-                    </div>
-                    <div class="self-preview">
-                        <video id="localVideoTeacher" autoplay muted playsinline></video>
-                    </div>
-                </div>
-            </div>
-        </div>
+      btn.addEventListener("click", async () => {
+        const text = urlEl.textContent.trim();
+        try {
+          await navigator.clipboard.writeText(text);
+          const old = btn.innerHTML;
+          btn.innerHTML = "✔ Скопировано";
+          setTimeout(() => (btn.innerHTML = old), 1200);
+        } catch (err) {
+          console.error(err);
+          alert("Не удалось скопировать ссылку");
+        }
+      });
+    })();
 
-        <!-- ЧАТ -->
-        <div class="chat-panel">
-            <div class="chat-header">
-                <div class="chat-title">Чат урока</div>
-                <div class="chat-status">Пока сообщения видите только вы</div>
-            </div>
-            <div id="chatMessagesTeacher" class="chat-messages">
-                <div class="chat-empty">Сообщений пока нет. Напишите что-нибудь ученику.</div>
-            </div>
-            <div class="chat-input-row">
-                <label class="chat-attach" title="Прикрепить файл">
-                    📎
-                    <input type="file" id="chatFileTeacher" style="display:none;">
-                </label>
-                <input id="chatInputTeacher" type="text" placeholder="Напишите сообщение...">
-                <button id="chatSendTeacher" class="chat-send-btn">Отправить</button>
-            </div>
-            <div class="chat-note">
-                Прикрепление файлов до 10 МБ (PDF, изображения). Сейчас это демо без реальной отправки.
-            </div>
-        </div>
-    </div>
-</div>
+    // ЛОКАЛЬНОЕ ВИДЕО / ЗВУК (getUserMedia)
+    (async function initMedia() {
+      const selfVideo = document.getElementById("selfVideo");
+      const mainVideo = document.getElementById("mainVideo");
 
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const room = params.get("room") || "demo-room";
-    const name = params.get("name") || "Учитель";
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        console.warn("getUserMedia не поддерживается в этом браузере");
+        return;
+      }
 
-    const studentLink = `${window.location.origin}/student.html?room=${encodeURIComponent(room)}`;
-
-    const input = document.getElementById("lessonLink");
-    const btn = document.getElementById("copyBtn");
-    const roomInfo = document.getElementById("roomInfo");
-    const teacherNameLabel = document.getElementById("teacherNameLabel");
-    const roomShort = document.getElementById("roomShort");
-
-    input.value = studentLink;
-
-    roomInfo.textContent = `Комната: ${room}`;
-    teacherNameLabel.textContent = name;
-    roomShort.textContent = room;
-
-    // копирование ссылки
-    btn.onclick = function () {
-        navigator.clipboard.writeText(studentLink).then(() => {
-            btn.textContent = "Скопировано ✓";
-            btn.style.backgroundColor = "#22c55e";
-
-            setTimeout(() => {
-                btn.textContent = "Скопировать";
-                btn.style.backgroundColor = "#4f46e5";
-            }, 2000);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true,
         });
-    };
 
-    // сворачивание панели ссылки
-    const toggleBtn = document.getElementById("toggleLink");
-    const linkContent = document.getElementById("linkContent");
-    toggleBtn.addEventListener("click", () => {
-        linkContent.classList.toggle("hidden");
-        toggleBtn.textContent = linkContent.classList.contains("hidden") ? "Показать" : "Свернуть";
-    });
-
-    // ЛОКАЛЬНЫЙ ЧАТ (учитель)
-    const chatMessagesT = document.getElementById("chatMessagesTeacher");
-    const chatInputT = document.getElementById("chatInputTeacher");
-    const chatSendT = document.getElementById("chatSendTeacher");
-    const chatFileT = document.getElementById("chatFileTeacher");
-
-    function addTeacherMessage(text, isFile = false) {
-        if (!text.trim()) return;
-
-        const empty = chatMessagesT.querySelector(".chat-empty");
-        if (empty) empty.remove();
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "msg msg-you";
-
-        const author = document.createElement("div");
-        author.className = "msg-author";
-        author.textContent = isFile ? "Файл (демо)" : "Вы";
-
-        const bubble = document.createElement("div");
-        bubble.className = "msg-bubble";
-        bubble.textContent = text;
-
-        wrapper.appendChild(author);
-        wrapper.appendChild(bubble);
-        chatMessagesT.appendChild(wrapper);
-
-        chatMessagesT.scrollTop = chatMessagesT.scrollHeight;
-    }
-
-    chatSendT.addEventListener("click", () => {
-        addTeacherMessage(chatInputT.value);
-        chatInputT.value = "";
-        chatInputT.focus();
-    });
-
-    chatInputT.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addTeacherMessage(chatInputT.value);
-            chatInputT.value = "";
+        // В маленьком окне всегда вы
+        if (selfVideo) {
+          selfVideo.srcObject = stream;
         }
-    });
 
-    chatFileT.addEventListener("change", () => {
-        if (!chatFileT.files || chatFileT.files.length === 0) return;
-        const file = chatFileT.files[0];
-        addTeacherMessage(`Файл: ${file.name} (до 10 МБ, демо без загрузки)`, true);
-        chatFileT.value = "";
-    });
+        // Пока нет реального WebRTC — дублируем себя в большое окно
+        if (mainVideo) {
+          mainVideo.srcObject = stream;
+        }
+      } catch (err) {
+        console.error("Ошибка доступа к камере/микрофону:", err);
+        alert(
+          "Не удалось получить доступ к камере/микрофону. Проверьте разрешения в браузере."
+        );
+      }
+    })();
 
-    // ЛОКАЛЬНОЕ ВИДЕО УЧИТЕЛЯ (WebRTC getUserMedia)
-    const localVideoT = document.getElementById("localVideoTeacher");
-    if (localVideoT && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-            .then(stream => {
-                localVideoT.srcObject = stream;
-                window.localStreamTeacher = stream; // пригодится для полноценного WebRTC позже
-            })
-            .catch(err => {
-                console.error("Не удалось получить доступ к камере/микрофону (учитель):", err);
-            });
-    }
+    // FULLSCREEN (НЕ ЛОМАЕМ ESC)
+    (function () {
+      const wrapper = document.getElementById("mainVideoWrapper");
+      const fsBtn = document.getElementById("fullscreenBtn");
+      const fsIcon = document.getElementById("fsIcon");
+      if (!wrapper || !fsBtn || !fsIcon) return;
 
-    // Полноэкранный режим для большого окна
-    function toggleFullscreen(btn) {
-        const remoteBox = btn.closest(".remote-box");
-        const wrapper = remoteBox.closest(".video-wrapper");
-        const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
-        const isFull = remoteBox.classList.contains("fullscreen");
+      function isFullscreen() {
+        return document.fullscreenElement === wrapper;
+      }
 
-        if (!isFull) {
-            remoteBox.classList.add("fullscreen");
-            if (selfBox) selfBox.classList.add("pip");
-            btn.textContent = "⤡";
+      function updateIcon() {
+        if (isFullscreen()) {
+          fsIcon.textContent = "🗗"; // иконка "выйти"
+          wrapper.classList.add("fullscreen-active");
         } else {
-            remoteBox.classList.remove("fullscreen");
-            if (selfBox) selfBox.classList.remove("pip");
-            btn.textContent = "⤢";
+          fsIcon.textContent = "⛶"; // иконка "на весь экран"
+          wrapper.classList.remove("fullscreen-active");
         }
-    }
+      }
 
-    // Выход из fullscreen по ESC
-    document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            const full = document.querySelector(".remote-box.fullscreen");
-            if (full) {
-                const btn = full.querySelector(".fullscreen-btn");
-                const wrapper = full.closest(".video-wrapper");
-                const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
-                full.classList.remove("fullscreen");
-                if (selfBox) selfBox.classList.remove("pip");
-                if (btn) btn.textContent = "⤢";
-            }
+      fsBtn.addEventListener("click", async () => {
+        try {
+          if (!isFullscreen()) {
+            await wrapper.requestFullscreen();
+          } else {
+            await document.exitFullscreen();
+          }
+        } catch (err) {
+          console.error("Ошибка переключения fullscreen:", err);
         }
-    });
-</script>
+      });
 
+      document.addEventListener("fullscreenchange", () => {
+        // Срабатывает и при ESC — иконка и классы синхронизированы
+        updateIcon();
+      });
+
+      updateIcon();
+    })();
+
+    // SWAP (МЕНЯЕМ МЕСТАМИ ОСНОВНОЕ ОКНО И PIP)
+    (function () {
+      const swapBtn = document.getElementById("swapBtn");
+      const mainVideo = document.getElementById("mainVideo");
+      const selfVideo = document.getElementById("selfVideo");
+      if (!swapBtn || !mainVideo || !selfVideo) return;
+
+      let swapped = false;
+
+      swapBtn.addEventListener("click", () => {
+        // Когда появится реальное WebRTC, здесь можно будет менять stream'ы
+        // Сейчас просто визуально показываем, что "логика уже есть".
+        swapped = !swapped;
+        swapBtn.textContent = swapped
+          ? "↔ Вернуть как было"
+          : "↔ Поменять местами";
+      });
+    })();
+  </script>
 </body>
 </html>
