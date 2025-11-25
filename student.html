@@ -5,321 +5,339 @@
     <title>WebClass — Комната ученика</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #eef1ff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+<style>
+/* ---------- ОБЩИЙ ФОН, КАК У УЧИТЕЛЯ ---------- */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
+    background-attachment: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #f1f5f9;
+}
 
-        .card {
-            background: white;
-            padding: 20px 20px 22px;
-            border-radius: 18px;
-            width: 1100px;
-            max-width: 96vw;
-            box-shadow: 0 20px 40px rgba(15,23,42,0.18);
-        }
+/* ---------- ОСНОВНАЯ КАРТОЧКА ---------- */
+.card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 20px 20px 24px;
+    border-radius: 18px;
+    width: 1100px;
+    max-width: 96vw;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+}
 
-        .top-row {
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            align-items: baseline;
-            margin-bottom: 10px;
-        }
+/* ---------- ВЕРХНЯЯ СТРОКА ---------- */
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
 
-        h2 {
-            margin: 0;
-        }
+h2 {
+    margin: 0;
+    font-size: 22px;
+}
 
-        .room {
-            font-size: 13px;
-            color: #6b7280;
-        }
+.room {
+    font-size: 13px;
+    opacity: 0.8;
+}
 
-        .bottom-row {
-            display: flex;
-            gap: 18px;
-            align-items: stretch;
-        }
+/* ---------- НИЖНИЙ БЛОК ---------- */
+.bottom-row {
+    display: flex;
+    gap: 18px;
+    align-items: stretch;
+}
 
-        .video-column {
-            flex: 2.5;
-            background: #020617;
-            border-radius: 16px;
-            padding: 14px;
-            border: 1px solid #312e81;
-            color: #e5e7eb;
-            display: flex;
-            flex-direction: column;
-        }
+/* ---------- ВИДЕО-КОЛОНКА ---------- */
+.video-column {
+    flex: 2.5;
+    background: rgba(15,23,42,0.92);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid rgba(148,163,184,0.25);
+    color: #e5e7eb;
+    display: flex;
+    flex-direction: column;
+}
 
-        .video-title {
-            font-size: 14px;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
+.video-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
 
-        .video-wrapper {
-            position: relative;
-            border-radius: 14px;
-            overflow: hidden;
-            background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
-            padding: 12px;
-            min-height: 360px;
-        }
+.video-wrapper {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
+    padding: 12px;
+    min-height: 360px;
+}
 
-        .remote-box {
-            border-radius: 12px;
-            background: rgba(15,23,42,0.9);
-            border: 1px solid rgba(129,140,248,0.6);
-            height: 400px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            color: #e5e7eb;
-            font-size: 14px;
-            text-align: center;
-        }
+/* ---------- БОЛЬШОЕ ОКНО (УЧИТЕЛЬ) ---------- */
+.remote-box {
+    border-radius: 12px;
+    background: rgba(15,23,42,0.90);
+    border: 1px solid rgba(129,140,248,0.55);
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #e5e7eb;
+    font-size: 14px;
+    text-align: center;
+    padding: 12px;
+}
 
-        .remote-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            opacity: 0.7;
-            margin-bottom: 6px;
-        }
+.remote-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-bottom: 6px;
+}
 
-        .remote-name {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 6px;
-        }
+.remote-name {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
 
-        .remote-sub {
-            font-size: 12px;
-            color: #9ca3af;
-        }
+.remote-sub {
+    font-size: 12px;
+    opacity: 0.9;
+}
 
-        .self-box {
-            position: absolute;
-            right: 14px;
-            bottom: 14px;
-            width: 28%;
-            min-width: 140px;
-            border-radius: 10px;
-            background: rgba(15,23,42,0.98);
-            border: 1px solid rgba(148,163,184,0.9);
-            padding: 8px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            font-size: 12px;
-            color: #e5e7eb;
-        }
+/* ---------- МАЛЕНЬКОЕ ОКНО (УЧЕНИК) ---------- */
+.self-box {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 28%;
+    min-width: 140px;
+    border-radius: 10px;
+    background: rgba(15,23,42,0.98);
+    border: 1px solid rgba(148,163,184,0.65);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: #e5e7eb;
+}
 
-        .self-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            opacity: 0.9;
-        }
+.self-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0.8;
+    font-size: 11px;
+}
 
-        .self-tag {
-            font-weight: 600;
-        }
+.self-tag {
+    font-weight: 600;
+}
 
-        .self-preview {
-            margin-top: 4px;
-            border-radius: 7px;
-            background: linear-gradient(135deg, #22c55e, #6366f1);
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: #f9fafb;
-            text-align: center;
-        }
+.self-preview {
+    margin-top: 4px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #22c55e, #6366f1);
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    text-align: center;
+}
 
-        .hint {
-            font-size: 13px;
-            color: #e5e7eb;
-            margin-top: 10px;
-        }
+/* ---------- ТЕКСТ И КНОПКА ---------- */
+.hint {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 12px;
+}
 
-        .btn-exit {
-            margin-top: 8px;
-            padding: 8px 16px;
-            background: #ef4444;
-            color: white;
-            border: none;
-            border-radius: 9px;
-            font-size: 13px;
-            cursor: pointer;
-            align-self: flex-start;
-            transition: background .2s;
-        }
+.btn-exit {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background .2s;
+}
 
-        .btn-exit:hover {
-            background: #b91c1c;
-        }
+.btn-exit:hover {
+    background: #b91c1c;
+}
 
-        .chat-panel {
-            flex: 0.9;
-            background: #f3f4ff;
-            border-radius: 16px;
-            border: 1px solid #d4d4ff;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-        }
+/* ---------- ЧАТ ---------- */
+.chat-panel {
+    flex: 0.9;
+    background: rgba(15,23,42,0.85);
+    border-radius: 16px;
+    border: 1px solid rgba(148,163,184,0.25);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    color: #e5e7eb;
+}
 
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
 
-        .chat-title {
-            font-size: 14px;
-            font-weight: 500;
-        }
+.chat-title {
+    font-size: 14px;
+    font-weight: 500;
+}
 
-        .chat-status {
-            font-size: 11px;
-            color: #6b7280;
-        }
+.chat-status {
+    font-size: 11px;
+    color: #9ca3af;
+}
 
-        .chat-messages {
-            flex: 1;
-            background: white;
-            border-radius: 10px;
-            border: 1px solid #e5e7eb;
-            padding: 8px;
-            overflow-y: auto;
-            font-size: 13px;
-            margin-bottom: 6px;
-        }
+.chat-messages {
+    flex: 1;
+    background: rgba(15,23,42,0.5);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 8px;
+    overflow-y: auto;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
 
-        .chat-empty {
-            font-size: 12px;
-            color: #9ca3af;
-            text-align: center;
-            margin-top: 18px;
-        }
+.chat-empty {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    margin-top: 18px;
+}
 
-        .chat-input-row {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
+.chat-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
 
-        .chat-input-row input[type="text"] {
-            flex: 1;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            padding: 8px 10px;
-            font-size: 13px;
-        }
+.chat-input-row input[type="text"] {
+    flex: 1;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.14);
+    padding: 8px 10px;
+    font-size: 13px;
+    background: rgba(0,0,0,0.25);
+    color: #e5e7eb;
+}
 
-        .chat-input-row input::placeholder {
-            color: #9ca3af;
-        }
+.chat-input-row input::placeholder {
+    color: #9ca3af;
+}
 
-        .chat-send-btn {
-            padding: 8px 10px;
-            border-radius: 10px;
-            border: none;
-            background: #16a34a;
-            color: white;
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
+.chat-send-btn {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: none;
+    background: #16a34a;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
 
-        .chat-send-btn:hover {
-            background: #15803d;
-        }
+.chat-send-btn:hover {
+    background: #15803d;
+}
 
-        .chat-attach {
-            width: 32px;
-            height: 32px;
-            border-radius: 999px;
-            border: 1px solid #cbd5e1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-            background: white;
-            color: #111827;
-            flex-shrink: 0;
-        }
+.chat-attach {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+    color: #e5e7eb;
+}
 
-        .chat-attach:hover {
-            background: #e5e7eb;
-        }
+.chat-attach:hover {
+    background: rgba(255,255,255,0.12);
+}
 
-        .chat-note {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
+.chat-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
 
-        .msg {
-            margin-bottom: 6px;
-            line-height: 1.35;
-        }
+/* ---------- СООБЩЕНИЯ ---------- */
+.msg {
+    margin-bottom: 7px;
+    line-height: 1.35;
+}
 
-        .msg-you {
-            text-align: right;
-        }
+.msg-you {
+    text-align: right;
+}
 
-        .msg-author {
-            font-size: 11px;
-            opacity: 0.7;
-        }
+.msg-author {
+    font-size: 11px;
+    opacity: 0.7;
+}
 
-        .msg-bubble {
-            display: inline-block;
-            margin-top: 1px;
-            padding: 6px 9px;
-            border-radius: 9px;
-            background: #e5e7eb;
-        }
+.msg-bubble {
+    display: inline-block;
+    margin-top: 2px;
+    padding: 6px 9px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.1);
+}
 
-        .msg-you .msg-bubble {
-            background: #4f46e5;
-            color: white;
-        }
+.msg-you .msg-bubble {
+    background: #4f46e5;
+    color: white;
+}
 
-        @media (max-width: 900px) {
-            .card {
-                width: 100%;
-                margin: 8px;
-                padding: 14px;
-            }
-            .bottom-row {
-                flex-direction: column;
-            }
-            .video-wrapper {
-                min-height: 280px;
-            }
-            .remote-box {
-                height: 280px;
-            }
-        }
-    </style>
+/* ---------- МОБИЛЬНАЯ АДАПТАЦИЯ ---------- */
+@media (max-width: 900px) {
+    .card {
+        width: 100%;
+        margin: 8px;
+        padding: 14px;
+    }
+    .bottom-row {
+        flex-direction: column;
+    }
+    .video-wrapper {
+        min-height: 280px;
+    }
+    .remote-box {
+        height: 280px;
+    }
+}
+</style>
 </head>
 
 <body>
@@ -330,10 +348,13 @@
     </div>
 
     <div class="bottom-row">
+
         <!-- ВИДЕО -->
         <div class="video-column">
             <div class="video-title">Комната</div>
+
             <div class="video-wrapper">
+
                 <div class="remote-box">
                     <div class="remote-label">Окно учителя</div>
                     <div class="remote-name" id="teacherNameLabel">Учитель</div>
@@ -352,9 +373,8 @@
                 </div>
             </div>
 
-            <div class="hint">
-                Вы уже в комнате. Если связи пока нет — просто дождитесь учителя.
-            </div>
+            <div class="hint">Вы уже в комнате. Если связи пока нет — просто дождитесь учителя.</div>
+
             <button class="btn-exit" onclick="goHome()">Выйти из урока</button>
         </div>
 
@@ -362,85 +382,91 @@
         <div class="chat-panel">
             <div class="chat-header">
                 <div class="chat-title">Чат урока</div>
-                <div class="chat-status">Сообщения пока только на вашем экране</div>
+                <div class="chat-status">Сообщения пока только у вас</div>
             </div>
+
             <div id="chatMessagesStudent" class="chat-messages">
-                <div class="chat-empty">Задайте вопрос учителю — позже мы сделаем так, чтобы он видел это сообщение.</div>
+                <div class="chat-empty">
+                    Задайте вопрос учителю — позже мы сделаем так, чтобы он видел это сообщение.
+                </div>
             </div>
+
             <div class="chat-input-row">
                 <label class="chat-attach" title="Прикрепить файл">
                     📎
                     <input type="file" id="chatFileStudent" style="display:none;">
                 </label>
+
                 <input id="chatInputStudent" type="text" placeholder="Написать сообщение учителю...">
+
                 <button id="chatSendStudent" class="chat-send-btn">Отправить</button>
             </div>
+
             <div class="chat-note">
-                Прикрепление файлов до 10 МБ (PDF, изображения). Сейчас это демо без реальной отправки.
+                Прикрепление файлов до 10 МБ (PDF, изображения). Это демо — без реальной загрузки.
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const params = new URLSearchParams(window.location.search);
-    const room = params.get("room") || "неизвестная комната";
+const params = new URLSearchParams(window.location.search);
+const room = params.get("room") || "неизвестная комната";
+document.getElementById("roomInfo").textContent = "Комната: " + room;
 
-    document.getElementById("roomInfo").textContent = "Комната: " + room;
+function goHome() {
+    window.location.href = "/";
+}
 
-    function goHome() {
-        window.location.href = "/";
-    }
+// ЧАТ УЧЕНИКА
+const chatMessagesS = document.getElementById("chatMessagesStudent");
+const chatInputS = document.getElementById("chatInputStudent");
+const chatSendS = document.getElementById("chatSendStudent");
+const chatFileS = document.getElementById("chatFileStudent");
 
-    const chatMessagesS = document.getElementById("chatMessagesStudent");
-    const chatInputS = document.getElementById("chatInputStudent");
-    const chatSendS = document.getElementById("chatSendStudent");
-    const chatFileS = document.getElementById("chatFileStudent");
+function addStudentMessage(text, isFile = false) {
+    if (!text.trim()) return;
 
-    function addStudentMessage(text, isFile = false) {
-        if (!text.trim()) return;
+    const empty = chatMessagesS.querySelector(".chat-empty");
+    if (empty) empty.remove();
 
-        const empty = chatMessagesS.querySelector(".chat-empty");
-        if (empty) empty.remove();
+    const wrapper = document.createElement("div");
+    wrapper.className = "msg msg-you";
 
-        const wrapper = document.createElement("div");
-        wrapper.className = "msg msg-you";
+    const author = document.createElement("div");
+    author.className = "msg-author";
+    author.textContent = isFile ? "Файл (демо)" : "Вы";
 
-        const author = document.createElement("div");
-        author.className = "msg-author";
-        author.textContent = isFile ? "Файл (демо)" : "Вы";
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble";
+    bubble.textContent = text;
 
-        const bubble = document.createElement("div");
-        bubble.className = "msg-bubble";
-        bubble.textContent = text;
+    wrapper.appendChild(author);
+    wrapper.appendChild(bubble);
+    chatMessagesS.appendChild(wrapper);
 
-        wrapper.appendChild(author);
-        wrapper.appendChild(bubble);
-        chatMessagesS.appendChild(wrapper);
+    chatMessagesS.scrollTop = chatMessagesS.scrollHeight;
+}
 
-        chatMessagesS.scrollTop = chatMessagesS.scrollHeight;
-    }
+chatSendS.addEventListener("click", () => {
+    addStudentMessage(chatInputS.value);
+    chatInputS.value = "";
+});
 
-    chatSendS.addEventListener("click", () => {
+chatInputS.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
         addStudentMessage(chatInputS.value);
         chatInputS.value = "";
-        chatInputS.focus();
-    });
+    }
+});
 
-    chatInputS.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addStudentMessage(chatInputS.value);
-            chatInputS.value = "";
-        }
-    });
-
-    chatFileS.addEventListener("change", () => {
-        if (!chatFileS.files || chatFileS.files.length === 0) return;
-        const file = chatFileS.files[0];
-        addStudentMessage(`Файл: ${file.name} (до 10 МБ, демо без загрузки)`, true);
-        chatFileS.value = "";
-    });
+chatFileS.addEventListener("change", () => {
+    if (!chatFileS.files || chatFileS.files.length === 0) return;
+    const file = chatFileS.files[0];
+    addStudentMessage(`Файл: ${file.name} (демо)`, true);
+    chatFileS.value = "";
+});
 </script>
 
 </body>
