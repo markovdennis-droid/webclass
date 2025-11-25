@@ -181,7 +181,6 @@
       gap: 14px;
     }
 
-    /* ОБЩИЙ класс для drag-состояния */
     .dragging {
       cursor: grabbing !important;
     }
@@ -203,7 +202,7 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 8px;
-      cursor: grab;          /* перетаскиваем по шапке */
+      cursor: grab;
       user-select: none;
     }
 
@@ -292,6 +291,7 @@
     }
 
     .side-panel {
+      position: relative;
       border-radius: var(--radius-xl);
       background: var(--bg-panel-soft);
       border: 1px solid rgba(148, 163, 184, 0.28);
@@ -299,41 +299,153 @@
       padding: 10px 10px 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
-    .side-panel h2 {
-      font-size: 13px;
+    .side-header {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
-      color: var(--text-main);
-      cursor: grab;          /* перетаскиваем по заголовку */
+      gap: 8px;
+      cursor: grab;
       user-select: none;
     }
 
-    .side-panel h2 span {
+    .side-header h2 {
+      font-size: 13px;
+    }
+
+    .side-header span {
       font-size: 11px;
       color: var(--text-dim);
       font-weight: 400;
     }
 
-    .side-panel-content {
-      flex: 1;
+    .chat-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
       border-radius: 13px;
       border: 1px dashed rgba(148, 163, 184, 0.45);
       padding: 8px;
-      font-size: 12px;
-      color: var(--text-dim);
       background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.14), transparent 55%),
         radial-gradient(circle at bottom right, rgba(8, 47, 73, 0.26), transparent 55%),
         rgba(15, 23, 42, 0.78);
+      height: 260px;
+      max-height: 320px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12px;
+    }
+
+    .chat-message {
+      padding: 4px 6px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      max-width: 100%;
+      word-wrap: break-word;
+    }
+
+    .chat-message.me {
+      background: rgba(37, 99, 235, 0.2);
+      border-color: rgba(96, 165, 250, 0.8);
+      align-self: flex-end;
+    }
+
+    .chat-message-header {
+      font-size: 10px;
+      color: var(--text-dim);
+      margin-bottom: 2px;
+      display: flex;
+      justify-content: space-between;
+      gap: 4px;
+    }
+
+    .chat-attachments {
+      font-size: 10px;
+      color: var(--text-dim);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .chat-attachment-pill {
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      background: rgba(15, 23, 42, 0.9);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .chat-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 2px;
+    }
+
+    .chat-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.95);
+      color: var(--text-main);
+      padding: 6px 10px;
+      font-size: 12px;
+      outline: none;
+    }
+
+    .chat-input::placeholder {
+      color: rgba(148, 163, 184, 0.8);
+    }
+
+    .file-btn-label {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 4px 8px;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    .send-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(96, 165, 250, 0.8);
+      padding: 5px 10px;
+      font-size: 13px;
+      cursor: pointer;
+      background: rgba(37, 99, 235, 0.9);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.6);
+    }
+
+    .send-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.6);
     }
 
     .side-panel-footer {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
+      margin-top: 2px;
     }
 
     .small-pill {
@@ -344,7 +456,31 @@
       color: var(--text-dim);
     }
 
-    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ + DRAG + HIDE === */
+    /* Resize handle (нижний правый угол) */
+    .resize-handle {
+      position: absolute;
+      right: 4px;
+      bottom: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.6), transparent 65%);
+      cursor: se-resize;
+      opacity: 0.8;
+    }
+
+    .resize-handle::after {
+      content: "";
+      position: absolute;
+      inset: 3px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.7);
+      border-right: 1px solid rgba(148, 163, 184, 0.7);
+      border-radius: 3px;
+      opacity: 0.9;
+    }
+
+    /* === PIP SELF BOX — DRAG + HIDE === */
     .self-box {
       position: fixed;
       right: 2.2vw;
@@ -473,7 +609,6 @@
       background: var(--danger);
     }
 
-    /* Скрытие предпросмотра маленького окна */
     .self-box.hidden .self-video-frame {
       display: none;
     }
@@ -486,7 +621,6 @@
       background: #000;
     }
 
-    /* МОБИЛЬНАЯ АДАПТАЦИЯ */
     @media (max-width: 900px) {
       .app-shell {
         padding: 10px 8px 18px;
@@ -584,7 +718,7 @@
           <div class="video-panel-header" id="videoPanelHandle">
             <span>Главное окно · Ученик</span>
             <span style="font-size:11px; color:var(--text-dim);">
-              Нажми ⛶ для полного экрана · ESC для выхода
+              ⛶ — fullscreen · ESC — выход
             </span>
           </div>
 
@@ -610,36 +744,43 @@
               </button>
             </div>
           </div>
+
+          <div class="resize-handle" id="videoResizeHandle"></div>
         </section>
 
         <aside class="side-panel" id="sidePanel">
-          <h2 id="sidePanelHandle">
-            Чат и заметки
-            <span>Скоро здесь будет чат с учеником</span>
-          </h2>
-          <div class="side-panel-content">
-            <p>
-              Сейчас главное — протестировать видео, звук, полноэкранный режим и
-              PiP окно.
-            </p>
-            <p style="margin-top:6px;">
-              🔹 Кликаешь по кнопке <strong>⛶</strong> — главное окно уходит в
-              fullscreen.<br />
-              🔹 Нажимаешь <strong>ESC</strong> — fullscreen закрывается, верстка
-              не ломается.<br />
-              🔹 Маленькое окно (PiP) можно мышкой перетащить в любой угол
-              экрана или скрыть.
-            </p>
+          <div class="side-header" id="sidePanelHandle">
+            <h2>Чат с учеником</h2>
+            <span>Локальный чат (без сервера)</span>
           </div>
+
+          <div class="chat-panel">
+            <div class="chat-messages" id="chatMessages"></div>
+            <div class="chat-attachments" id="chatAttachments"></div>
+            <div class="chat-footer">
+              <label class="file-btn-label" for="chatFileInput">📎</label>
+              <input type="file" id="chatFileInput" multiple style="display:none;" />
+              <input
+                type="text"
+                id="chatInput"
+                class="chat-input"
+                placeholder="Напишите сообщение..."
+              />
+              <button class="send-btn" id="chatSendBtn">➤</button>
+            </div>
+          </div>
+
           <div class="side-panel-footer">
             <div class="small-pill">👩‍🏫 Режим: Учитель</div>
             <div class="small-pill">🎧 Наушники рекомендуются</div>
           </div>
+
+          <div class="resize-handle" id="sideResizeHandle"></div>
         </aside>
       </div>
     </main>
 
-    <!-- УВЕЛИЧЕННЫЙ + DRAGGABLE + HIDABLE PiP SELF BOX -->
+    <!-- DRAGGABLE + HIDABLE PiP SELF BOX -->
     <div class="self-box" id="selfBox">
       <div class="self-header" id="selfBoxHandle">
         <div class="self-title">
@@ -675,10 +816,8 @@
   </div>
 
   <script>
-    // Глобальный счётчик для z-index при перетаскивании
     let dragZIndex = 80;
 
-    // Утилита: сделать элемент draggable через pointer events
     function makeDraggable(box, handle) {
       if (!box) return;
       const dragHandle = handle || box;
@@ -692,7 +831,7 @@
       dragHandle.style.touchAction = "none";
 
       dragHandle.addEventListener("pointerdown", (e) => {
-        if (e.button !== 0) return; // только левая кнопка
+        if (e.button !== 0) return;
         isDragging = true;
 
         const rect = box.getBoundingClientRect();
@@ -748,7 +887,73 @@
       }
     }
 
-    // КОПИРОВАНИЕ ПРИГЛАСИТЕЛЬНОЙ ССЫЛКИ
+    function makeResizable(box, handle) {
+      if (!box || !handle) return;
+
+      let isResizing = false;
+      let startX = 0;
+      let startY = 0;
+      let startWidth = 0;
+      let startHeight = 0;
+
+      handle.addEventListener("pointerdown", (e) => {
+        e.stopPropagation(); // чтобы не срабатывал drag
+        if (e.button !== 0) return;
+        isResizing = true;
+
+        const rect = box.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        startWidth = rect.width;
+        startHeight = rect.height;
+
+        // переведём в fixed, если ещё нет
+        box.style.position = "fixed";
+        box.style.left = rect.left + "px";
+        box.style.top = rect.top + "px";
+        box.style.right = "auto";
+        box.style.bottom = "auto";
+        box.style.width = rect.width + "px";
+        box.style.height = rect.height + "px";
+        box.style.zIndex = ++dragZIndex;
+
+        document.addEventListener("pointermove", pointerMove);
+        document.addEventListener("pointerup", pointerUp);
+      });
+
+      function pointerMove(e) {
+        if (!isResizing) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newWidth = startWidth + dx;
+        let newHeight = startHeight + dy;
+
+        const minWidth = 260;
+        const minHeight = 180;
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const rect = box.getBoundingClientRect();
+
+        if (newWidth < minWidth) newWidth = minWidth;
+        if (newHeight < minHeight) newHeight = minHeight;
+        if (rect.left + newWidth > vw - 8) newWidth = vw - 8 - rect.left;
+        if (rect.top + newHeight > vh - 8) newHeight = vh - 8 - rect.top;
+
+        box.style.width = newWidth + "px";
+        box.style.height = newHeight + "px";
+      }
+
+      function pointerUp() {
+        if (!isResizing) return;
+        isResizing = false;
+        document.removeEventListener("pointermove", pointerMove);
+        document.removeEventListener("pointerup", pointerUp);
+      }
+    }
+
+    // Копирование ссылки
     (function () {
       const btn = document.getElementById("copyInviteBtn");
       const urlEl = document.getElementById("inviteUrl");
@@ -768,7 +973,7 @@
       });
     })();
 
-    // ЛОКАЛЬНОЕ ВИДЕО / ЗВУК (getUserMedia)
+    // Камера/звук (пока локально)
     (async function initMedia() {
       const selfVideo = document.getElementById("selfVideo");
       const mainVideo = document.getElementById("mainVideo");
@@ -785,7 +990,7 @@
         });
 
         if (selfVideo) selfVideo.srcObject = stream;
-        if (mainVideo) mainVideo.srcObject = stream; // пока дублируем, потом будет WebRTC
+        if (mainVideo) mainVideo.srcObject = stream; // позже заменим на WebRTC
       } catch (err) {
         console.error("Ошибка доступа к камере/микрофону:", err);
         alert(
@@ -794,7 +999,7 @@
       }
     })();
 
-    // FULLSCREEN (ESC не ломает разметку)
+    // Fullscreen
     (function () {
       const wrapper = document.getElementById("mainVideoWrapper");
       const fsBtn = document.getElementById("fullscreenBtn");
@@ -823,29 +1028,24 @@
             await document.exitFullscreen();
           }
         } catch (err) {
-          console.error("Ошибка переключения fullscreen:", err);
+          console.error("Ошибка fullscreen:", err);
         }
       });
 
-      document.addEventListener("fullscreenchange", () => {
-        updateIcon(); // срабатывает и при ESC
-      });
-
+      document.addEventListener("fullscreenchange", updateIcon);
       updateIcon();
     })();
 
-    // SWAP (запас на будущее под реальный WebRTC)
+    // Псевдо-SWAP (на будущее, сейчас только меняет подпись)
     (function () {
       const swapBtn = document.getElementById("swapBtn");
       const mainVideo = document.getElementById("mainVideo");
       const selfVideo = document.getElementById("selfVideo");
       if (!swapBtn || !mainVideo || !selfVideo) return;
 
-      // Чтобы клик по кнопке не запускал drag selfBox
       swapBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
 
       let swapped = false;
-
       swapBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         swapped = !swapped;
@@ -855,17 +1055,15 @@
       });
     })();
 
-    // TOGGLE SELF PREVIEW (скрыть/показать маленькое окно)
+    // Скрыть/показать PiP
     (function () {
       const selfBox = document.getElementById("selfBox");
       const toggleBtn = document.getElementById("toggleSelfBtn");
       if (!selfBox || !toggleBtn) return;
 
-      // Чтобы клик по кнопке не начинал drag
       toggleBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
 
       let hidden = false;
-
       toggleBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         hidden = !hidden;
@@ -876,7 +1074,95 @@
       });
     })();
 
-    // DRAG: маленькое окно, большой экран и текстовый блок
+    // Чат (локальный, без сервера)
+    (function () {
+      const messagesEl = document.getElementById("chatMessages");
+      const attachmentsEl = document.getElementById("chatAttachments");
+      const inputEl = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("chatSendBtn");
+      const fileInput = document.getElementById("chatFileInput");
+
+      if (!messagesEl || !inputEl || !sendBtn || !fileInput || !attachmentsEl) return;
+
+      let pendingFiles = [];
+
+      function renderAttachments() {
+        attachmentsEl.innerHTML = "";
+        pendingFiles.forEach((file) => {
+          const pill = document.createElement("div");
+          pill.className = "chat-attachment-pill";
+          pill.textContent = file.name;
+          attachmentsEl.appendChild(pill);
+        });
+      }
+
+      fileInput.addEventListener("change", () => {
+        pendingFiles = Array.from(fileInput.files || []);
+        renderAttachments();
+      });
+
+      function addMessage(text, files) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "chat-message me";
+
+        const header = document.createElement("div");
+        header.className = "chat-message-header";
+        const who = document.createElement("span");
+        who.textContent = "Вы";
+        const when = document.createElement("span");
+        const d = new Date();
+        when.textContent =
+          d.getHours().toString().padStart(2, "0") +
+          ":" +
+          d.getMinutes().toString().padStart(2, "0");
+        header.appendChild(who);
+        header.appendChild(when);
+
+        const body = document.createElement("div");
+        body.textContent = text || "";
+
+        wrapper.appendChild(header);
+        if (text) wrapper.appendChild(body);
+
+        if (files && files.length > 0) {
+          const filesWrap = document.createElement("div");
+          filesWrap.style.marginTop = "2px";
+          filesWrap.style.display = "flex";
+          filesWrap.style.flexDirection = "column";
+          filesWrap.style.gap = "2px";
+          files.forEach((f) => {
+            const pill = document.createElement("div");
+            pill.className = "chat-attachment-pill";
+            pill.textContent = "📎 " + f.name;
+            filesWrap.appendChild(pill);
+          });
+          wrapper.appendChild(filesWrap);
+        }
+
+        messagesEl.appendChild(wrapper);
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function send() {
+        const text = inputEl.value.trim();
+        if (!text && pendingFiles.length === 0) return;
+        addMessage(text, pendingFiles);
+        inputEl.value = "";
+        pendingFiles = [];
+        fileInput.value = "";
+        renderAttachments();
+      }
+
+      sendBtn.addEventListener("click", send);
+      inputEl.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          send();
+        }
+      });
+    })();
+
+    // DRAG + RESIZE: видео, чат и PiP
     (function () {
       const selfBox = document.getElementById("selfBox");
       const selfHandle = document.getElementById("selfBoxHandle");
@@ -884,10 +1170,15 @@
       const videoHandle = document.getElementById("videoPanelHandle");
       const sidePanel = document.getElementById("sidePanel");
       const sideHandle = document.getElementById("sidePanelHandle");
+      const videoResize = document.getElementById("videoResizeHandle");
+      const sideResize = document.getElementById("sideResizeHandle");
 
       makeDraggable(selfBox, selfHandle);
       makeDraggable(videoPanel, videoHandle);
       makeDraggable(sidePanel, sideHandle);
+
+      makeResizable(videoPanel, videoResize);
+      makeResizable(sidePanel, sideResize);
     })();
   </script>
 </body>
