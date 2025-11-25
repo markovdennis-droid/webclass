@@ -40,7 +40,7 @@
 
     .app-shell {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1320px; /* Чуть больше основное окно */
       margin: 10px auto;
       padding: 10px 10px 24px;
       display: flex;
@@ -177,8 +177,8 @@
 
     .main-layout {
       display: grid;
-      grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
-      gap: 12px;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); /* главное окно чуть шире */
+      gap: 14px;
     }
 
     .video-panel {
@@ -190,14 +190,14 @@
       box-shadow: var(--shadow-soft);
       border: 1px solid rgba(148, 163, 184, 0.25);
       overflow: hidden;
-      padding: 10px;
+      padding: 12px;
     }
 
     .video-panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .video-panel-header span {
@@ -211,7 +211,7 @@
       border-radius: 20px;
       overflow: hidden;
       background: radial-gradient(circle at center, #111827 0, #020617 70%);
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(15, 23, 42, 0.9);
     }
 
@@ -335,13 +335,13 @@
       color: var(--text-dim);
     }
 
-    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ === */
+    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ + ПЕРЕТАСКИВАЕМЫЙ === */
     .self-box {
       position: fixed;
       right: 2.2vw;
       bottom: 2.2vh;
-      width: 40vw;            /* было 22vw → стало 40vw */
-      max-width: 420px;       /* было 260px → стало 420px */
+      width: 40vw;
+      max-width: 420px;
       border-radius: var(--radius-xl);
       background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.02), transparent 55%),
         rgba(5, 10, 25, 0.96);
@@ -353,6 +353,12 @@
       gap: 6px;
       z-index: 50;
       backdrop-filter: blur(12px);
+      cursor: grab;            /* визуально понятно, что можно двигать */
+      touch-action: none;      /* для drag на тач-устройствах */
+    }
+
+    .self-box.dragging {
+      cursor: grabbing;
     }
 
     .self-header {
@@ -413,7 +419,6 @@
       display: block;
       background: #000;
       object-fit: cover;
-      /* высота предпросмотра увеличена за счёт aspect-ratio */
       aspect-ratio: 16 / 9;
     }
 
@@ -457,12 +462,11 @@
       background: var(--danger);
     }
 
-    /* === FULLSCREEN STATE (по желанию — чуть тёмный фон вокруг) === */
     .fullscreen-active {
       background: #000;
     }
 
-    /* === МОБИЛЬНАЯ АДАПТАЦИЯ === */
+    /* МОБИЛЬНАЯ АДАПТАЦИЯ */
     @media (max-width: 900px) {
       .app-shell {
         padding: 10px 8px 18px;
@@ -489,8 +493,8 @@
       .self-box {
         right: 4vw;
         bottom: 4vh;
-        width: 60vw;         /* на телефонах: 60vw */
-        max-width: 60vw;     /* чтобы реально занимал 60% экрана */
+        width: 60vw;
+        max-width: 60vw;
         padding: 7px 8px 9px;
       }
 
@@ -611,7 +615,7 @@
               fullscreen.<br />
               🔹 Нажимаешь <strong>ESC</strong> — fullscreen закрывается, верстка
               не ломается.<br />
-              🔹 Маленькое окно — увеличенное PiP по типу Zoom Large PiP.
+              🔹 Маленькое окно (PiP) можно мышкой перетащить в любой угол экрана.
             </p>
           </div>
           <div class="side-panel-footer">
@@ -622,7 +626,7 @@
       </div>
     </main>
 
-    <!-- УВЕЛИЧЕННЫЙ PiP SELF BOX -->
+    <!-- УВЕЛИЧЕННЫЙ + DRAGGABLE PiP SELF BOX -->
     <div class="self-box" id="selfBox">
       <div class="self-header">
         <div class="self-title">
@@ -689,15 +693,8 @@
           audio: true,
         });
 
-        // В маленьком окне всегда вы
-        if (selfVideo) {
-          selfVideo.srcObject = stream;
-        }
-
-        // Пока нет реального WebRTC — дублируем себя в большое окно
-        if (mainVideo) {
-          mainVideo.srcObject = stream;
-        }
+        if (selfVideo) selfVideo.srcObject = stream;
+        if (mainVideo) mainVideo.srcObject = stream; // пока дублируем, потом будет WebRTC
       } catch (err) {
         console.error("Ошибка доступа к камере/микрофону:", err);
         alert(
@@ -706,7 +703,7 @@
       }
     })();
 
-    // FULLSCREEN (НЕ ЛОМАЕМ ESC)
+    // FULLSCREEN (ESC не ломает разметку)
     (function () {
       const wrapper = document.getElementById("mainVideoWrapper");
       const fsBtn = document.getElementById("fullscreenBtn");
@@ -719,10 +716,10 @@
 
       function updateIcon() {
         if (isFullscreen()) {
-          fsIcon.textContent = "🗗"; // иконка "выйти"
+          fsIcon.textContent = "🗗";
           wrapper.classList.add("fullscreen-active");
         } else {
-          fsIcon.textContent = "⛶"; // иконка "на весь экран"
+          fsIcon.textContent = "⛶";
           wrapper.classList.remove("fullscreen-active");
         }
       }
@@ -740,14 +737,13 @@
       });
 
       document.addEventListener("fullscreenchange", () => {
-        // Срабатывает и при ESC — иконка и классы синхронизированы
-        updateIcon();
+        updateIcon(); // срабатывает и при ESC
       });
 
       updateIcon();
     })();
 
-    // SWAP (МЕНЯЕМ МЕСТАМИ ОСНОВНОЕ ОКНО И PIP)
+    // SWAP (запас на будущее под реальный WebRTC)
     (function () {
       const swapBtn = document.getElementById("swapBtn");
       const mainVideo = document.getElementById("mainVideo");
@@ -757,13 +753,79 @@
       let swapped = false;
 
       swapBtn.addEventListener("click", () => {
-        // Когда появится реальное WebRTC, здесь можно будет менять stream'ы
-        // Сейчас просто визуально показываем, что "логика уже есть".
         swapped = !swapped;
         swapBtn.textContent = swapped
           ? "↔ Вернуть как было"
           : "↔ Поменять местами";
       });
+    })();
+
+    // DRAGGABLE PiP (selfBox можно перетаскивать мышью/пальцем)
+    (function () {
+      const selfBox = document.getElementById("selfBox");
+      if (!selfBox) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let boxStartX = 0;
+      let boxStartY = 0;
+
+      function pointerDown(e) {
+        isDragging = true;
+        const rect = selfBox.getBoundingClientRect();
+
+        startX = e.clientX;
+        startY = e.clientY;
+        boxStartX = rect.left;
+        boxStartY = rect.top;
+
+        // Переключаемся с right/bottom на left/top
+        selfBox.style.right = "auto";
+        selfBox.style.bottom = "auto";
+        selfBox.style.left = rect.left + "px";
+        selfBox.style.top = rect.top + "px";
+
+        selfBox.classList.add("dragging");
+
+        document.addEventListener("pointermove", pointerMove);
+        document.addEventListener("pointerup", pointerUp);
+      }
+
+      function pointerMove(e) {
+        if (!isDragging) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newX = boxStartX + dx;
+        let newY = boxStartY + dy;
+
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const rect = selfBox.getBoundingClientRect();
+        const margin = 8;
+        const width = rect.width;
+        const height = rect.height;
+
+        if (newX < margin) newX = margin;
+        if (newY < margin) newY = margin;
+        if (newX + width > vw - margin) newX = vw - width - margin;
+        if (newY + height > vh - margin) newY = vh - height - margin;
+
+        selfBox.style.left = newX + "px";
+        selfBox.style.top = newY + "px";
+      }
+
+      function pointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        selfBox.classList.remove("dragging");
+        document.removeEventListener("pointermove", pointerMove);
+        document.removeEventListener("pointerup", pointerUp);
+      }
+
+      selfBox.addEventListener("pointerdown", pointerDown);
     })();
   </script>
 </body>
