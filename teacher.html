@@ -39,16 +39,40 @@
             flex: 1.5;
         }
 
+        .link-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
         .link-title {
             font-size: 18px;
             font-weight: 600;
-            margin-bottom: 6px;
+        }
+
+        .link-toggle {
+            font-size: 12px;
+            color: #9ca3af;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            padding: 3px 6px;
+            border-radius: 999px;
+        }
+
+        .link-toggle:hover {
+            background: rgba(148,163,184,0.15);
         }
 
         .room-label {
             font-size: 13px;
             color: #9ca3af;
             margin-bottom: 8px;
+        }
+
+        .link-content.hidden {
+            display: none;
         }
 
         .link-input-row {
@@ -149,14 +173,14 @@
             overflow: hidden;
             background: radial-gradient(circle at top, #1d4ed8, #020617 60%);
             padding: 12px;
-            min-height: 230px;
+            min-height: 290px;
         }
 
         .remote-box {
             border-radius: 12px;
             background: rgba(15,23,42,0.85);
             border: 1px solid rgba(129,140,248,0.5);
-            height: 260px;
+            height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -217,7 +241,7 @@
             margin-top: 4px;
             border-radius: 7px;
             background: linear-gradient(135deg, #1d4ed8, #22c55e);
-            height: 70px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -261,7 +285,7 @@
             padding: 8px;
             overflow-y: auto;
             font-size: 13px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .chat-empty {
@@ -275,6 +299,7 @@
             display: flex;
             gap: 6px;
             margin-top: 2px;
+            align-items: center;
         }
 
         .chat-input-row input {
@@ -298,6 +323,31 @@
 
         .chat-send-btn:hover {
             background: #15803d;
+        }
+
+        .chat-attach {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            background: #020617;
+            color: #e5e7eb;
+            flex-shrink: 0;
+        }
+
+        .chat-attach:hover {
+            background: #111827;
+        }
+
+        .chat-note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
         }
 
         .msg {
@@ -338,6 +388,9 @@
             .bottom-row {
                 flex-direction: column;
             }
+            .remote-box {
+                height: 260px;
+            }
         }
     </style>
 </head>
@@ -346,24 +399,29 @@
 <div class="container">
     <div class="top-row">
         <div class="link-block">
-            <div class="link-title">Ссылка для ученика</div>
+            <div class="link-header">
+                <div class="link-title">Ссылка для ученика</div>
+                <button id="toggleLink" class="link-toggle">Свернуть</button>
+            </div>
             <div id="roomInfo" class="room-label"></div>
 
-            <div class="link-input-row">
-                <input id="lessonLink" type="text" readonly>
-                <button id="copyBtn">Скопировать</button>
-            </div>
+            <div id="linkContent" class="link-content">
+                <div class="link-input-row">
+                    <input id="lessonLink" type="text" readonly>
+                    <button id="copyBtn">Скопировать</button>
+                </div>
 
-            <div id="clickSelect" class="link-field"></div>
-            <div class="hint">Нажмите на поле ниже, чтобы выделить ссылку целиком. Отправьте её ученику в любой мессенджер.</div>
+                <div id="clickSelect" class="link-field"></div>
+                <div class="hint">Нажмите на поле ниже, чтобы выделить ссылку целиком. Отправьте её ученику в любой мессенджер.</div>
+            </div>
         </div>
 
         <div class="teacher-info">
             <div><b>Учитель:</b> <span id="teacherNameLabel">—</span></div>
             <div><b>Комната:</b> <span id="roomShort">—</span></div>
             <div style="margin-top:6px;">
-                После того как ученик перейдёт по ссылке, он увидит вас в большом окне. Сейчас мы показываем только макет комнаты,
-                позже сюда добавим живое видео и общий чат.
+                После того как ученик перейдёт по ссылке, он увидит вас в большом окне. Сейчас мы показываем макет комнаты,
+                позже сюда добавим живое видео и общий чат между вами.
             </div>
         </div>
     </div>
@@ -403,15 +461,19 @@
                 <div class="chat-empty">Сообщений пока нет. Напишите что-нибудь ученику.</div>
             </div>
             <div class="chat-input-row">
+                <label class="chat-attach" title="Прикрепить файл">
+                    📎
+                    <input type="file" id="chatFileTeacher" style="display:none;">
+                </label>
                 <input id="chatInputTeacher" type="text" placeholder="Напишите сообщение...">
                 <button id="chatSendTeacher" class="chat-send-btn">Отправить</button>
             </div>
+            <div class="chat-note">Прикрепление файлов до 10 МБ (PDF, изображения). Сейчас это демо без реальной отправки.</div>
         </div>
     </div>
 </div>
 
 <script>
-    // читаем параметры из URL
     const params = new URLSearchParams(window.location.search);
     const room = params.get("room") || "demo-room";
     const name = params.get("name") || "Учитель";
@@ -454,15 +516,23 @@
         });
     };
 
+    // сворачивание панели ссылки
+    const toggleBtn = document.getElementById("toggleLink");
+    const linkContent = document.getElementById("linkContent");
+    toggleBtn.addEventListener("click", () => {
+        linkContent.classList.toggle("hidden");
+        toggleBtn.textContent = linkContent.classList.contains("hidden") ? "Показать" : "Свернуть";
+    });
+
     // ЛОКАЛЬНЫЙ ЧАТ ДЛЯ УЧИТЕЛЯ
     const chatMessagesT = document.getElementById("chatMessagesTeacher");
     const chatInputT = document.getElementById("chatInputTeacher");
     const chatSendT = document.getElementById("chatSendTeacher");
+    const chatFileT = document.getElementById("chatFileTeacher");
 
-    function addTeacherMessage(text) {
+    function addTeacherMessage(text, isFile = false) {
         if (!text.trim()) return;
 
-        // убираем заглушку
         const empty = chatMessagesT.querySelector(".chat-empty");
         if (empty) empty.remove();
 
@@ -471,7 +541,7 @@
 
         const author = document.createElement("div");
         author.className = "msg-author";
-        author.textContent = "Вы";
+        author.textContent = isFile ? "Файл (демо)" : "Вы";
 
         const bubble = document.createElement("div");
         bubble.className = "msg-bubble";
@@ -496,6 +566,13 @@
             addTeacherMessage(chatInputT.value);
             chatInputT.value = "";
         }
+    });
+
+    chatFileT.addEventListener("change", () => {
+        if (!chatFileT.files || chatFileT.files.length === 0) return;
+        const file = chatFileT.files[0];
+        addTeacherMessage(`Файл: ${file.name} (до 10 МБ, демо без загрузки)`, true);
+        chatFileT.value = "";
     });
 </script>
 
