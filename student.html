@@ -40,7 +40,7 @@
 
     .app-shell {
       width: 100%;
-      max-width: 1200px;
+      max-width: 1320px; /* чуть крупнее */
       margin: 10px auto;
       padding: 10px 10px 24px;
       display: flex;
@@ -133,8 +133,8 @@
 
     .main-layout {
       display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-      gap: 12px;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+      gap: 14px;
     }
 
     .video-panel {
@@ -146,14 +146,14 @@
       box-shadow: var(--shadow-soft);
       border: 1px solid rgba(148, 163, 184, 0.25);
       overflow: hidden;
-      padding: 10px;
+      padding: 12px;
     }
 
     .video-panel-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .video-panel-header span {
@@ -167,7 +167,7 @@
       border-radius: 20px;
       overflow: hidden;
       background: radial-gradient(circle at center, #111827 0, #020617 70%);
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.9);
+      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(15, 23, 42, 0.9);
     }
 
@@ -291,13 +291,13 @@
       color: var(--text-dim);
     }
 
-    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ === */
+    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ + DRAGGABLE === */
     .self-box {
       position: fixed;
       right: 2.2vw;
       bottom: 2.2vh;
-      width: 40vw;            /* было 22vw → стало 40vw */
-      max-width: 420px;       /* было 260px → стало 420px */
+      width: 40vw;
+      max-width: 420px;
       border-radius: var(--radius-xl);
       background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.02), transparent 55%),
         rgba(5, 10, 25, 0.96);
@@ -309,6 +309,12 @@
       gap: 6px;
       z-index: 50;
       backdrop-filter: blur(12px);
+      cursor: grab;
+      touch-action: none;
+    }
+
+    .self-box.dragging {
+      cursor: grabbing;
     }
 
     .self-header {
@@ -369,7 +375,6 @@
       display: block;
       background: #000;
       object-fit: cover;
-      /* высота предпросмотра увеличена за счёт aspect-ratio */
       aspect-ratio: 16 / 9;
     }
 
@@ -444,7 +449,7 @@
       .self-box {
         right: 4vw;
         bottom: 4vh;
-        width: 60vw;         /* на телефонах: 60vw */
+        width: 60vw;
         max-width: 60vw;
         padding: 7px 8px 9px;
       }
@@ -541,11 +546,11 @@
           </h2>
           <div class="side-panel-content">
             <p>
-              Сейчас вы тестируете камеру, звук, большой экран и PiP.
+              Сейчас вы тестируете камеру, звук, большое окно и PiP.
             </p>
             <p style="margin-top:6px;">
               🔹 Большое окно — главный экран.<br />
-              🔹 Маленькое — увеличенное PiP, как в Zoom (Large PiP).<br />
+              🔹 Маленькое PiP можно перетаскивать — разместите там, где удобнее.<br />
               🔹 Нажмите <strong>⛶</strong>, чтобы развернуть главное окно, и
               <strong>ESC</strong>, чтобы выйти.
             </p>
@@ -558,7 +563,7 @@
       </div>
     </main>
 
-    <!-- УВЕЛИЧЕННЫЙ PiP SELF BOX -->
+    <!-- УВЕЛИЧЕННЫЙ + DRAGGABLE PiP -->
     <div class="self-box" id="selfBox">
       <div class="self-header">
         <div class="self-title">
@@ -589,7 +594,7 @@
   </div>
 
   <script>
-    // ЛОКАЛЬНОЕ ВИДЕО (пока вместо реального стрима от учителя)
+    // ЛОКАЛЬНОЕ ВИДЕО (пока свою камеру в оба окна)
     (async function initMedia() {
       const selfVideo = document.getElementById("selfVideo");
       const mainVideo = document.getElementById("mainVideo");
@@ -605,15 +610,8 @@
           audio: true,
         });
 
-        // В большом окне показываем себя — как будто «вы в фокусе»
-        if (mainVideo) {
-          mainVideo.srcObject = stream;
-        }
-
-        // А PiP — тоже ваша камера, пока нет настоящего WebRTC
-        if (selfVideo) {
-          selfVideo.srcObject = stream;
-        }
+        if (mainVideo) mainVideo.srcObject = stream;
+        if (selfVideo) selfVideo.srcObject = stream;
       } catch (err) {
         console.error("Ошибка доступа к камере/микрофону:", err);
         alert(
@@ -622,7 +620,7 @@
       }
     })();
 
-    // FULLSCREEN (ESC ничего не ломает)
+    // FULLSCREEN
     (function () {
       const wrapper = document.getElementById("mainVideoWrapper");
       const fsBtn = document.getElementById("fullscreenBtn");
@@ -656,13 +654,13 @@
       });
 
       document.addEventListener("fullscreenchange", () => {
-        updateIcon(); // срабатывает и при ESC
+        updateIcon();
       });
 
       updateIcon();
     })();
 
-    // SWAP (логика на будущее, когда появится реальный стрим от учителя)
+    // SWAP — под WebRTC на будущее
     (function () {
       const swapBtn = document.getElementById("swapBtn");
       const mainVideo = document.getElementById("mainVideo");
@@ -677,6 +675,73 @@
           ? "↔ Вернуть как было"
           : "↔ Поменять местами";
       });
+    })();
+
+    // DRAGGABLE PiP (selfBox)
+    (function () {
+      const selfBox = document.getElementById("selfBox");
+      if (!selfBox) return;
+
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let boxStartX = 0;
+      let boxStartY = 0;
+
+      function pointerDown(e) {
+        isDragging = true;
+        const rect = selfBox.getBoundingClientRect();
+
+        startX = e.clientX;
+        startY = e.clientY;
+        boxStartX = rect.left;
+        boxStartY = rect.top;
+
+        selfBox.style.right = "auto";
+        selfBox.style.bottom = "auto";
+        selfBox.style.left = rect.left + "px";
+        selfBox.style.top = rect.top + "px";
+
+        selfBox.classList.add("dragging");
+
+        document.addEventListener("pointermove", pointerMove);
+        document.addEventListener("pointerup", pointerUp);
+      }
+
+      function pointerMove(e) {
+        if (!isDragging) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newX = boxStartX + dx;
+        let newY = boxStartY + dy;
+
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const rect = selfBox.getBoundingClientRect();
+        const margin = 8;
+        const width = rect.width;
+        const height = rect.height;
+
+        if (newX < margin) newX = margin;
+        if (newY < margin) newY = margin;
+        if (newX + width > vw - margin) newX = vw - width - margin;
+        if (newY + height > vh - margin) newY = vh - height - margin;
+
+        selfBox.style.left = newX + "px";
+        selfBox.style.top = newY + "px";
+      }
+
+      function pointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        selfBox.classList.remove("dragging");
+        document.removeEventListener("pointermove", pointerMove);
+        document.removeEventListener("pointerup", pointerUp);
+      }
+
+      selfBox.addEventListener("pointerdown", pointerDown);
     })();
   </script>
 </body>
