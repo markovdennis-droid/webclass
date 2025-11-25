@@ -49,6 +49,7 @@
             align-items: stretch;
         }
 
+        /* ВИДЕО-СЕКЦИЯ СЛЕВА */
         .video-column {
             flex: 2;
             background: #020617;
@@ -56,6 +57,8 @@
             padding: 14px;
             border: 1px solid #312e81;
             color: #e5e7eb;
+            display: flex;
+            flex-direction: column;
         }
 
         .video-title {
@@ -70,20 +73,21 @@
             overflow: hidden;
             background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
             padding: 12px;
-            min-height: 230px;
+            min-height: 290px;
         }
 
         .remote-box {
             border-radius: 12px;
             background: rgba(15,23,42,0.9);
             border: 1px solid rgba(129,140,248,0.6);
-            height: 260px;
+            height: 320px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             color: #e5e7eb;
             font-size: 14px;
+            text-align: center;
         }
 
         .remote-label {
@@ -138,17 +142,18 @@
             margin-top: 4px;
             border-radius: 7px;
             background: linear-gradient(135deg, #22c55e, #6366f1);
-            height: 70px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 11px;
             color: #f9fafb;
+            text-align: center;
         }
 
         .hint {
             font-size: 13px;
-            color: #6b7280;
+            color: #e5e7eb;
             margin-top: 10px;
         }
 
@@ -161,6 +166,7 @@
             border-radius: 9px;
             font-size: 13px;
             cursor: pointer;
+            align-self: flex-start;
             transition: background .2s;
         }
 
@@ -168,7 +174,7 @@
             background: #b91c1c;
         }
 
-        /* CHAT PANEL СПРАВА */
+        /* ЧАТ СПРАВА */
         .chat-panel {
             flex: 1;
             background: #f3f4ff;
@@ -204,7 +210,7 @@
             padding: 8px;
             overflow-y: auto;
             font-size: 13px;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .chat-empty {
@@ -217,9 +223,10 @@
         .chat-input-row {
             display: flex;
             gap: 6px;
+            align-items: center;
         }
 
-        .chat-input-row input {
+        .chat-input-row input[type="text"] {
             flex: 1;
             border-radius: 10px;
             border: 1px solid #cbd5e1;
@@ -244,6 +251,31 @@
 
         .chat-send-btn:hover {
             background: #15803d;
+        }
+
+        .chat-attach {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            background: white;
+            color: #111827;
+            flex-shrink: 0;
+        }
+
+        .chat-attach:hover {
+            background: #e5e7eb;
+        }
+
+        .chat-note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
         }
 
         .msg {
@@ -282,6 +314,12 @@
             .bottom-row {
                 flex-direction: column;
             }
+            .video-wrapper {
+                min-height: 260px;
+            }
+            .remote-box {
+                height: 260px;
+            }
         }
     </style>
 </head>
@@ -312,7 +350,8 @@
                         <span>предпросмотр</span>
                     </div>
                     <div class="self-preview">
-                        Здесь позже будет ваше видео
+                        Здесь позже будет ваше видео.
+                        <br>Камера включится после подключения.
                     </div>
                 </div>
             </div>
@@ -333,8 +372,15 @@
                 <div class="chat-empty">Задайте вопрос учителю — позже мы сделаем так, чтобы он видел это сообщение.</div>
             </div>
             <div class="chat-input-row">
+                <label class="chat-attach" title="Прикрепить файл">
+                    📎
+                    <input type="file" id="chatFileStudent" style="display:none;">
+                </label>
                 <input id="chatInputStudent" type="text" placeholder="Написать сообщение учителю...">
                 <button id="chatSendStudent" class="chat-send-btn">Отправить</button>
+            </div>
+            <div class="chat-note">
+                Прикрепление файлов до 10 МБ (PDF, изображения). Сейчас это демо без реальной отправки.
             </div>
         </div>
     </div>
@@ -354,8 +400,9 @@
     const chatMessagesS = document.getElementById("chatMessagesStudent");
     const chatInputS = document.getElementById("chatInputStudent");
     const chatSendS = document.getElementById("chatSendStudent");
+    const chatFileS = document.getElementById("chatFileStudent");
 
-    function addStudentMessage(text) {
+    function addStudentMessage(text, isFile = false) {
         if (!text.trim()) return;
 
         const empty = chatMessagesS.querySelector(".chat-empty");
@@ -366,7 +413,7 @@
 
         const author = document.createElement("div");
         author.className = "msg-author";
-        author.textContent = "Вы";
+        author.textContent = isFile ? "Файл (демо)" : "Вы";
 
         const bubble = document.createElement("div");
         bubble.className = "msg-bubble";
@@ -391,6 +438,13 @@
             addStudentMessage(chatInputS.value);
             chatInputS.value = "";
         }
+    });
+
+    chatFileS.addEventListener("change", () => {
+        if (!chatFileS.files || chatFileS.files.length === 0) return;
+        const file = chatFileS.files[0];
+        addStudentMessage(`Файл: ${file.name} (до 10 МБ, демо без загрузки)`, true);
+        chatFileS.value = "";
     });
 </script>
 
