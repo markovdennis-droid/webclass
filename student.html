@@ -88,6 +88,7 @@ h2 {
 
 /* ---------- БОЛЬШОЕ ОКНО (УЧИТЕЛЬ) ---------- */
 .remote-box {
+    position: relative;
     border-radius: 12px;
     background: rgba(15,23,42,0.90);
     border: 1px solid rgba(129,140,248,0.55);
@@ -119,6 +120,37 @@ h2 {
 .remote-sub {
     font-size: 12px;
     opacity: 0.9;
+}
+
+/* Кнопка полноэкранного режима */
+.fullscreen-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.45);
+    color: #f9fafb;
+    border: none;
+    padding: 6px 8px;
+    font-size: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 50;
+    backdrop-filter: blur(4px);
+}
+.fullscreen-btn:hover {
+    background: rgba(255,255,255,0.22);
+}
+
+.remote-box.fullscreen {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 9999;
+    border-radius: 0;
+    margin: 0;
+    background: #020617;
 }
 
 /* ---------- МАЛЕНЬКОЕ ОКНО (УЧЕНИК) ---------- */
@@ -154,13 +186,17 @@ h2 {
 .self-preview {
     margin-top: 4px;
     border-radius: 7px;
-    background: linear-gradient(135deg, #22c55e, #6366f1);
     height: 85px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    text-align: center;
+    overflow: hidden;
+    background: #020617;
+}
+
+.self-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #020617;
 }
 
 /* ---------- ТЕКСТ И КНОПКА ---------- */
@@ -337,6 +373,14 @@ h2 {
         height: 280px;
     }
 }
+
+@media (max-width: 600px) {
+    .top-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+}
 </style>
 </head>
 
@@ -356,6 +400,7 @@ h2 {
             <div class="video-wrapper">
 
                 <div class="remote-box">
+                    <button class="fullscreen-btn" type="button" onclick="toggleFullscreen(this)">⤢</button>
                     <div class="remote-label">Окно учителя</div>
                     <div class="remote-name" id="teacherNameLabel">Учитель</div>
                     <div class="remote-sub">Когда учитель начнёт урок, здесь появится его видео.</div>
@@ -367,8 +412,7 @@ h2 {
                         <span>предпросмотр</span>
                     </div>
                     <div class="self-preview">
-                        Здесь позже будет ваше видео.
-                        <br>Камера включится после подключения.
+                        <video id="localVideoStudent" autoplay muted playsinline></video>
                     </div>
                 </div>
             </div>
@@ -466,6 +510,52 @@ chatFileS.addEventListener("change", () => {
     const file = chatFileS.files[0];
     addStudentMessage(`Файл: ${file.name} (демо)`, true);
     chatFileS.value = "";
+});
+
+// ЛОКАЛЬНОЕ ВИДЕО УЧЕНИКА (WebRTC getUserMedia)
+const localVideoS = document.getElementById("localVideoStudent");
+if (localVideoS && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        .then(stream => {
+            localVideoS.srcObject = stream;
+            window.localStreamStudent = stream; // для будущего WebRTC
+        })
+        .catch(err => {
+            console.error("Не удалось получить доступ к камере/микрофону (ученик):", err);
+        });
+}
+
+// Полноэкранный режим для большого окна
+function toggleFullscreen(btn) {
+    const remoteBox = btn.closest(".remote-box");
+    const wrapper = remoteBox.closest(".video-wrapper");
+    const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
+    const isFull = remoteBox.classList.contains("fullscreen");
+
+    if (!isFull) {
+        remoteBox.classList.add("fullscreen");
+        if (selfBox) selfBox.style.display = "none";
+        btn.textContent = "⤡";
+    } else {
+        remoteBox.classList.remove("fullscreen");
+        if (selfBox) selfBox.style.display = "flex";
+        btn.textContent = "⤢";
+    }
+}
+
+// Выход из fullscreen по ESC
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+        const full = document.querySelector(".remote-box.fullscreen");
+        if (full) {
+            const btn = full.querySelector(".fullscreen-btn");
+            const wrapper = full.closest(".video-wrapper");
+            const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
+            full.classList.remove("fullscreen");
+            if (selfBox) selfBox.style.display = "flex";
+            if (btn) btn.textContent = "⤢";
+        }
+    }
 });
 </script>
 
