@@ -49,9 +49,9 @@
             align-items: stretch;
         }
 
-        /* ВИДЕО-СЕКЦИЯ СЛЕВА */
+        /* ВИДЕО СЛЕВА (шире, чем чат) */
         .video-column {
-            flex: 2;
+            flex: 2.5;
             background: #020617;
             border-radius: 16px;
             padding: 14px;
@@ -73,14 +73,14 @@
             overflow: hidden;
             background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
             padding: 12px;
-            min-height: 290px;
+            min-height: 360px;
         }
 
         .remote-box {
             border-radius: 12px;
             background: rgba(15,23,42,0.9);
             border: 1px solid rgba(129,140,248,0.6);
-            height: 320px;
+            height: 400px;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -176,7 +176,7 @@
 
         /* ЧАТ СПРАВА */
         .chat-panel {
-            flex: 1;
+            flex: 0.9;
             background: #f3f4ff;
             border-radius: 16px;
             border: 1px solid #d4d4ff;
@@ -211,242 +211,3 @@
             overflow-y: auto;
             font-size: 13px;
             margin-bottom: 6px;
-        }
-
-        .chat-empty {
-            font-size: 12px;
-            color: #9ca3af;
-            text-align: center;
-            margin-top: 18px;
-        }
-
-        .chat-input-row {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .chat-input-row input[type="text"] {
-            flex: 1;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
-            padding: 8px 10px;
-            font-size: 13px;
-        }
-
-        .chat-input-row input::placeholder {
-            color: #9ca3af;
-        }
-
-        .chat-send-btn {
-            padding: 8px 10px;
-            border-radius: 10px;
-            border: none;
-            background: #16a34a;
-            color: white;
-            font-size: 13px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .chat-send-btn:hover {
-            background: #15803d;
-        }
-
-        .chat-attach {
-            width: 32px;
-            height: 32px;
-            border-radius: 999px;
-            border: 1px solid #cbd5e1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-            background: white;
-            color: #111827;
-            flex-shrink: 0;
-        }
-
-        .chat-attach:hover {
-            background: #e5e7eb;
-        }
-
-        .chat-note {
-            font-size: 11px;
-            color: #6b7280;
-            margin-top: 2px;
-        }
-
-        .msg {
-            margin-bottom: 6px;
-            line-height: 1.35;
-        }
-
-        .msg-you {
-            text-align: right;
-        }
-
-        .msg-author {
-            font-size: 11px;
-            opacity: 0.7;
-        }
-
-        .msg-bubble {
-            display: inline-block;
-            margin-top: 1px;
-            padding: 6px 9px;
-            border-radius: 9px;
-            background: #e5e7eb;
-        }
-
-        .msg-you .msg-bubble {
-            background: #4f46e5;
-            color: white;
-        }
-
-        @media (max-width: 900px) {
-            .card {
-                width: 100%;
-                margin: 8px;
-                padding: 14px;
-            }
-            .bottom-row {
-                flex-direction: column;
-            }
-            .video-wrapper {
-                min-height: 260px;
-            }
-            .remote-box {
-                height: 260px;
-            }
-        }
-    </style>
-</head>
-
-<body>
-<div class="card">
-    <div class="top-row">
-        <h2>Урок WebClass</h2>
-        <div id="roomInfo" class="room"></div>
-    </div>
-
-    <div class="bottom-row">
-        <!-- ВИДЕО СЛЕВА -->
-        <div class="video-column">
-            <div class="video-title">Комната</div>
-            <div class="video-wrapper">
-                <!-- БОЛЬШОЕ ОКНО УЧИТЕЛЯ -->
-                <div class="remote-box">
-                    <div class="remote-label">Окно учителя</div>
-                    <div class="remote-name" id="teacherNameLabel">Учитель</div>
-                    <div class="remote-sub">Когда учитель начнёт урок, здесь появится его видео.</div>
-                </div>
-
-                <!-- МАЛЕНЬКОЕ ОКНО УЧЕНИКА -->
-                <div class="self-box">
-                    <div class="self-header">
-                        <span class="self-tag">Вы (ученик)</span>
-                        <span>предпросмотр</span>
-                    </div>
-                    <div class="self-preview">
-                        Здесь позже будет ваше видео.
-                        <br>Камера включится после подключения.
-                    </div>
-                </div>
-            </div>
-
-            <div class="hint">
-                Вы уже в комнате. Если связи пока нет — просто дождитесь учителя.
-            </div>
-            <button class="btn-exit" onclick="goHome()">Выйти из урока</button>
-        </div>
-
-        <!-- ЧАТ СПРАВА -->
-        <div class="chat-panel">
-            <div class="chat-header">
-                <div class="chat-title">Чат урока</div>
-                <div class="chat-status">Сообщения пока только на вашем экране</div>
-            </div>
-            <div id="chatMessagesStudent" class="chat-messages">
-                <div class="chat-empty">Задайте вопрос учителю — позже мы сделаем так, чтобы он видел это сообщение.</div>
-            </div>
-            <div class="chat-input-row">
-                <label class="chat-attach" title="Прикрепить файл">
-                    📎
-                    <input type="file" id="chatFileStudent" style="display:none;">
-                </label>
-                <input id="chatInputStudent" type="text" placeholder="Написать сообщение учителю...">
-                <button id="chatSendStudent" class="chat-send-btn">Отправить</button>
-            </div>
-            <div class="chat-note">
-                Прикрепление файлов до 10 МБ (PDF, изображения). Сейчас это демо без реальной отправки.
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const room = params.get("room") || "неизвестная комната";
-
-    document.getElementById("roomInfo").textContent = "Комната: " + room;
-
-    function goHome() {
-        window.location.href = "/";
-    }
-
-    // ЛОКАЛЬНЫЙ ЧАТ ДЛЯ УЧЕНИКА
-    const chatMessagesS = document.getElementById("chatMessagesStudent");
-    const chatInputS = document.getElementById("chatInputStudent");
-    const chatSendS = document.getElementById("chatSendStudent");
-    const chatFileS = document.getElementById("chatFileStudent");
-
-    function addStudentMessage(text, isFile = false) {
-        if (!text.trim()) return;
-
-        const empty = chatMessagesS.querySelector(".chat-empty");
-        if (empty) empty.remove();
-
-        const wrapper = document.createElement("div");
-        wrapper.className = "msg msg-you";
-
-        const author = document.createElement("div");
-        author.className = "msg-author";
-        author.textContent = isFile ? "Файл (демо)" : "Вы";
-
-        const bubble = document.createElement("div");
-        bubble.className = "msg-bubble";
-        bubble.textContent = text;
-
-        wrapper.appendChild(author);
-        wrapper.appendChild(bubble);
-        chatMessagesS.appendChild(wrapper);
-
-        chatMessagesS.scrollTop = chatMessagesS.scrollHeight;
-    }
-
-    chatSendS.addEventListener("click", () => {
-        addStudentMessage(chatInputS.value);
-        chatInputS.value = "";
-        chatInputS.focus();
-    });
-
-    chatInputS.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            e.preventDefault();
-            addStudentMessage(chatInputS.value);
-            chatInputS.value = "";
-        }
-    });
-
-    chatFileS.addEventListener("change", () => {
-        if (!chatFileS.files || chatFileS.files.length === 0) return;
-        const file = chatFileS.files[0];
-        addStudentMessage(`Файл: ${file.name} (до 10 МБ, демо без загрузки)`, true);
-        chatFileS.value = "";
-    });
-</script>
-
-</body>
-</html>
