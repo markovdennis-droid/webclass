@@ -78,7 +78,7 @@
         .link-input-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         input {
@@ -113,22 +113,10 @@
             transform: translateY(-1px);
         }
 
-        .link-field {
-            font-size: 13px;
-            color: #e5e7eb;
-            user-select: all;
-            cursor: pointer;
-            background: #020617;
-            padding: 8px 10px;
-            border-radius: 8px;
-            border: 1px dashed #374151;
-            word-break: break-all;
-        }
-
         .hint {
             font-size: 12px;
             color: #9ca3af;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .teacher-info {
@@ -189,6 +177,7 @@
             color: #e5e7eb;
             font-size: 14px;
             text-align: center;
+            padding: 12px;
         }
 
         .remote-label {
@@ -416,11 +405,7 @@
                     <input id="lessonLink" type="text" readonly>
                     <button id="copyBtn">Скопировать</button>
                 </div>
-
-                <div id="clickSelect" class="link-field"></div>
-                <div class="hint">
-                    Нажмите на поле ниже, чтобы выделить ссылку целиком. Отправьте её ученику в любой мессенджер.
-                </div>
+                <div class="hint">Скопируйте ссылку и отправьте её ученику в любой мессенджер.</div>
             </div>
         </div>
 
@@ -492,27 +477,16 @@
     const studentLink = `${window.location.origin}/student.html?room=${encodeURIComponent(room)}`;
 
     const input = document.getElementById("lessonLink");
-    const field = document.getElementById("clickSelect");
     const btn = document.getElementById("copyBtn");
     const roomInfo = document.getElementById("roomInfo");
     const teacherNameLabel = document.getElementById("teacherNameLabel");
     const roomShort = document.getElementById("roomShort");
 
     input.value = studentLink;
-    field.textContent = studentLink;
 
     roomInfo.textContent = `Комната: ${room}`;
     teacherNameLabel.textContent = name;
     roomShort.textContent = room;
-
-    // выделение ссылки
-    field.onclick = function () {
-        const range = document.createRange();
-        range.selectNode(field);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-    };
 
     // копирование ссылки
     btn.onclick = function () {
