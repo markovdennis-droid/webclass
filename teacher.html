@@ -40,7 +40,7 @@
 
     .app-shell {
       width: 100%;
-      max-width: 1320px; /* Чуть больше основное окно */
+      max-width: 1320px;
       margin: 10px auto;
       padding: 10px 10px 24px;
       display: flex;
@@ -177,8 +177,13 @@
 
     .main-layout {
       display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); /* главное окно чуть шире */
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
       gap: 14px;
+    }
+
+    /* ОБЩИЙ класс для drag-состояния */
+    .dragging {
+      cursor: grabbing !important;
     }
 
     .video-panel {
@@ -198,6 +203,8 @@
       align-items: center;
       justify-content: space-between;
       margin-bottom: 8px;
+      cursor: grab;          /* перетаскиваем по шапке */
+      user-select: none;
     }
 
     .video-panel-header span {
@@ -301,6 +308,8 @@
       align-items: center;
       justify-content: space-between;
       color: var(--text-main);
+      cursor: grab;          /* перетаскиваем по заголовку */
+      user-select: none;
     }
 
     .side-panel h2 span {
@@ -335,7 +344,7 @@
       color: var(--text-dim);
     }
 
-    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ + ПЕРЕТАСКИВАЕМЫЙ === */
+    /* === PIP SELF BOX — УВЕЛИЧЕННЫЙ + DRAG + HIDE === */
     .self-box {
       position: fixed;
       right: 2.2vw;
@@ -351,14 +360,9 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      z-index: 50;
+      z-index: 70;
       backdrop-filter: blur(12px);
-      cursor: grab;            /* визуально понятно, что можно двигать */
-      touch-action: none;      /* для drag на тач-устройствах */
-    }
-
-    .self-box.dragging {
-      cursor: grabbing;
+      cursor: grab;
     }
 
     .self-header {
@@ -366,6 +370,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 6px;
+      user-select: none;
     }
 
     .self-title {
@@ -382,6 +387,12 @@
       border-radius: 999px;
       background: #22c55e;
       box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+    }
+
+    .self-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
     .swap-btn {
@@ -462,6 +473,15 @@
       background: var(--danger);
     }
 
+    /* Скрытие предпросмотра маленького окна */
+    .self-box.hidden .self-video-frame {
+      display: none;
+    }
+
+    .self-box.hidden {
+      padding-bottom: 6px;
+    }
+
     .fullscreen-active {
       background: #000;
     }
@@ -480,14 +500,6 @@
 
       .main-layout {
         grid-template-columns: minmax(0, 1fr);
-      }
-
-      .video-panel {
-        order: 1;
-      }
-
-      .side-panel {
-        order: 2;
       }
 
       .self-box {
@@ -568,8 +580,8 @@
 
     <main>
       <div class="main-layout">
-        <section class="video-panel">
-          <div class="video-panel-header">
+        <section class="video-panel" id="videoPanel">
+          <div class="video-panel-header" id="videoPanelHandle">
             <span>Главное окно · Ученик</span>
             <span style="font-size:11px; color:var(--text-dim);">
               Нажми ⛶ для полного экрана · ESC для выхода
@@ -600,8 +612,8 @@
           </div>
         </section>
 
-        <aside class="side-panel">
-          <h2>
+        <aside class="side-panel" id="sidePanel">
+          <h2 id="sidePanelHandle">
             Чат и заметки
             <span>Скоро здесь будет чат с учеником</span>
           </h2>
@@ -615,7 +627,8 @@
               fullscreen.<br />
               🔹 Нажимаешь <strong>ESC</strong> — fullscreen закрывается, верстка
               не ломается.<br />
-              🔹 Маленькое окно (PiP) можно мышкой перетащить в любой угол экрана.
+              🔹 Маленькое окно (PiP) можно мышкой перетащить в любой угол
+              экрана или скрыть.
             </p>
           </div>
           <div class="side-panel-footer">
@@ -626,16 +639,21 @@
       </div>
     </main>
 
-    <!-- УВЕЛИЧЕННЫЙ + DRAGGABLE PiP SELF BOX -->
+    <!-- УВЕЛИЧЕННЫЙ + DRAGGABLE + HIDABLE PiP SELF BOX -->
     <div class="self-box" id="selfBox">
-      <div class="self-header">
+      <div class="self-header" id="selfBoxHandle">
         <div class="self-title">
           <span class="self-dot"></span>
           <span>Вы (учитель)</span>
         </div>
-        <button class="swap-btn" id="swapBtn" type="button">
-          ↔ Поменять местами
-        </button>
+        <div class="self-actions">
+          <button class="swap-btn" id="toggleSelfBtn" type="button">
+            🙈 Скрыть себя
+          </button>
+          <button class="swap-btn" id="swapBtn" type="button">
+            ↔ Поменять местами
+          </button>
+        </div>
       </div>
       <div class="self-video-frame">
         <video
@@ -657,6 +675,79 @@
   </div>
 
   <script>
+    // Глобальный счётчик для z-index при перетаскивании
+    let dragZIndex = 80;
+
+    // Утилита: сделать элемент draggable через pointer events
+    function makeDraggable(box, handle) {
+      if (!box) return;
+      const dragHandle = handle || box;
+
+      let isDragging = false;
+      let startX = 0;
+      let startY = 0;
+      let boxStartX = 0;
+      let boxStartY = 0;
+
+      dragHandle.style.touchAction = "none";
+
+      dragHandle.addEventListener("pointerdown", (e) => {
+        if (e.button !== 0) return; // только левая кнопка
+        isDragging = true;
+
+        const rect = box.getBoundingClientRect();
+        startX = e.clientX;
+        startY = e.clientY;
+        boxStartX = rect.left;
+        boxStartY = rect.top;
+
+        box.style.position = "fixed";
+        box.style.left = rect.left + "px";
+        box.style.top = rect.top + "px";
+        box.style.right = "auto";
+        box.style.bottom = "auto";
+        box.style.zIndex = ++dragZIndex;
+
+        box.classList.add("dragging");
+
+        document.addEventListener("pointermove", pointerMove);
+        document.addEventListener("pointerup", pointerUp);
+      });
+
+      function pointerMove(e) {
+        if (!isDragging) return;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newX = boxStartX + dx;
+        let newY = boxStartY + dy;
+
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const rect = box.getBoundingClientRect();
+        const margin = 8;
+        const width = rect.width;
+        const height = rect.height;
+
+        if (newX < margin) newX = margin;
+        if (newY < margin) newY = margin;
+        if (newX + width > vw - margin) newX = vw - width - margin;
+        if (newY + height > vh - margin) newY = vh - height - margin;
+
+        box.style.left = newX + "px";
+        box.style.top = newY + "px";
+      }
+
+      function pointerUp() {
+        if (!isDragging) return;
+        isDragging = false;
+        box.classList.remove("dragging");
+        document.removeEventListener("pointermove", pointerMove);
+        document.removeEventListener("pointerup", pointerUp);
+      }
+    }
+
     // КОПИРОВАНИЕ ПРИГЛАСИТЕЛЬНОЙ ССЫЛКИ
     (function () {
       const btn = document.getElementById("copyInviteBtn");
@@ -750,9 +841,13 @@
       const selfVideo = document.getElementById("selfVideo");
       if (!swapBtn || !mainVideo || !selfVideo) return;
 
+      // Чтобы клик по кнопке не запускал drag selfBox
+      swapBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
+
       let swapped = false;
 
-      swapBtn.addEventListener("click", () => {
+      swapBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
         swapped = !swapped;
         swapBtn.textContent = swapped
           ? "↔ Вернуть как было"
@@ -760,72 +855,39 @@
       });
     })();
 
-    // DRAGGABLE PiP (selfBox можно перетаскивать мышью/пальцем)
+    // TOGGLE SELF PREVIEW (скрыть/показать маленькое окно)
     (function () {
       const selfBox = document.getElementById("selfBox");
-      if (!selfBox) return;
+      const toggleBtn = document.getElementById("toggleSelfBtn");
+      if (!selfBox || !toggleBtn) return;
 
-      let isDragging = false;
-      let startX = 0;
-      let startY = 0;
-      let boxStartX = 0;
-      let boxStartY = 0;
+      // Чтобы клик по кнопке не начинал drag
+      toggleBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
 
-      function pointerDown(e) {
-        isDragging = true;
-        const rect = selfBox.getBoundingClientRect();
+      let hidden = false;
 
-        startX = e.clientX;
-        startY = e.clientY;
-        boxStartX = rect.left;
-        boxStartY = rect.top;
+      toggleBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        hidden = !hidden;
+        selfBox.classList.toggle("hidden", hidden);
+        toggleBtn.textContent = hidden
+          ? "👁 Показать себя"
+          : "🙈 Скрыть себя";
+      });
+    })();
 
-        // Переключаемся с right/bottom на left/top
-        selfBox.style.right = "auto";
-        selfBox.style.bottom = "auto";
-        selfBox.style.left = rect.left + "px";
-        selfBox.style.top = rect.top + "px";
+    // DRAG: маленькое окно, большой экран и текстовый блок
+    (function () {
+      const selfBox = document.getElementById("selfBox");
+      const selfHandle = document.getElementById("selfBoxHandle");
+      const videoPanel = document.getElementById("videoPanel");
+      const videoHandle = document.getElementById("videoPanelHandle");
+      const sidePanel = document.getElementById("sidePanel");
+      const sideHandle = document.getElementById("sidePanelHandle");
 
-        selfBox.classList.add("dragging");
-
-        document.addEventListener("pointermove", pointerMove);
-        document.addEventListener("pointerup", pointerUp);
-      }
-
-      function pointerMove(e) {
-        if (!isDragging) return;
-
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        let newX = boxStartX + dx;
-        let newY = boxStartY + dy;
-
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const rect = selfBox.getBoundingClientRect();
-        const margin = 8;
-        const width = rect.width;
-        const height = rect.height;
-
-        if (newX < margin) newX = margin;
-        if (newY < margin) newY = margin;
-        if (newX + width > vw - margin) newX = vw - width - margin;
-        if (newY + height > vh - margin) newY = vh - height - margin;
-
-        selfBox.style.left = newX + "px";
-        selfBox.style.top = newY + "px";
-      }
-
-      function pointerUp() {
-        if (!isDragging) return;
-        isDragging = false;
-        selfBox.classList.remove("dragging");
-        document.removeEventListener("pointermove", pointerMove);
-        document.removeEventListener("pointerup", pointerUp);
-      }
-
-      selfBox.addEventListener("pointerdown", pointerDown);
+      makeDraggable(selfBox, selfHandle);
+      makeDraggable(videoPanel, videoHandle);
+      makeDraggable(sidePanel, sideHandle);
     })();
   </script>
 </body>
