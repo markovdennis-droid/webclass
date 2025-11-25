@@ -166,6 +166,7 @@
         }
 
         .remote-box {
+            position: relative;
             border-radius: 12px;
             background: rgba(15,23,42,0.85);
             border: 1px solid rgba(129,140,248,0.5);
@@ -197,6 +198,37 @@
         .remote-sub {
             font-size: 12px;
             color: #9ca3af;
+        }
+
+        /* Кнопка полноэкранного режима */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.45);
+            color: #f9fafb;
+            border: none;
+            padding: 6px 8px;
+            font-size: 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 50;
+            backdrop-filter: blur(4px);
+        }
+        .fullscreen-btn:hover {
+            background: rgba(255,255,255,0.22);
+        }
+
+        .remote-box.fullscreen {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100vw !important;
+            height: 100vh !important;
+            z-index: 9999;
+            border-radius: 0;
+            margin: 0;
+            background: #020617;
         }
 
         .self-box {
@@ -231,14 +263,17 @@
         .self-preview {
             margin-top: 4px;
             border-radius: 7px;
-            background: linear-gradient(135deg, #1d4ed8, #22c55e);
             height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 11px;
-            color: #f9fafb;
-            text-align: center;
+            overflow: hidden;
+            background: #020617;
+        }
+
+        .self-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 6px;
+            background: #020617;
         }
 
         /* ЧАТ ПРАВО */
@@ -368,6 +403,7 @@
             background: #1d4ed8;
         }
 
+        /* АДАПТИВ */
         @media (max-width: 900px) {
             .container {
                 width: 100%;
@@ -385,6 +421,21 @@
             }
             .remote-box {
                 height: 280px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .link-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .link-input-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            button {
+                width: 100%;
             }
         }
     </style>
@@ -426,20 +477,20 @@
             <div class="video-wrapper">
                 <!-- БОЛЬШОЕ ОКНО УЧЕНИКА -->
                 <div class="remote-box">
+                    <button class="fullscreen-btn" type="button" onclick="toggleFullscreen(this)">⤢</button>
                     <div class="remote-label">Окно ученика</div>
                     <div class="remote-name" id="remoteNameLabel">Ученик</div>
                     <div class="remote-sub">Здесь позже появится видео ученика.</div>
                 </div>
 
-                <!-- МАЛЕНЬКОЕ ОКНО УЧИТЕЛЯ -->
+                <!-- МАЛЕНЬКОЕ ОКНО УЧИТЕЛЯ (живое видео) -->
                 <div class="self-box">
                     <div class="self-header">
                         <span class="self-tag">Вы (учитель)</span>
                         <span>предпросмотр</span>
                     </div>
                     <div class="self-preview">
-                        Здесь будет ваше видео.
-                        <br>Камера включится после подключения.
+                        <video id="localVideoTeacher" autoplay muted playsinline></video>
                     </div>
                 </div>
             </div>
@@ -558,6 +609,52 @@
         const file = chatFileT.files[0];
         addTeacherMessage(`Файл: ${file.name} (до 10 МБ, демо без загрузки)`, true);
         chatFileT.value = "";
+    });
+
+    // ЛОКАЛЬНОЕ ВИДЕО УЧИТЕЛЯ (WebRTC getUserMedia)
+    const localVideoT = document.getElementById("localVideoTeacher");
+    if (localVideoT && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+            .then(stream => {
+                localVideoT.srcObject = stream;
+                window.localStreamTeacher = stream; // пригодится для полноценного WebRTC позже
+            })
+            .catch(err => {
+                console.error("Не удалось получить доступ к камере/микрофону (учитель):", err);
+            });
+    }
+
+    // Полноэкранный режим для большого окна
+    function toggleFullscreen(btn) {
+        const remoteBox = btn.closest(".remote-box");
+        const wrapper = remoteBox.closest(".video-wrapper");
+        const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
+        const isFull = remoteBox.classList.contains("fullscreen");
+
+        if (!isFull) {
+            remoteBox.classList.add("fullscreen");
+            if (selfBox) selfBox.style.display = "none";
+            btn.textContent = "⤡";
+        } else {
+            remoteBox.classList.remove("fullscreen");
+            if (selfBox) selfBox.style.display = "flex";
+            btn.textContent = "⤢";
+        }
+    }
+
+    // Выход из fullscreen по ESC
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            const full = document.querySelector(".remote-box.fullscreen");
+            if (full) {
+                const btn = full.querySelector(".fullscreen-btn");
+                const wrapper = full.closest(".video-wrapper");
+                const selfBox = wrapper ? wrapper.querySelector(".self-box") : null;
+                full.classList.remove("fullscreen");
+                if (selfBox) selfBox.style.display = "flex";
+                if (btn) btn.textContent = "⤢";
+            }
+        }
     });
 </script>
 
