@@ -54,6 +54,7 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 6px;
+      flex-wrap: wrap;
     }
 
     .brand-block {
@@ -96,8 +97,9 @@
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: wrap;
       justify-content: flex-end;
+      flex: 1;
+      min-width: 260px;
     }
 
     .invite-block {
@@ -158,10 +160,6 @@
       align-items: stretch;
     }
 
-    .dragging {
-      cursor: grabbing !important;
-    }
-
     .video-panel {
       position: relative;
       border-radius: var(--radius-xl);
@@ -181,7 +179,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      cursor: grab;
+      cursor: default;
       user-select: none;
       padding: 4px 4px 4px 6px;
       border-radius: 999px;
@@ -298,7 +296,6 @@
       font-size: 11px;
       background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(234, 179, 8, 0.95));
       border-bottom: 1px solid rgba(250, 204, 21, 0.75);
-      cursor: grab;
       user-select: none;
     }
 
@@ -389,7 +386,6 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
-      cursor: grab;
       user-select: none;
       padding: 4px 6px;
       border-radius: 10px;
@@ -523,18 +519,6 @@
       font-size: 16px;
     }
 
-    .grid-resizer {
-      position: absolute;
-      right: 6px;
-      bottom: 6px;
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      background: rgba(148, 163, 184, 0.85);
-      cursor: nwse-resize;
-      opacity: 0.9;
-    }
-
     @media (max-width: 980px) {
       .app-main {
         grid-template-columns: 1fr;
@@ -578,7 +562,7 @@
 
     <main class="app-main">
       <section class="video-panel" id="videoPanel">
-        <div class="video-header" id="videoPanelHandle">
+        <div class="video-header">
           <div class="video-header-left">
             <div class="status-dot"></div>
             <div class="video-header-text">
@@ -599,7 +583,7 @@
             <video id="mainVideo" autoplay playsinline></video>
 
             <div class="self-box" id="selfBox">
-              <div class="self-box-header" id="selfBoxHandle">
+              <div class="self-box-header">
                 <span>Вы</span>
                 <span style="opacity:0.75;">PiP</span>
               </div>
@@ -622,9 +606,9 @@
       </section>
 
       <aside class="side-panel" id="sidePanel">
-        <div class="side-header" id="sidePanelHandle">
+        <div class="side-header">
           <h2>Чат урока</h2>
-          <span>Локальный чат (для заметок и планов)</span>
+          <span>Локальный чат (заметки учителя)</span>
         </div>
 
         <div class="chat-panel">
@@ -648,7 +632,7 @@
     </main>
   </div>
 
-  <!-- WebRTC + приглашение -->
+  <!-- WebRTC + генерация ссылки + локальный чат -->
   <script>
   (function () {
     const ROLE = "teacher";
@@ -697,6 +681,9 @@
     let pc = null;
     let ws = null;
 
+    const statusEl = createStatusBadge("teacher");
+    status("init");
+
     start();
 
     async function start() {
@@ -706,9 +693,11 @@
           audio: true
         });
         selfVideo.srcObject = localStream;
+        status("local-stream");
       } catch (err) {
-        console.error("WebRTC: ошибка доступа к камере/микрофону:", err);
+        console.error("gUM error:", err);
         alert("Не удалось получить доступ к камере/микрофону.");
+        status("gUM-error");
         return;
       }
       setupWebSocket();
@@ -717,13 +706,16 @@
     function setupWebSocket() {
       try {
         ws = new WebSocket(signalingUrl);
+        status("ws-connecting");
       } catch (err) {
-        console.error("WebRTC: ошибка создания WebSocket:", err);
+        console.error("WS create error:", err);
+        status("ws-error");
         return;
       }
 
       ws.onopen = () => {
-        console.log("WebRTC WS open, room =", roomId);
+        console.log("WS open (teacher), room =", roomId);
+        status("ws-open");
         send({ type: "ready", role: ROLE });
       };
 
@@ -736,10 +728,11 @@
         }
 
         if (msg.role === ROLE) return;
+        console.log("[teacher] msg:", msg.type);
 
         switch (msg.type) {
           case "ready":
-            // учитель инициирует соединение
+            // ученик подключился, инициируем звонок
             await ensurePeerConnection();
             await makeOffer();
             break;
@@ -750,26 +743,36 @@
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             send({ type: "answer", sdp: pc.localDescription, role: ROLE });
+            status("answer-sent");
             break;
 
           case "answer":
             if (!pc) return;
             await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            status("answer-set");
             break;
 
           case "candidate":
             if (!pc || !msg.candidate) return;
             try {
               await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+              status("candidate-add");
             } catch (err) {
-              console.warn("Ошибка addIceCandidate:", err);
+              console.warn("addIceCandidate error:", err);
             }
             break;
         }
       };
 
-      ws.onclose = () => console.log("WebRTC WS closed");
-      ws.onerror = (err) => console.error("WebRTC WS error:", err);
+      ws.onclose = () => {
+        console.log("WS closed (teacher)");
+        status("ws-closed");
+      };
+
+      ws.onerror = (err) => {
+        console.error("WS error (teacher):", err);
+        status("ws-error");
+      };
     }
 
     function send(payload) {
@@ -780,9 +783,10 @@
 
     async function ensurePeerConnection() {
       if (pc) return;
+      status("pc-creating");
 
       pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
       });
 
       if (localStream) {
@@ -796,13 +800,14 @@
           send({
             type: "candidate",
             candidate: event.candidate,
-            role: ROLE,
+            role: ROLE
           });
         }
       };
 
       pc.ontrack = (event) => {
         const stream = event.streams[0];
+        console.log("[teacher] ontrack", stream);
         if (!remoteStream) {
           remoteStream = new MediaStream();
           mainVideo.srcObject = remoteStream; // сюда придёт ученик
@@ -810,6 +815,7 @@
         stream.getTracks().forEach((track) => {
           remoteStream.addTrack(track);
         });
+        status("remote-track");
       };
     }
 
@@ -819,9 +825,110 @@
         const offer = await pc.createOffer();
         await pc.setLocalDescription(offer);
         send({ type: "offer", sdp: pc.localDescription, role: ROLE });
+        status("offer-sent");
       } catch (err) {
-        console.error("WebRTC: ошибка создания offer:", err);
+        console.error("offer error:", err);
+        status("offer-error");
       }
+    }
+
+    function createStatusBadge(label) {
+      const el = document.createElement("div");
+      el.style.position = "fixed";
+      el.style.left = "8px";
+      el.style.bottom = "8px";
+      el.style.zIndex = "9999";
+      el.style.fontSize = "10px";
+      el.style.padding = "3px 6px";
+      el.style.borderRadius = "999px";
+      el.style.background = "rgba(15,23,42,0.9)";
+      el.style.border = "1px solid rgba(148,163,184,.6)";
+      el.style.color = "#e5e7eb";
+      el.textContent = label + ": …";
+      document.body.appendChild(el);
+      return el;
+    }
+
+    function status(code) {
+      if (statusEl) statusEl.textContent = "teacher: " + code;
+    }
+
+    // 3) Локальный чат
+    const input = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("chatSendBtn");
+    const messages = document.getElementById("chatMessages");
+    const attachBox = document.getElementById("chatAttachments");
+    const fileInput = document.getElementById("chatFileInput");
+
+    if (input && sendBtn && messages) {
+      let pendingFiles = [];
+
+      if (fileInput) {
+        fileInput.addEventListener("change", () => {
+          pendingFiles = Array.from(fileInput.files || []);
+          renderAttachments();
+        });
+      }
+
+      function renderAttachments() {
+        if (!attachBox) return;
+        attachBox.innerHTML = "";
+        pendingFiles.forEach((f) => {
+          const pill = document.createElement("div");
+          pill.className = "chat-attachment-pill";
+          pill.textContent = "📎 " + f.name;
+          attachBox.appendChild(pill);
+        });
+      }
+
+      function addMessage(text, from = "Вы") {
+        const wrap = document.createElement("div");
+        wrap.className = "chat-message me";
+
+        const header = document.createElement("div");
+        header.className = "chat-message-header";
+        const time = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+        header.innerHTML = `<span>${from}</span><span>${time}</span>`;
+        wrap.appendChild(header);
+
+        if (text) {
+          const body = document.createElement("div");
+          body.className = "chat-message-body";
+          body.textContent = text;
+          wrap.appendChild(body);
+        }
+
+        pendingFiles.forEach((f) => {
+          const pill = document.createElement("div");
+          pill.className = "chat-attachment-pill";
+          pill.textContent = "📎 " + f.name;
+          wrap.appendChild(pill);
+        });
+
+        messages.appendChild(wrap);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function sendMsg() {
+        const text = input.value.trim();
+        if (!text && pendingFiles.length === 0) return;
+        addMessage(text);
+        input.value = "";
+        pendingFiles = [];
+        if (fileInput) fileInput.value = "";
+        renderAttachments();
+      }
+
+      sendBtn.addEventListener("click", sendMsg);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMsg();
+        }
+      });
     }
   })();
   </script>
