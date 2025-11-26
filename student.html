@@ -1463,5 +1463,152 @@
       makeResizable(sidePanel, sideResize);
     })();
   </script>
+  <script>
+(function () {
+  const ROLE = "student";
+  const params = new URLSearchParams(window.location.search);
+  const roomId = params.get("room") || "default-room";
+  const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
+
+  const selfVideo = document.getElementById("selfVideo");
+  const mainVideo = document.getElementById("mainVideo");
+
+  if (!selfVideo || !mainVideo) {
+    console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
+    return;
+  }
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
+    return;
+  }
+
+  let localStream = null;
+  let remoteStream = null;
+  let pc = null;
+  let ws = null;
+
+  start();
+
+  async function start() {
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+      // ученик: себя — в PiP
+      selfVideo.srcObject = localStream;
+    } catch (err) {
+      console.error("WebRTC: ошибка доступа к камере/микрофону:", err);
+      alert("Не удалось получить доступ к камере/микрофону.");
+      return;
+    }
+    setupWebSocket();
+  }
+
+  function setupWebSocket() {
+    try {
+      ws = new WebSocket(signalingUrl);
+    } catch (err) {
+      console.error("WebRTC: ошибка создания WebSocket:", err);
+      return;
+    }
+
+    ws.onopen = () => {
+      console.log("WebRTC WS open, room =", roomId);
+      send({ type: "ready", role: ROLE });
+    };
+
+    ws.onmessage = async (event) => {
+      let msg;
+      try {
+        msg = JSON.parse(event.data);
+      } catch {
+        return;
+      }
+
+      if (msg.role === ROLE) return;
+
+      switch (msg.type) {
+        case "ready":
+          // студент не инициирует, ждём offer от учителя
+          break;
+
+        case "offer":
+          await ensurePeerConnection();
+          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+          const answer = await pc.createAnswer();
+          await pc.setLocalDescription(answer);
+          send({ type: "answer", sdp: pc.localDescription, role: ROLE });
+          break;
+
+        case "answer":
+          if (!pc) return;
+          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+          break;
+
+        case "candidate":
+          if (!pc || !msg.candidate) return;
+          try {
+            await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+          } catch (err) {
+            console.warn("WebRTC: addIceCandidate error", err);
+          }
+          break;
+      }
+    };
+
+    ws.onclose = () => {
+      console.log("WebRTC WS closed");
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebRTC WS error:", err);
+    };
+  }
+
+  function send(payload) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(payload));
+    }
+  }
+
+  async function ensurePeerConnection() {
+    if (pc) return;
+
+    pc = new RTCPeerConnection({
+      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+    });
+
+    if (localStream) {
+      localStream.getTracks().forEach((track) => {
+        pc.addTrack(track, localStream);
+      });
+    }
+
+    pc.onicecandidate = (event) => {
+      if (event.candidate) {
+        send({
+          type: "candidate",
+          candidate: event.candidate,
+          role: ROLE
+        });
+      }
+    };
+
+    pc.ontrack = (event) => {
+      const stream = event.streams[0];
+      if (!remoteStream) {
+        remoteStream = new MediaStream();
+        mainVideo.srcObject = remoteStream; // сюда придёт учитель
+      }
+      stream.getTracks().forEach((track) => {
+        remoteStream.addTrack(track);
+      });
+    };
+  }
+})();
+</script>
+
 </body>
 </html>
