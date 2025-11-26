@@ -188,7 +188,8 @@
         .remote-box video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: #000;
         }
 
         .remote-placeholder {
@@ -267,7 +268,8 @@
         .self-preview video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            background: #000;
         }
 
         /* ЧАТ СПРАВА */
@@ -510,7 +512,7 @@
         <!-- ВИДЕО -->
         <div class="video-area">
             <div class="room-title">Комната урока</div>
-            <div class="video-wrapper">
+            <div class="video-wrapper" id="videoWrapperTeacher">
                 <div class="remote-box" id="remoteBoxTeacher">
                     <video id="remoteVideoTeacher" autoplay playsinline muted></video>
                     <div class="remote-controls">
@@ -707,8 +709,10 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const fsBtn = document.getElementById("remoteFullscreenTeacher");
     const remoteBox = document.getElementById("remoteBoxTeacher");
-    if (fsBtn && remoteBox) {
-        fsBtn.addEventListener("click", () => toggleFullscreen(remoteBox, fsBtn));
+    const wrapper = document.getElementById("videoWrapperTeacher");
+    const fsTarget = wrapper || remoteBox;
+    if (fsBtn && fsTarget) {
+        fsBtn.addEventListener("click", () => toggleFullscreen(fsTarget, fsBtn));
     }
 });
 
