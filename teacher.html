@@ -8,7 +8,7 @@
     :root {
       --bg-main: radial-gradient(circle at top, #0f172a 0, #020617 38%, #000 100%);
       --card-bg: rgba(15, 23, 42, 0.96);
-      --card-border: rgba(30, 64, 175, 0.4);
+      --card-border: rgba(37, 99, 235, 0.5);
       --accent: #f97316;
       --accent-soft: rgba(249, 115, 22, 0.2);
       --accent-2: #4f46e5;
@@ -23,8 +23,7 @@
       box-sizing: border-box;
     }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
@@ -115,19 +114,19 @@
       gap: 8px;
     }
 
-    .invite-url-row #inviteUrl {
+    #inviteUrl {
       flex: 1;
       font-size: 12px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       padding: 4px 8px;
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       background: rgba(15, 23, 42, 0.85);
       border: 1px dashed rgba(148, 163, 184, 0.5);
     }
 
-    .invite-url-row button {
+    #copyInviteBtn {
       border-radius: var(--radius-pill);
       border: none;
       background: linear-gradient(135deg, #facc15, #f97316);
@@ -141,7 +140,7 @@
       box-shadow: 0 4px 18px rgba(248, 250, 252, 0.16);
     }
 
-    .invite-url-row button span {
+    #copyInviteBtn span {
       font-size: 15px;
     }
 
@@ -156,13 +155,14 @@
     .video-panel {
       background: rgba(15, 23, 42, 0.94);
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(37, 99, 235, 0.35);
+      border: 1px solid var(--card-border);
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
       padding: 10px 12px 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
       position: relative;
+      min-height: 0;
     }
 
     .video-header {
@@ -201,10 +201,12 @@
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .swap-btn,
-    .fs-btn {
+    .fs-btn,
+    .mute-remote-btn {
       border-radius: var(--radius-pill);
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
@@ -221,11 +223,21 @@
       font-size: 14px;
     }
 
+    #qualitySelectTeacher {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
     .video-body {
       border-radius: 14px;
       background: radial-gradient(circle at top left, #1f2937, #020617);
       padding: 8px;
       position: relative;
+      min-height: 0;
     }
 
     .main-video-wrapper {
@@ -235,6 +247,7 @@
       border: 1px solid rgba(30, 64, 175, 0.7);
       background: #000;
       box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
+      min-height: 240px;
     }
 
     #mainVideo {
@@ -260,6 +273,8 @@
       display: flex;
       flex-direction: column;
       backdrop-filter: blur(6px);
+      cursor: move; /* перетаскивание */
+      z-index: 10;
     }
 
     .self-box-header,
@@ -329,7 +344,7 @@
     .side-panel {
       background: rgba(15, 23, 42, 0.96);
       border-radius: var(--radius-lg);
-      border: 1px solid rgba(30, 64, 175, 0.45);
+      border: 1px solid var(--card-border);
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
       padding: 10px;
       display: flex;
@@ -484,7 +499,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="app-shell">
     <header>
@@ -520,6 +534,12 @@
             </div>
           </div>
           <div class="video-header-actions">
+            <select id="qualitySelectTeacher">
+              <option value="high">Качество: High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <button class="mute-remote-btn" id="muteRemoteBtn">🔊 Звук ученика</button>
             <button class="swap-btn" id="swapBtn">↔ Поменять местами</button>
             <button class="fs-btn" id="fullscreenBtn">
               <span class="fs-btn-icon" id="fsIcon">⛶</span> На весь экран
@@ -581,14 +601,13 @@
     </main>
   </div>
 
-  <!-- WebRTC + генерация ссылки + общий чат -->
   <script>
     (function () {
       const ROLE = "teacher";
       const params = new URLSearchParams(window.location.search);
       const roomId = params.get("room") || "default-room";
 
-      // 1) Генерация ссылки для ученика
+      // -------- Генерация ссылки --------
       const inviteEl = document.getElementById("inviteUrl");
       const copyBtn = document.getElementById("copyInviteBtn");
       if (inviteEl) {
@@ -610,18 +629,14 @@
         }
       }
 
-      // 2) WebRTC
+      // -------- WebRTC --------
       const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
       const selfVideo = document.getElementById("selfVideo");
       const mainVideo = document.getElementById("mainVideo");
 
-      if (!selfVideo || !mainVideo) {
-        console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
-        return;
-      }
-
+      if (!selfVideo || !mainVideo) return;
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
+        alert("Ваш браузер не поддерживает видеосвязь.");
         return;
       }
 
@@ -650,6 +665,7 @@
           return;
         }
         setupWebSocket();
+        initUIControls();
       }
 
       function setupWebSocket() {
@@ -663,7 +679,6 @@
         }
 
         ws.onopen = () => {
-          console.log("WS open (teacher), room =", roomId);
           status("ws-open");
           send({ type: "ready", role: ROLE });
         };
@@ -675,17 +690,13 @@
           } catch {
             return;
           }
-
           if (msg.role === ROLE) return;
-          console.log("[teacher] msg:", msg.type);
 
           switch (msg.type) {
             case "ready":
-              // ученик подключился, инициируем звонок
               await ensurePeerConnection();
               await makeOffer();
               break;
-
             case "offer":
               await ensurePeerConnection();
               await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
@@ -694,40 +705,28 @@
               send({ type: "answer", sdp: pc.localDescription, role: ROLE });
               status("answer-sent");
               break;
-
             case "answer":
               if (!pc) return;
               await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
               status("answer-set");
               break;
-
             case "candidate":
               if (!pc || !msg.candidate) return;
               try {
                 await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
                 status("candidate-add");
-              } catch (err) {
-                console.warn("addIceCandidate error:", err);
+              } catch (e) {
+                console.warn("addIceCandidate error:", e);
               }
               break;
-
             case "chat":
-              if (msg.text) {
-                addMessage(msg.text, "Ученик");
-              }
+              if (msg.text) addMessage(msg.text, "Ученик");
               break;
           }
         };
 
-        ws.onclose = () => {
-          console.log("WS closed (teacher)");
-          status("ws-closed");
-        };
-
-        ws.onerror = (err) => {
-          console.error("WS error (teacher):", err);
-          status("ws-error");
-        };
+        ws.onclose = () => status("ws-closed");
+        ws.onerror = () => status("ws-error");
       }
 
       function send(payload) {
@@ -745,31 +744,22 @@
         });
 
         if (localStream) {
-          localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream);
-          });
+          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
         }
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
-            send({
-              type: "candidate",
-              candidate: event.candidate,
-              role: ROLE
-            });
+            send({ type: "candidate", candidate: event.candidate, role: ROLE });
           }
         };
 
         pc.ontrack = (event) => {
           const stream = event.streams[0];
-          console.log("[teacher] ontrack", stream);
           if (!remoteStream) {
             remoteStream = new MediaStream();
-            mainVideo.srcObject = remoteStream; // сюда придёт ученик
+            mainVideo.srcObject = remoteStream;
           }
-          stream.getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-          });
+          stream.getTracks().forEach(track => remoteStream.addTrack(track));
           status("remote-track");
         };
       }
@@ -808,102 +798,39 @@
         if (statusEl) statusEl.textContent = "teacher: " + code;
       }
 
-      // 3) Чат – общий
-      const input = document.getElementById("chatInput");
-      const sendBtn = document.getElementById("chatSendBtn");
-      const messages = document.getElementById("chatMessages");
-      const attachBox = document.getElementById("chatAttachments");
-      const fileInput = document.getElementById("chatFileInput");
+      // -------- UI: чат, микрофон, mute remote, качество, перетаскивание --------
 
-      if (input && sendBtn && messages) {
-        let pendingFiles = [];
-
-        if (fileInput) {
-          fileInput.addEventListener("change", () => {
-            pendingFiles = Array.from(fileInput.files || []);
-            renderAttachments();
-          });
-        }
-
-        function renderAttachments() {
-          if (!attachBox) return;
-          attachBox.innerHTML = "";
-          pendingFiles.forEach((f) => {
-            const pill = document.createElement("div");
-            pill.className = "chat-attachment-pill";
-            pill.textContent = "📎 " + f.name;
-            attachBox.appendChild(pill);
-          });
-        }
-
-        function addMessage(text, from = "Вы") {
-          const wrap = document.createElement("div");
-          wrap.className = "chat-message " + (from === "Вы" ? "me" : "other");
-
-          const meta = document.createElement("div");
-          meta.className = "chat-message-meta";
-          meta.textContent = from;
-
-          const body = document.createElement("div");
-          body.className = "chat-message-text";
-          body.textContent = text;
-
-          wrap.appendChild(meta);
-          wrap.appendChild(body);
-          messages.appendChild(wrap);
-          messages.scrollTop = messages.scrollHeight;
-        }
-
-        // экспортируем для ws.onmessage
-        window.__teacherAddMessage = addMessage;
-
-        function sendChatMessage() {
-          const text = (input.value || "").trim();
-          if (!text && (!pendingFiles || pendingFiles.length === 0)) return;
-
-          if (text) addMessage(text, "Вы");
-
-          if (text) {
-            send({
-              type: "chat",
-              role: ROLE,
-              text
-            });
-          }
-
-          pendingFiles = [];
-          renderAttachments();
-          input.value = "";
-        }
-
-        sendBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          sendChatMessage();
-        });
-
-        input.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendChatMessage();
-          }
-        });
-
-        // кнопки микрофона / скрыть себя
+      function initUIControls() {
+        const input = document.getElementById("chatInput");
+        const sendBtn = document.getElementById("chatSendBtn");
+        const messages = document.getElementById("chatMessages");
+        const attachBox = document.getElementById("chatAttachments");
+        const fileInput = document.getElementById("chatFileInput");
         const micBtn = document.getElementById("micToggleBtn");
         const toggleSelfBtn = document.getElementById("toggleSelfBtn");
         const selfBox = document.getElementById("selfBox");
+        const swapBtn = document.getElementById("swapBtn");
+        const fsBtn = document.getElementById("fullscreenBtn");
+        const fsIcon = document.getElementById("fsIcon");
+        const videoPanel = document.getElementById("videoPanel");
+        const muteRemoteBtn = document.getElementById("muteRemoteBtn");
+        const qualitySelect = document.getElementById("qualitySelectTeacher");
 
+        // перетаскивание маленького окна
+        if (selfBox) initDraggable(selfBox);
+
+        // микрофон
         if (micBtn) {
           micBtn.addEventListener("click", () => {
             if (!localStream) return;
-            localStream.getAudioTracks().forEach((t) => {
-              t.enabled = !t.enabled;
-            });
-            const enabled = localStream.getAudioTracks().some((t) => t.enabled);
-            micBtn.querySelector(".dot-mic").style.backgroundColor = enabled ? "#22c55e" : "#ef4444";
+            localStream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
+            const enabled = localStream.getAudioTracks().some(t => t.enabled);
+            micBtn.querySelector(".dot-mic").style.backgroundColor =
+              enabled ? "#22c55e" : "#ef4444";
           });
         }
 
+        // скрыть/показать себя
         if (toggleSelfBtn && selfBox) {
           toggleSelfBtn.addEventListener("click", () => {
             const hidden = selfBox.style.display === "none";
@@ -912,12 +839,39 @@
           });
         }
 
-        // swap / fullscreen
-        const swapBtn = document.getElementById("swapBtn");
-        const fsBtn = document.getElementById("fullscreenBtn");
-        const fsIcon = document.getElementById("fsIcon");
-        const videoPanel = document.getElementById("videoPanel");
+        // mute remote (звук ученика)
+        if (muteRemoteBtn && mainVideo) {
+          mainVideo.muted = false;
+          muteRemoteBtn.addEventListener("click", () => {
+            mainVideo.muted = !mainVideo.muted;
+            muteRemoteBtn.textContent = mainVideo.muted ? "🔇 Звук ученика" : "🔊 Звук ученика";
+          });
+        }
 
+        // качество
+        if (qualitySelect && localStream) {
+          applyQuality(qualitySelect.value);
+          qualitySelect.addEventListener("change", () => {
+            applyQuality(qualitySelect.value);
+          });
+        }
+
+        function applyQuality(level) {
+          if (!localStream) return;
+          const track = localStream.getVideoTracks()[0];
+          if (!track || !track.applyConstraints) return;
+          let constraints;
+          if (level === "low") {
+            constraints = { width: 640, height: 360, frameRate: 20 };
+          } else if (level === "medium") {
+            constraints = { width: 960, height: 540, frameRate: 25 };
+          } else {
+            constraints = { width: 1280, height: 720, frameRate: 30 };
+          }
+          track.applyConstraints(constraints).catch(console.warn);
+        }
+
+        // swap (меняем, кто в большом окне)
         if (swapBtn) {
           swapBtn.addEventListener("click", () => {
             if (!localStream || !remoteStream) return;
@@ -932,6 +886,7 @@
           });
         }
 
+        // fullscreen
         if (fsBtn && videoPanel) {
           fsBtn.addEventListener("click", async () => {
             try {
@@ -946,24 +901,123 @@
               console.warn("FS error", e);
             }
           });
-
           document.addEventListener("fullscreenchange", () => {
-            if (!document.fullscreenElement) {
-              fsIcon.textContent = "⛶";
+            if (!document.fullscreenElement) fsIcon.textContent = "⛶";
+          });
+        }
+
+        // чат
+        if (input && sendBtn && messages) {
+          let pendingFiles = [];
+
+          if (fileInput) {
+            fileInput.addEventListener("change", () => {
+              pendingFiles = Array.from(fileInput.files || []);
+              renderAttachments();
+            });
+          }
+
+          function renderAttachments() {
+            if (!attachBox) return;
+            attachBox.innerHTML = "";
+            pendingFiles.forEach(f => {
+              const pill = document.createElement("div");
+              pill.className = "chat-attachment-pill";
+              pill.textContent = "📎 " + f.name;
+              attachBox.appendChild(pill);
+            });
+          }
+
+          function addMessageLocal(text, from = "Вы") {
+            const wrap = document.createElement("div");
+            wrap.className = "chat-message " + (from === "Вы" ? "me" : "other");
+
+            const meta = document.createElement("div");
+            meta.className = "chat-message-meta";
+            meta.textContent = from;
+
+            const body = document.createElement("div");
+            body.className = "chat-message-text";
+            body.textContent = text;
+
+            wrap.appendChild(meta);
+            wrap.appendChild(body);
+            messages.appendChild(wrap);
+            messages.scrollTop = messages.scrollHeight;
+          }
+
+          window.__teacherAddMessage = addMessageLocal;
+
+          function sendChatMessage() {
+            const text = (input.value || "").trim();
+            if (!text && (!pendingFiles || pendingFiles.length === 0)) return;
+
+            if (text) addMessageLocal(text, "Вы");
+            if (text) send({ type: "chat", role: ROLE, text });
+
+            pendingFiles = [];
+            renderAttachments();
+            input.value = "";
+          }
+
+          sendBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            sendChatMessage();
+          });
+
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendChatMessage();
             }
           });
         }
       }
 
       function addMessage(text, from = "Ученик") {
-        if (window.__teacherAddMessage) {
-          window.__teacherAddMessage(text, from);
-        } else {
-          console.log("chat:", from, text);
+        if (window.__teacherAddMessage) window.__teacherAddMessage(text, from);
+      }
+
+      function initDraggable(el) {
+        let dragging = false;
+        let startX = 0, startY = 0, offsetX = 0, offsetY = 0;
+
+        function onDown(e) {
+          dragging = true;
+          const rect = el.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          offsetX = clientX - rect.left;
+          offsetY = clientY - rect.top;
+          // переключаемся на координаты left/top
+          el.style.right = "auto";
+          el.style.bottom = "auto";
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+          document.addEventListener("touchmove", onMove, { passive: false });
+          document.addEventListener("touchend", onUp);
         }
+
+        function onMove(e) {
+          if (!dragging) return;
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          el.style.left = (clientX - offsetX) + "px";
+          el.style.top = (clientY - offsetY) + "px";
+        }
+
+        function onUp() {
+          dragging = false;
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+          document.removeEventListener("touchmove", onMove);
+          document.removeEventListener("touchend", onUp);
+        }
+
+        el.addEventListener("mousedown", onDown);
+        el.addEventListener("touchstart", onDown, { passive: false });
       }
     })();
   </script>
 </body>
-
 </html>
