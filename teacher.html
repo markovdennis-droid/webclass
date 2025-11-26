@@ -2,49 +2,48 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>WebClass — Учитель</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebClass • Teacher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
-      --bg-main: #050816;
-      --bg-panel: #0b1020;
-      --bg-panel-soft: #11172b;
-      --accent: #4f46e5;
-      --accent-soft: rgba(79, 70, 229, 0.25);
-      --text-main: #f9fafb;
-      --text-dim: #9ca3af;
+      --bg-main: radial-gradient(circle at top, #0f172a 0, #020617 38%, #000 100%);
+      --card-bg: rgba(15, 23, 42, 0.96);
+      --card-border: rgba(30, 64, 175, 0.4);
+      --accent: #f97316;
+      --accent-soft: rgba(249, 115, 22, 0.2);
+      --accent-2: #4f46e5;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
       --danger: #ef4444;
-      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.95);
-      --shadow-pip: 0 16px 40px rgba(15, 23, 42, 1);
-      --border-soft: 1px solid rgba(148, 163, 184, 0.4);
       --radius-lg: 18px;
-      --radius-xl: 22px;
+      --radius-pill: 999px;
     }
 
     * {
       box-sizing: border-box;
+    }
+
+    html,
+    body {
       margin: 0;
       padding: 0;
+      height: 100%;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: #020617;
+      color: var(--text-main);
     }
 
     body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-        sans-serif;
-      background: radial-gradient(circle at top, #1f2937 0, #020617 52%, #000 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      align-items: stretch;
-      justify-content: center;
+      background-image: var(--bg-main);
+      background-attachment: fixed;
     }
 
     .app-shell {
-      width: 100%;
-      max-width: 1320px;
-      margin: 10px auto;
-      padding: 10px 10px 24px;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      padding: 10px 16px 16px;
       gap: 10px;
     }
 
@@ -53,8 +52,6 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 6px;
-      flex-wrap: wrap;
     }
 
     .brand-block {
@@ -64,343 +61,291 @@
     }
 
     .brand-logo {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 20%, #facc15 0, #f97316 32%, #111827 100%);
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      background: radial-gradient(circle at 20% 0, #f97316, #4f46e5);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
-      font-size: 16px;
-      color: #0f172a;
-      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.6),
-        0 12px 35px rgba(250, 204, 21, 0.9);
-    }
-
-    .brand-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+      font-size: 18px;
+      color: #020617;
+      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.75),
+        0 10px 25px rgba(15, 23, 42, 0.8);
     }
 
     .brand-text strong {
-      font-size: 15px;
+      display: block;
+      font-size: 16px;
     }
 
     .brand-text span {
+      display: block;
       font-size: 12px;
-      color: var(--text-dim);
+      color: var(--text-soft);
     }
 
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
+      flex-wrap: wrap;
       justify-content: flex-end;
-      flex: 1;
-      min-width: 260px;
     }
 
     .invite-block {
-      padding: 6px 10px;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      max-width: 520px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      padding: 8px 10px;
+      border-radius: 14px;
+      background: rgba(15, 23, 42, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      min-width: 240px;
+      max-width: 480px;
     }
 
     .invite-title {
-      font-size: 12px;
-      color: var(--text-dim);
+      font-size: 11px;
+      color: var(--text-soft);
+      margin-bottom: 4px;
     }
 
     .invite-url-row {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
-    #inviteUrl {
-      font-size: 12px;
-      word-break: break-all;
-      color: #e5e7eb;
-      padding: 4px 6px;
-      border-radius: 8px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148, 163, 184, 0.6);
+    .invite-url-row #inviteUrl {
       flex: 1;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px dashed rgba(148, 163, 184, 0.5);
     }
 
-    #copyInviteBtn {
-      border-radius: 999px;
+    .invite-url-row button {
+      border-radius: var(--radius-pill);
       border: none;
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
-      color: #e5e7eb;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      color: #0f172a;
       font-size: 12px;
       padding: 5px 10px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      white-space: nowrap;
+      box-shadow: 0 4px 18px rgba(248, 250, 252, 0.16);
     }
 
-    #copyInviteBtn span {
-      font-size: 14px;
+    .invite-url-row button span {
+      font-size: 15px;
     }
 
     .app-main {
+      flex: 1;
       display: grid;
-      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
-      gap: 14px;
-      align-items: stretch;
+      grid-template-columns: minmax(0, 3fr) minmax(260px, 1.2fr);
+      gap: 12px;
+      min-height: 0;
     }
 
     .video-panel {
-      position: relative;
-      border-radius: var(--radius-xl);
-      background: radial-gradient(circle at top left, rgba(96, 165, 250, 0.22), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.28), transparent 60%),
-        var(--bg-panel);
-      box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148, 163, 184, 0.48);
-      padding: 10px 10px 14px;
+      background: rgba(15, 23, 42, 0.94);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+      padding: 10px 12px 12px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      overflow: hidden;
+      position: relative;
     }
 
     .video-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      cursor: default;
-      user-select: none;
-      padding: 4px 4px 4px 6px;
-      border-radius: 999px;
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(17, 24, 39, 0.88));
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      gap: 10px;
     }
 
     .video-header-left {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
     }
 
     .status-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
-    }
-
-    .video-header-text {
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #16a34a;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
     }
 
     .video-header-text strong {
-      font-size: 13px;
+      display: block;
+      font-size: 14px;
     }
 
     .video-header-text span {
-      font-size: 11px;
-      color: var(--text-dim);
+      display: block;
+      font-size: 12px;
+      color: var(--text-soft);
     }
 
     .video-header-actions {
       display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .swap-btn,
+    .fs-btn {
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
     }
 
-    .fs-btn,
-    .swap-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 12px;
-      cursor: pointer;
-      padding: 4px 8px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
     .fs-btn-icon {
-      font-size: 16px;
+      font-size: 14px;
     }
 
     .video-body {
-      position: relative;
-      border-radius: 18px;
+      border-radius: 14px;
+      background: radial-gradient(circle at top left, #1f2937, #020617);
       padding: 8px;
-      background:
-        radial-gradient(circle at top left, rgba(96, 165, 250, 0.2), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.22), transparent 60%),
-        #020617;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      box-shadow: var(--shadow-soft);
+      position: relative;
     }
 
     .main-video-wrapper {
       position: relative;
       border-radius: 14px;
       overflow: hidden;
+      border: 1px solid rgba(30, 64, 175, 0.7);
       background: #000;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
     }
 
     #mainVideo {
       width: 100%;
+      height: 100%;
+      max-height: calc(100vh - 220px);
       display: block;
-      border-radius: 14px;
-      background: #000;
-      aspect-ratio: 16/9;
       object-fit: cover;
+      background: #000;
     }
 
     .self-box {
       position: absolute;
-      right: 10px;
-      bottom: 10px;
-      width: 26vw;
-      max-width: 260px;
-      min-width: 180px;
-      background: radial-gradient(circle at top, rgba(250, 204, 21, 0.2), transparent 60%),
-        #020617;
+      right: 12px;
+      bottom: 12px;
+      width: 260px;
+      max-width: 32vw;
       border-radius: 16px;
-      border: 1px solid rgba(250, 204, 21, 0.8);
-      box-shadow: var(--shadow-pip);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
       overflow: hidden;
-      backdrop-filter: blur(12px);
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(6px);
     }
 
-    .self-box.hidden {
-      display: none;
-    }
-
-    .self-box-header {
+    .self-box-header,
+    .self-box-footer {
+      padding: 4px 8px;
+      font-size: 11px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 4px 7px;
-      font-size: 11px;
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(234, 179, 8, 0.95));
-      border-bottom: 1px solid rgba(250, 204, 21, 0.75);
-      user-select: none;
+      color: var(--text-soft);
+      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), #020617);
+    }
+
+    .self-box-header span:first-child {
+      font-weight: 500;
+      color: var(--text-main);
     }
 
     #selfVideo {
       width: 100%;
-      display: block;
-      background: #020617;
-      aspect-ratio: 4/3;
+      height: 150px;
       object-fit: cover;
+      background: #020617;
     }
 
-    .self-box-footer {
-      padding: 4px 6px 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(234, 179, 8, 0.94));
-      border-top: 1px solid rgba(250, 204, 21, 0.7);
-    }
-
-    .pill-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.65);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
+    .pill-btn,
+    .toggle-self-btn {
+      border-radius: var(--radius-pill);
+      border: none;
+      padding: 4px 9px;
       font-size: 11px;
-      padding: 3px 8px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 4px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
     }
 
-    .pill-btn .dot-mic {
+    .pill-btn {
+      border: 1px solid rgba(148, 163, 184, 0.7);
+    }
+
+    .dot-mic {
       width: 7px;
       height: 7px;
-      border-radius: 50%;
-      background: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
-    }
-
-    .pill-btn.muted .dot-mic {
-      background: #ef4444;
-      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.35);
-    }
-
-    .toggle-self-btn {
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.92);
-      color: #e5e7eb;
-      font-size: 11px;
-      padding: 3px 6px;
-      cursor: pointer;
+      background: #22c55e;
     }
 
     .fs-hint {
-      margin-top: 4px;
+      margin-top: 5px;
       font-size: 11px;
-      color: var(--text-dim);
+      color: var(--text-soft);
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
 
     .icon-kbd {
-      padding: 2px 5px;
-      border-radius: 4px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
+      border-radius: 6px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 0 5px;
       font-size: 10px;
-      background: rgba(15, 23, 42, 0.95);
     }
 
     .side-panel {
-      position: relative;
-      border-radius: var(--radius-xl);
-      background: var(--bg-panel-soft);
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      box-shadow: var(--shadow-soft);
-      padding: 10px 10px 12px;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(30, 64, 175, 0.45);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
+      padding: 10px;
       display: flex;
       flex-direction: column;
       gap: 8px;
-    }
-
-    .side-header {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      user-select: none;
-      padding: 4px 6px;
-      border-radius: 10px;
-      background: linear-gradient(90deg, rgba(15, 23, 42, 0.94), rgba(17, 24, 39, 0.88));
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      min-height: 0;
     }
 
     .side-header h2 {
-      font-size: 13px;
       margin: 0;
+      font-size: 15px;
     }
 
     .side-header span {
-      font-size: 11px;
-      color: var(--text-dim);
+      font-size: 12px;
+      color: var(--text-soft);
     }
 
     .chat-panel {
@@ -408,71 +353,75 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      border-radius: 14px;
-      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.95);
-      overflow: hidden;
+      min-height: 0;
     }
 
     .chat-messages {
       flex: 1;
-      padding: 10px 10px 6px;
+      min-height: 0;
+      border-radius: 12px;
+      background: radial-gradient(circle at top, #020617, #020617);
+      border: 1px solid rgba(30, 64, 175, 0.6);
+      padding: 6px 6px 8px;
       overflow-y: auto;
-      font-size: 13px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
     .chat-message {
-      margin-bottom: 8px;
-      padding: 7px 8px;
-      border-radius: 12px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.5);
+      max-width: 92%;
+      padding: 6px 8px;
+      border-radius: 11px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(30, 64, 175, 0.5);
     }
 
     .chat-message.me {
-      background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.36), rgba(17, 24, 39, 0.95));
-      border-color: rgba(250, 204, 21, 0.85);
+      align-self: flex-end;
+      background: radial-gradient(circle at top, #f97316, #ea580c);
+      border-color: transparent;
+      color: #0f172a;
     }
 
-    .chat-message-header {
-      display: flex;
-      justify-content: space-between;
+    .chat-message.other {
+      align-self: flex-start;
+    }
+
+    .chat-message-meta {
+      font-size: 10px;
+      opacity: 0.8;
       margin-bottom: 2px;
-      font-size: 11px;
-      color: var(--text-dim);
     }
 
-    .chat-message-body {
-      font-size: 13px;
+    .chat-message-text {
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
 
     .chat-attachments {
-      padding: 4px 8px;
-      border-top: 1px solid rgba(148, 163, 184, 0.35);
       min-height: 0;
+      max-height: 56px;
+      overflow-y: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      font-size: 11px;
     }
 
     .chat-attachment-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      margin: 2px;
-      padding: 3px 7px;
       border-radius: 999px;
-      background: rgba(250, 204, 21, 0.2);
-      border: 1px solid rgba(250, 204, 21, 0.7);
-      font-size: 11px;
-      color: #fefce8;
+      padding: 2px 7px;
+      background: rgba(30, 64, 175, 0.25);
+      border: 1px solid rgba(96, 165, 250, 0.5);
     }
 
     .chat-footer {
       display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 8px 8px;
-      border-top: 1px solid rgba(148, 163, 184, 0.45);
-      background: rgba(15, 23, 42, 0.98);
+      padding-top: 2px;
     }
 
     .file-btn-label {
@@ -608,7 +557,7 @@
       <aside class="side-panel" id="sidePanel">
         <div class="side-header">
           <h2>Чат урока</h2>
-          <span>Локальный чат (заметки учителя)</span>
+          <span>Общий чат с учеником</span>
         </div>
 
         <div class="chat-panel">
@@ -621,7 +570,7 @@
               type="text"
               id="chatInput"
               class="chat-input"
-              placeholder="Написать заметку к уроку..."
+              placeholder="Написать сообщение..."
             />
             <button class="chat-send-btn" id="chatSendBtn">
               <span>➤</span> Отпр.
@@ -632,305 +581,389 @@
     </main>
   </div>
 
-  <!-- WebRTC + генерация ссылки + локальный чат -->
+  <!-- WebRTC + генерация ссылки + общий чат -->
   <script>
-  (function () {
-    const ROLE = "teacher";
-    const params = new URLSearchParams(window.location.search);
-    const roomId = params.get("room") || "default-room";
+    (function () {
+      const ROLE = "teacher";
+      const params = new URLSearchParams(window.location.search);
+      const roomId = params.get("room") || "default-room";
 
-    // 1) Генерация ссылки для ученика
-    const inviteEl = document.getElementById("inviteUrl");
-    const copyBtn = document.getElementById("copyInviteBtn");
-    if (inviteEl) {
-      const origin = window.location.origin;
-      const studentUrl = `${origin}/student.html?room=${encodeURIComponent(roomId)}`;
-      inviteEl.textContent = studentUrl;
+      // 1) Генерация ссылки для ученика
+      const inviteEl = document.getElementById("inviteUrl");
+      const copyBtn = document.getElementById("copyInviteBtn");
+      if (inviteEl) {
+        const origin = window.location.origin;
+        const studentUrl = `${origin}/student.html?room=${encodeURIComponent(roomId)}`;
+        inviteEl.textContent = studentUrl;
 
-      if (copyBtn) {
-        copyBtn.addEventListener("click", async () => {
-          try {
-            await navigator.clipboard.writeText(studentUrl);
-            const old = copyBtn.innerHTML;
-            copyBtn.innerHTML = "<span>✔</span> Скопировано";
-            setTimeout(() => (copyBtn.innerHTML = old), 1200);
-          } catch {
-            alert("Не удалось скопировать ссылку");
-          }
-        });
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async () => {
+            try {
+              await navigator.clipboard.writeText(studentUrl);
+              const old = copyBtn.innerHTML;
+              copyBtn.innerHTML = "<span>✔</span> Скопировано";
+              setTimeout(() => (copyBtn.innerHTML = old), 1200);
+            } catch {
+              alert("Не удалось скопировать ссылку");
+            }
+          });
+        }
       }
-    }
 
-    // 2) WebRTC
-    const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
-    const selfVideo = document.getElementById("selfVideo");
-    const mainVideo = document.getElementById("mainVideo");
+      // 2) WebRTC
+      const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
+      const selfVideo = document.getElementById("selfVideo");
+      const mainVideo = document.getElementById("mainVideo");
 
-    if (!selfVideo || !mainVideo) {
-      console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
-      return;
-    }
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
-      return;
-    }
-
-    let localStream = null;
-    let remoteStream = null;
-    let pc = null;
-    let ws = null;
-
-    const statusEl = createStatusBadge("teacher");
-    status("init");
-
-    start();
-
-    async function start() {
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true
-        });
-        selfVideo.srcObject = localStream;
-        status("local-stream");
-      } catch (err) {
-        console.error("gUM error:", err);
-        alert("Не удалось получить доступ к камере/микрофону.");
-        status("gUM-error");
-        return;
-      }
-      setupWebSocket();
-    }
-
-    function setupWebSocket() {
-      try {
-        ws = new WebSocket(signalingUrl);
-        status("ws-connecting");
-      } catch (err) {
-        console.error("WS create error:", err);
-        status("ws-error");
+      if (!selfVideo || !mainVideo) {
+        console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
         return;
       }
 
-      ws.onopen = () => {
-        console.log("WS open (teacher), room =", roomId);
-        status("ws-open");
-        send({ type: "ready", role: ROLE });
-      };
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
+        return;
+      }
 
-      ws.onmessage = async (event) => {
-        let msg;
+      let localStream = null;
+      let remoteStream = null;
+      let pc = null;
+      let ws = null;
+
+      const statusEl = createStatusBadge("teacher");
+      status("init");
+
+      start();
+
+      async function start() {
         try {
-          msg = JSON.parse(event.data);
-        } catch {
+          localStream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+            audio: true
+          });
+          selfVideo.srcObject = localStream;
+          status("local-stream");
+        } catch (err) {
+          console.error("gUM error:", err);
+          alert("Не удалось получить доступ к камере/микрофону.");
+          status("gUM-error");
+          return;
+        }
+        setupWebSocket();
+      }
+
+      function setupWebSocket() {
+        try {
+          ws = new WebSocket(signalingUrl);
+          status("ws-connecting");
+        } catch (err) {
+          console.error("WS create error:", err);
+          status("ws-error");
           return;
         }
 
-        if (msg.role === ROLE) return;
-        console.log("[teacher] msg:", msg.type);
+        ws.onopen = () => {
+          console.log("WS open (teacher), room =", roomId);
+          status("ws-open");
+          send({ type: "ready", role: ROLE });
+        };
 
-        switch (msg.type) {
-          case "ready":
-            // ученик подключился, инициируем звонок
-            await ensurePeerConnection();
-            await makeOffer();
-            break;
+        ws.onmessage = async (event) => {
+          let msg;
+          try {
+            msg = JSON.parse(event.data);
+          } catch {
+            return;
+          }
 
-          case "offer":
-            await ensurePeerConnection();
-            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-            const answer = await pc.createAnswer();
-            await pc.setLocalDescription(answer);
-            send({ type: "answer", sdp: pc.localDescription, role: ROLE });
-            status("answer-sent");
-            break;
+          if (msg.role === ROLE) return;
+          console.log("[teacher] msg:", msg.type);
 
-          case "answer":
-            if (!pc) return;
-            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-            status("answer-set");
-            break;
+          switch (msg.type) {
+            case "ready":
+              // ученик подключился, инициируем звонок
+              await ensurePeerConnection();
+              await makeOffer();
+              break;
 
-          case "candidate":
-            if (!pc || !msg.candidate) return;
-            try {
-              await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-              status("candidate-add");
-            } catch (err) {
-              console.warn("addIceCandidate error:", err);
-            }
-            break;
+            case "offer":
+              await ensurePeerConnection();
+              await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+              const answer = await pc.createAnswer();
+              await pc.setLocalDescription(answer);
+              send({ type: "answer", sdp: pc.localDescription, role: ROLE });
+              status("answer-sent");
+              break;
+
+            case "answer":
+              if (!pc) return;
+              await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+              status("answer-set");
+              break;
+
+            case "candidate":
+              if (!pc || !msg.candidate) return;
+              try {
+                await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+                status("candidate-add");
+              } catch (err) {
+                console.warn("addIceCandidate error:", err);
+              }
+              break;
+
+            case "chat":
+              if (msg.text) {
+                addMessage(msg.text, "Ученик");
+              }
+              break;
+          }
+        };
+
+        ws.onclose = () => {
+          console.log("WS closed (teacher)");
+          status("ws-closed");
+        };
+
+        ws.onerror = (err) => {
+          console.error("WS error (teacher):", err);
+          status("ws-error");
+        };
+      }
+
+      function send(payload) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify(payload));
         }
-      };
-
-      ws.onclose = () => {
-        console.log("WS closed (teacher)");
-        status("ws-closed");
-      };
-
-      ws.onerror = (err) => {
-        console.error("WS error (teacher):", err);
-        status("ws-error");
-      };
-    }
-
-    function send(payload) {
-      if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(JSON.stringify(payload));
       }
-    }
 
-    async function ensurePeerConnection() {
-      if (pc) return;
-      status("pc-creating");
+      async function ensurePeerConnection() {
+        if (pc) return;
+        status("pc-creating");
 
-      pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-      });
-
-      if (localStream) {
-        localStream.getTracks().forEach((track) => {
-          pc.addTrack(track, localStream);
+        pc = new RTCPeerConnection({
+          iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
         });
-      }
 
-      pc.onicecandidate = (event) => {
-        if (event.candidate) {
-          send({
-            type: "candidate",
-            candidate: event.candidate,
-            role: ROLE
+        if (localStream) {
+          localStream.getTracks().forEach((track) => {
+            pc.addTrack(track, localStream);
           });
         }
-      };
 
-      pc.ontrack = (event) => {
-        const stream = event.streams[0];
-        console.log("[teacher] ontrack", stream);
-        if (!remoteStream) {
-          remoteStream = new MediaStream();
-          mainVideo.srcObject = remoteStream; // сюда придёт ученик
+        pc.onicecandidate = (event) => {
+          if (event.candidate) {
+            send({
+              type: "candidate",
+              candidate: event.candidate,
+              role: ROLE
+            });
+          }
+        };
+
+        pc.ontrack = (event) => {
+          const stream = event.streams[0];
+          console.log("[teacher] ontrack", stream);
+          if (!remoteStream) {
+            remoteStream = new MediaStream();
+            mainVideo.srcObject = remoteStream; // сюда придёт ученик
+          }
+          stream.getTracks().forEach((track) => {
+            remoteStream.addTrack(track);
+          });
+          status("remote-track");
+        };
+      }
+
+      async function makeOffer() {
+        if (!pc) return;
+        try {
+          const offer = await pc.createOffer();
+          await pc.setLocalDescription(offer);
+          send({ type: "offer", sdp: pc.localDescription, role: ROLE });
+          status("offer-sent");
+        } catch (err) {
+          console.error("offer error:", err);
+          status("offer-error");
         }
-        stream.getTracks().forEach((track) => {
-          remoteStream.addTrack(track);
-        });
-        status("remote-track");
-      };
-    }
-
-    async function makeOffer() {
-      if (!pc) return;
-      try {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        send({ type: "offer", sdp: pc.localDescription, role: ROLE });
-        status("offer-sent");
-      } catch (err) {
-        console.error("offer error:", err);
-        status("offer-error");
-      }
-    }
-
-    function createStatusBadge(label) {
-      const el = document.createElement("div");
-      el.style.position = "fixed";
-      el.style.left = "8px";
-      el.style.bottom = "8px";
-      el.style.zIndex = "9999";
-      el.style.fontSize = "10px";
-      el.style.padding = "3px 6px";
-      el.style.borderRadius = "999px";
-      el.style.background = "rgba(15,23,42,0.9)";
-      el.style.border = "1px solid rgba(148,163,184,.6)";
-      el.style.color = "#e5e7eb";
-      el.textContent = label + ": …";
-      document.body.appendChild(el);
-      return el;
-    }
-
-    function status(code) {
-      if (statusEl) statusEl.textContent = "teacher: " + code;
-    }
-
-    // 3) Локальный чат
-    const input = document.getElementById("chatInput");
-    const sendBtn = document.getElementById("chatSendBtn");
-    const messages = document.getElementById("chatMessages");
-    const attachBox = document.getElementById("chatAttachments");
-    const fileInput = document.getElementById("chatFileInput");
-
-    if (input && sendBtn && messages) {
-      let pendingFiles = [];
-
-      if (fileInput) {
-        fileInput.addEventListener("change", () => {
-          pendingFiles = Array.from(fileInput.files || []);
-          renderAttachments();
-        });
       }
 
-      function renderAttachments() {
-        if (!attachBox) return;
-        attachBox.innerHTML = "";
-        pendingFiles.forEach((f) => {
-          const pill = document.createElement("div");
-          pill.className = "chat-attachment-pill";
-          pill.textContent = "📎 " + f.name;
-          attachBox.appendChild(pill);
-        });
+      function createStatusBadge(label) {
+        const el = document.createElement("div");
+        el.style.position = "fixed";
+        el.style.left = "8px";
+        el.style.bottom = "8px";
+        el.style.zIndex = "9999";
+        el.style.fontSize = "10px";
+        el.style.padding = "3px 6px";
+        el.style.borderRadius = "999px";
+        el.style.background = "rgba(15,23,42,0.9)";
+        el.style.border = "1px solid rgba(148,163,184,.6)";
+        el.style.color = "#e5e7eb";
+        el.textContent = label + ": …";
+        document.body.appendChild(el);
+        return el;
       }
 
-      function addMessage(text, from = "Вы") {
-        const wrap = document.createElement("div");
-        wrap.className = "chat-message me";
+      function status(code) {
+        if (statusEl) statusEl.textContent = "teacher: " + code;
+      }
 
-        const header = document.createElement("div");
-        header.className = "chat-message-header";
-        const time = new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit"
-        });
-        header.innerHTML = `<span>${from}</span><span>${time}</span>`;
-        wrap.appendChild(header);
+      // 3) Чат – общий
+      const input = document.getElementById("chatInput");
+      const sendBtn = document.getElementById("chatSendBtn");
+      const messages = document.getElementById("chatMessages");
+      const attachBox = document.getElementById("chatAttachments");
+      const fileInput = document.getElementById("chatFileInput");
 
-        if (text) {
+      if (input && sendBtn && messages) {
+        let pendingFiles = [];
+
+        if (fileInput) {
+          fileInput.addEventListener("change", () => {
+            pendingFiles = Array.from(fileInput.files || []);
+            renderAttachments();
+          });
+        }
+
+        function renderAttachments() {
+          if (!attachBox) return;
+          attachBox.innerHTML = "";
+          pendingFiles.forEach((f) => {
+            const pill = document.createElement("div");
+            pill.className = "chat-attachment-pill";
+            pill.textContent = "📎 " + f.name;
+            attachBox.appendChild(pill);
+          });
+        }
+
+        function addMessage(text, from = "Вы") {
+          const wrap = document.createElement("div");
+          wrap.className = "chat-message " + (from === "Вы" ? "me" : "other");
+
+          const meta = document.createElement("div");
+          meta.className = "chat-message-meta";
+          meta.textContent = from;
+
           const body = document.createElement("div");
-          body.className = "chat-message-body";
+          body.className = "chat-message-text";
           body.textContent = text;
+
+          wrap.appendChild(meta);
           wrap.appendChild(body);
+          messages.appendChild(wrap);
+          messages.scrollTop = messages.scrollHeight;
         }
 
-        pendingFiles.forEach((f) => {
-          const pill = document.createElement("div");
-          pill.className = "chat-attachment-pill";
-          pill.textContent = "📎 " + f.name;
-          wrap.appendChild(pill);
+        // экспортируем для ws.onmessage
+        window.__teacherAddMessage = addMessage;
+
+        function sendChatMessage() {
+          const text = (input.value || "").trim();
+          if (!text && (!pendingFiles || pendingFiles.length === 0)) return;
+
+          if (text) addMessage(text, "Вы");
+
+          if (text) {
+            send({
+              type: "chat",
+              role: ROLE,
+              text
+            });
+          }
+
+          pendingFiles = [];
+          renderAttachments();
+          input.value = "";
+        }
+
+        sendBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          sendChatMessage();
         });
 
-        messages.appendChild(wrap);
-        messages.scrollTop = messages.scrollHeight;
-      }
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            sendChatMessage();
+          }
+        });
 
-      function sendMsg() {
-        const text = input.value.trim();
-        if (!text && pendingFiles.length === 0) return;
-        addMessage(text);
-        input.value = "";
-        pendingFiles = [];
-        if (fileInput) fileInput.value = "";
-        renderAttachments();
-      }
+        // кнопки микрофона / скрыть себя
+        const micBtn = document.getElementById("micToggleBtn");
+        const toggleSelfBtn = document.getElementById("toggleSelfBtn");
+        const selfBox = document.getElementById("selfBox");
 
-      sendBtn.addEventListener("click", sendMsg);
-      input.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          sendMsg();
+        if (micBtn) {
+          micBtn.addEventListener("click", () => {
+            if (!localStream) return;
+            localStream.getAudioTracks().forEach((t) => {
+              t.enabled = !t.enabled;
+            });
+            const enabled = localStream.getAudioTracks().some((t) => t.enabled);
+            micBtn.querySelector(".dot-mic").style.backgroundColor = enabled ? "#22c55e" : "#ef4444";
+          });
         }
-      });
-    }
-  })();
+
+        if (toggleSelfBtn && selfBox) {
+          toggleSelfBtn.addEventListener("click", () => {
+            const hidden = selfBox.style.display === "none";
+            selfBox.style.display = hidden ? "flex" : "none";
+            toggleSelfBtn.textContent = hidden ? "🙈 Скрыть" : "👁 Показать";
+          });
+        }
+
+        // swap / fullscreen
+        const swapBtn = document.getElementById("swapBtn");
+        const fsBtn = document.getElementById("fullscreenBtn");
+        const fsIcon = document.getElementById("fsIcon");
+        const videoPanel = document.getElementById("videoPanel");
+
+        if (swapBtn) {
+          swapBtn.addEventListener("click", () => {
+            if (!localStream || !remoteStream) return;
+            const mainIsRemote = mainVideo.srcObject === remoteStream;
+            if (mainIsRemote) {
+              mainVideo.srcObject = localStream;
+              selfVideo.srcObject = remoteStream;
+            } else {
+              mainVideo.srcObject = remoteStream;
+              selfVideo.srcObject = localStream;
+            }
+          });
+        }
+
+        if (fsBtn && videoPanel) {
+          fsBtn.addEventListener("click", async () => {
+            try {
+              if (!document.fullscreenElement) {
+                await videoPanel.requestFullscreen();
+                fsIcon.textContent = "🡼";
+              } else {
+                await document.exitFullscreen();
+                fsIcon.textContent = "⛶";
+              }
+            } catch (e) {
+              console.warn("FS error", e);
+            }
+          });
+
+          document.addEventListener("fullscreenchange", () => {
+            if (!document.fullscreenElement) {
+              fsIcon.textContent = "⛶";
+            }
+          });
+        }
+      }
+
+      function addMessage(text, from = "Ученик") {
+        if (window.__teacherAddMessage) {
+          window.__teacherAddMessage(text, from);
+        } else {
+          console.log("chat:", from, text);
+        }
+      }
+    })();
   </script>
 </body>
+
 </html>
