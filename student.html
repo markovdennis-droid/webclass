@@ -4,389 +4,282 @@
     <meta charset="UTF-8">
     <title>WebClass — Комната ученика</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg-grad: linear-gradient(145deg, #020617 0%, #0b1635 45%, #020617 100%);
+            --panel: rgba(15,23,42,0.96);
+            --panel-soft: rgba(15,23,42,0.9);
+            --border: #1e293b;
+            --accent: #4f46e5;
+            --accent-soft: rgba(79,70,229,0.2);
+            --text-main: #e5e7eb;
+            --text-muted: #9ca3af;
+        }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-grad);
+            background-attachment: fixed;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+        }
+        .card {
+            background: radial-gradient(circle at top left, #020617 0%, #020617 55%, #000 100%);
+            backdrop-filter: blur(18px);
+            padding: 20px 22px 24px;
+            border-radius: 22px;
+            width: 1180px;
+            max-width: 96vw;
+            border: 1px solid rgba(148,163,184,0.25);
+            box-shadow: 0 24px 55px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .top-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+            align-items: baseline;
+        }
+        h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+        .room {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .bottom-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 1fr);
+            gap: 14px;
+            align-items: stretch;
+        }
+        .video-column {
+            background: var(--panel);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 10px 10px 12px;
+            display: flex;
+            flex-direction: column;
+            min-height: 340px;
+        }
+        .video-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .video-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .viewport {
+            flex: 1;
+            border-radius: 14px;
+            background: radial-gradient(circle at top, #020617 0%, #000 100%);
+            border: 1px solid rgba(30,64,175,0.7);
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 9 / 16;
+            align-self: center;
+            width: 100%;
+            max-width: 300px;
+        }
+        .viewport video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+            display: block;
+        }
+        .video-toolbar {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+        .icon-btn {
+            width: 26px;
+            height: 26px;
+            border-radius: 999px;
+            border: 1px solid rgba(148,163,184,0.45);
+            background: rgba(15,23,42,0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+        .icon-btn:hover {
+            border-color: var(--accent);
+            color: var(--text-main);
+        }
+        .video-placeholder {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 12px;
+            padding: 0 12px;
+            pointer-events: none;
+        }
+        .video-placeholder b {
+            font-size: 16px;
+            color: var(--text-main);
+        }
 
-<style>
-/* ---------- ОБЩИЙ ФОН, КАК У УЧИТЕЛЯ ---------- */
-body {
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
-    background-attachment: fixed;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    color: #f1f5f9;
-}
-
-/* ---------- ОСНОВНАЯ КАРТОЧКА ---------- */
-.card {
-    background: rgba(255,255,255,0.06);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    padding: 20px 20px 24px;
-    border-radius: 18px;
-    width: 1180px;
-    max-width: 96vw;
-    border: 1px solid rgba(255,255,255,0.1);
-    box-shadow: 0 25px 50px rgba(0,0,0,0.45);
-}
-
-/* ---------- ВЕРХНЯЯ СТРОКА ---------- */
-.top-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 6px;
-    align-items: baseline;
-    margin-bottom: 12px;
-}
-
-h2 {
-    margin: 0;
-    font-size: 22px;
-}
-
-.room {
-    font-size: 13px;
-    opacity: 0.8;
-}
-
-/* ---------- НИЖНИЙ БЛОК ---------- */
-.bottom-row {
-    display: flex;
-    gap: 18px;
-    align-items: stretch;
-}
-
-/* ---------- ВИДЕО-КОЛОНКА ---------- */
-.video-column {
-    flex: 2.7;
-    background: rgba(15,23,42,0.92);
-    border-radius: 16px;
-    padding: 14px;
-    border: 1px solid rgba(148,163,184,0.25);
-    color: #e5e7eb;
-    display: flex;
-    flex-direction: column;
-}
-
-.video-title {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 10px;
-}
-
-.video-wrapper {
-    position: relative;
-    border-radius: 14px;
-    overflow: visible;
-    background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
-    padding: 0;
-    min-height: 420px;
-    display: flex;
-    align-items: stretch;
-    justify-content: center;
-}
-
-/* ---------- БОЛЬШОЕ ОКНО (УЧИТЕЛЬ) ---------- */
-.remote-box {
-    border-radius: 12px;
-    background: rgba(15,23,42,0.90);
-    border: 1px solid rgba(129,140,248,0.55);
-    height: 100%;
-    min-height: 320px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #e5e7eb;
-    font-size: 14px;
-    text-align: center;
-    padding: 0;
-    resize: both;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-.remote-box video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background: #000;
-}
-
-.remote-placeholder {
-    position: absolute;
-    text-align: center;
-    pointer-events: none;
-}
-
-.remote-label {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.8;
-    margin-bottom: 6px;
-}
-
-.remote-name {
-    font-size: 19px;
-    font-weight: 600;
-    margin-bottom: 6px;
-}
-
-.remote-sub {
-    font-size: 12px;
-    opacity: 0.9;
-    max-width: 280px;
-}
-
-/* ---------- МАЛЕНЬКОЕ ОКНО (УЧЕНИК) ---------- */
-.self-box {
-    position: absolute;
-    right: 14px;
-    bottom: 14px;
-    width: 28%;
-    min-width: 150px;
-    border-radius: 10px;
-    background: rgba(15,23,42,0.98);
-    border: 1px solid rgba(148,163,184,0.65);
-    padding: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    font-size: 12px;
-    color: #e5e7eb;
-    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-    z-index: 20;
-}
-
-.self-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    opacity: 0.8;
-    font-size: 11px;
-    cursor: move;
-}
-
-.self-tag {
-    font-weight: 600;
-}
-
-.self-preview {
-    margin-top: 4px;
-    border-radius: 7px;
-    background: linear-gradient(135deg, #22c55e, #6366f1);
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    text-align: center;
-    overflow: hidden;
-}
-
-.self-preview video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background: #000;
-}
-
-/* ---------- ТЕКСТ И КНОПКА ---------- */
-.hint {
-    font-size: 13px;
-    opacity: 0.9;
-    margin-top: 12px;
-}
-
-.btn-exit {
-    margin-top: 10px;
-    padding: 8px 16px;
-    background: #ef4444;
-    color: white;
-    border: none;
-    border-radius: 9px;
-    font-size: 13px;
-    cursor: pointer;
-    align-self: flex-start;
-    transition: background .2s;
-}
-
-.btn-exit:hover {
-    background: #b91c1c;
-}
-
-/* ---------- ЧАТ ---------- */
-.chat-panel {
-    flex: 0.9;
-    background: rgba(15,23,42,0.90);
-    border-radius: 16px;
-    border: 1px solid rgba(148,163,184,0.25);
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    color: #e5e7eb;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-}
-
-.chat-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    cursor: move;
-}
-
-.chat-title {
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.chat-status {
-    font-size: 11px;
-    color: #9ca3af;
-}
-
-.chat-messages {
-    flex: 1;
-    background: rgba(15,23,42,0.5);
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.07);
-    padding: 8px;
-    overflow-y: auto;
-    font-size: 13px;
-    margin-bottom: 6px;
-}
-
-.chat-empty {
-    font-size: 12px;
-    color: #9ca3af;
-    text-align: center;
-    margin-top: 18px;
-}
-
-.chat-input-row {
-    display: flex;
-    gap: 6px;
-    align-items: center;
-}
-
-.chat-input-row input[type="text"] {
-    flex: 1;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.14);
-    padding: 8px 10px;
-    font-size: 13px;
-    background: rgba(0,0,0,0.25);
-    color: #e5e7eb;
-}
-
-.chat-input-row input::placeholder {
-    color: #9ca3af;
-}
-
-.chat-send-btn {
-    padding: 8px 10px;
-    border-radius: 10px;
-    border: none;
-    background: #16a34a;
-    color: white;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-.chat-send-btn:hover {
-    background: #15803d;
-}
-
-.chat-attach {
-    width: 32px;
-    height: 32px;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    cursor: pointer;
-    background: rgba(255,255,255,0.05);
-    color: #e5e7eb;
-}
-
-.chat-attach:hover {
-    background: rgba(255,255,255,0.12);
-}
-
-.chat-note {
-    font-size: 11px;
-    color: #9ca3af;
-    margin-top: 2px;
-}
-
-/* ---------- СООБЩЕНИЯ ---------- */
-.msg {
-    margin-bottom: 7px;
-    line-height: 1.35;
-}
-
-.msg-you {
-    text-align: right;
-}
-
-.msg-author {
-    font-size: 11px;
-    opacity: 0.7;
-}
-
-.msg-bubble {
-    display: inline-block;
-    margin-top: 2px;
-    padding: 6px 9px;
-    border-radius: 9px;
-    background: rgba(255,255,255,0.1);
-}
-
-.msg-you .msg-bubble {
-    background: #4f46e5;
-    color: white;
-}
-
-/* ---------- МОБИЛЬНАЯ АДАПТАЦИЯ ---------- */
-
-#videoWrapperStudent:fullscreen {
-    padding: 0;
-}
-#videoWrapperStudent:fullscreen .remote-box {
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-}
-#videoWrapperStudent:fullscreen .remote-box video {
-    object-fit: cover;
-}
-
-@media (max-width: 900px) {
-    .card {
-        width: 100%;
-        margin: 8px;
-        padding: 14px;
-    }
-    .bottom-row {
-        flex-direction: column;
-    }
-    .video-wrapper {
-        min-height: 280px;
-    }
-    .remote-box {
-        height: 280px;
-    }
-}
-</style>
+        /* ЧАТ ПО СЕРЕДИНЕ */
+        .chat-panel {
+            background: var(--panel);
+            border-radius: 18px;
+            border: 1px solid var(--border);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            min-height: 340px;
+        }
+        .chat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .chat-title {
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .chat-status {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+        .chat-messages {
+            flex: 1;
+            background: #020617;
+            border-radius: 10px;
+            border: 1px solid #111827;
+            padding: 8px;
+            overflow-y: auto;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+        .chat-empty {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+            margin-top: 18px;
+        }
+        .chat-input-row {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .chat-input-row input[type="text"] {
+            flex: 1;
+            border-radius: 10px;
+            border: 1px solid #374151;
+            padding: 8px 10px;
+            font-size: 13px;
+            background: #020617;
+            color: var(--text-main);
+        }
+        .chat-input-row input::placeholder {
+            color: #6b7280;
+        }
+        .chat-send-btn {
+            background: #16a34a;
+            font-size: 13px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: none;
+            color: #fff;
+            cursor: pointer;
+        }
+        .chat-send-btn:hover {
+            background: #15803d;
+        }
+        .chat-attach {
+            width: 32px;
+            height: 32px;
+            border-radius: 999px;
+            border: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            cursor: pointer;
+            background: #020617;
+            color: #e5e7eb;
+        }
+        .chat-attach:hover {
+            background: #111827;
+        }
+        .chat-note {
+            font-size: 11px;
+            color: #6b7280;
+            margin-top: 2px;
+        }
+        .msg {
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+        .msg-you {
+            text-align: right;
+        }
+        .msg-author {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+        .msg-bubble {
+            display: inline-block;
+            margin-top: 1px;
+            padding: 6px 9px;
+            border-radius: 9px;
+            background: #111827;
+        }
+        .msg-you .msg-bubble {
+            background: #1d4ed8;
+        }
+        /* fullscreen для окна учителя у ученика */
+        #remoteViewportStudent:fullscreen {
+            background: #000;
+            max-width: none;
+            width: 100%;
+            height: 100%;
+        }
+        #remoteViewportStudent:fullscreen video {
+            object-fit: contain;
+        }
+        @media (max-width: 980px) {
+            .card {
+                width: 100%;
+                margin: 6px;
+                padding: 14px;
+            }
+            .bottom-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
 <div class="card">
     <div class="top-row">
@@ -395,71 +288,63 @@ h2 {
     </div>
 
     <div class="bottom-row">
-
-        <!-- ВИДЕО -->
+        <!-- ЛЕВАЯ КОЛОНКА: УЧИТЕЛЬ ДЛЯ УЧЕНИКА -->
         <div class="video-column">
-            <div class="video-title">Комната</div>
-
-            <div class="video-wrapper" id="videoWrapperStudent">
-                <div class="remote-box" id="remoteBoxStudent">
-                    <video id="remoteVideoStudent" autoplay playsinline muted></video>
-                    <div class="remote-controls">
-                        <button id="remoteFullscreenStudent" class="remote-btn" title="На весь экран">⤢</button>
-                        <button id="remoteMuteStudent" class="remote-btn" title="Выкл/вкл звук">🔇</button>
-                    </div>
-                    <div class="remote-placeholder">
-                        <div class="remote-label">Окно учителя</div>
-                        <div class="remote-name" id="teacherNameLabel">Учитель</div>
-                        <div class="remote-sub">Когда учитель начнёт урок, здесь появится его видео.</div>
-                    </div>
+            <div class="video-title">Учитель</div>
+            <div class="video-sub" id="teacherNameLabel">—</div>
+            <div class="viewport" id="remoteViewportStudent">
+                <video id="remoteVideoStudent" autoplay playsinline muted></video>
+                <div class="video-toolbar">
+                    <button id="remoteFullscreenStudent" class="icon-btn" title="На весь экран">⤢</button>
+                    <button id="remoteMuteStudent" class="icon-btn" title="Вкл/выкл звук">🔇</button>
                 </div>
-
-                <div class="self-box" id="selfBoxStudent">
-                    <div class="self-header" id="selfHeaderStudent">
-                        <span class="self-tag">Вы (ученик)</span>
-                        <span>предпросмотр</span>
-                    </div>
-                    <div class="self-controls">
-                        <button id="selfMuteStudent" class="self-btn" title="Выкл/вкл микрофон">🎤</button>
-                    </div>
-                    <div class="self-preview" id="selfPreviewStudent">
-                        Включаем камеру...
-                    </div>
+                <div class="video-placeholder" id="remotePlaceholderStudent">
+                    <div>Окно учителя</div>
+                    <b>Учитель</b>
+                    <div>Когда учитель начнёт урок, здесь появится его видео.</div>
                 </div>
             </div>
-
-            <div class="hint">Вы уже в комнате. Если связи пока нет — просто дождитесь учителя.</div>
-
-            <button class="btn-exit" onclick="goHome()">Выйти из урока</button>
         </div>
 
-        <!-- ЧАТ -->
-        <div class="chat-panel" id="chatPanelStudent">
-            <div class="chat-header" id="chatHeaderStudent">
+        <!-- ЦЕНТР: ЧАТ -->
+        <div class="chat-panel">
+            <div class="chat-header">
                 <div class="chat-title">Чат урока</div>
-                <div class="chat-status">Сообщения пока только у вас</div>
+                <div class="chat-status">Сообщения пока видите только вы</div>
             </div>
-
             <div id="chatMessagesStudent" class="chat-messages">
                 <div class="chat-empty">
                     Задайте вопрос учителю — позже мы сделаем так, чтобы он видел это сообщение.
                 </div>
             </div>
-
             <div class="chat-input-row">
                 <label class="chat-attach" title="Прикрепить файл">
                     📎
                     <input type="file" id="chatFileStudent" style="display:none;">
                 </label>
-
                 <input id="chatInputStudent" type="text" placeholder="Написать сообщение учителю...">
-
                 <button id="chatSendStudent" class="chat-send-btn">Отправить</button>
             </div>
-
             <div class="chat-note">
                 Прикрепление файлов до 10 МБ (PDF, изображения). Это демо — без реальной загрузки.
             </div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: УЧЕНИК (СЕБЯ ВИДИТ) -->
+        <div class="video-column">
+            <div class="video-title">Вы (ученик)</div>
+            <div class="video-sub">Камера и микрофон вашего устройства</div>
+            <div class="viewport" id="localViewportStudent">
+                <video id="localVideoStudent" autoplay playsinline muted></video>
+                <div class="video-toolbar">
+                    <button id="selfMuteStudent" class="icon-btn" title="Вкл/выкл микрофон">🎤</button>
+                </div>
+                <div class="video-placeholder" id="localPlaceholderStudent">
+                    <div>Включаем камеру...</div>
+                    <div style="font-size:11px;">Разрешите доступ к камере и микрофону в браузере.</div>
+                </div>
+            </div>
+            <button class="chat-send-btn" style="margin-top:10px;" onclick="goHome()">Выйти из урока</button>
         </div>
     </div>
 </div>
@@ -575,119 +460,33 @@ window.addEventListener("DOMContentLoaded", () => {
     if (remoteMuteBtn) remoteMuteBtn.addEventListener("click", toggleRemoteMuteStudent);
 
     const fsBtn = document.getElementById("remoteFullscreenStudent");
-    const remoteBox = document.getElementById("remoteBoxStudent");
-    const wrapper = document.getElementById("videoWrapperStudent");
-    const fsTarget = wrapper || remoteBox;
-    if (fsBtn && fsTarget) {
-        fsBtn.addEventListener("click", () => toggleFullscreen(fsTarget, fsBtn));
+    const remoteViewport = document.getElementById("remoteViewportStudent");
+    if (fsBtn && remoteViewport) {
+        fsBtn.addEventListener("click", () => toggleFullscreen(remoteViewport, fsBtn));
     }
+
+    // старт локального видео ученика
+    startLocalVideoStudent();
 });
-
-// ====== DRAG + RESIZE ======
-function makeDraggable(element, handle) {
-    let startX, startY, startTx = 0, startTy = 0;
-    let dragging = false;
-
-    const target = handle || element;
-
-    target.addEventListener("mousedown", (e) => {
-        dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-
-        const style = window.getComputedStyle(element);
-        const transform = style.transform;
-        if (transform && transform !== "none") {
-            const match = transform.match(/matrix\\(([^)]+)\\)/);
-            if (match) {
-                const values = match[1].split(",").map(parseFloat);
-                startTx = values[4] || 0;
-                startTy = values[5] || 0;
-            }
-        } else {
-            startTx = 0;
-            startTy = 0;
-        }
-        e.preventDefault();
-    });
-
-    window.addEventListener("mousemove", (e) => {
-        if (!dragging) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        element.style.transform = `translate(${startTx + dx}px, ${startTy + dy}px)`;
-    });
-
-    window.addEventListener("mouseup", () => dragging = false);
-}
-
-function makeResizable(el) {
-    el.style.position = "relative";
-    const grip = document.createElement("div");
-    grip.style.width = "14px";
-    grip.style.height = "14px";
-    grip.style.position = "absolute";
-    grip.style.right = "2px";
-    grip.style.bottom = "2px";
-    grip.style.borderRadius = "3px";
-    grip.style.background = "rgba(255,255,255,0.7)";
-    grip.style.cursor = "nwse-resize";
-    grip.style.zIndex = "30";
-    el.appendChild(grip);
-
-    let startX, startY, startW, startH, resizing = false;
-
-    grip.addEventListener("mousedown", (e) => {
-        e.stopPropagation();
-        resizing = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        startW = el.offsetWidth;
-        startH = el.offsetHeight;
-        e.preventDefault();
-    });
-
-    window.addEventListener("mousemove", (e) => {
-        if (!resizing) return;
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-        el.style.width = (startW + dx) + "px";
-        el.style.height = (startH + dy) + "px";
-    });
-
-    window.addEventListener("mouseup", () => resizing = false);
-}
-
-// применяем к элементам
-makeDraggable(document.getElementById("selfBoxStudent"), document.getElementById("selfHeaderStudent"));
-makeResizable(document.getElementById("selfBoxStudent"));
-
-makeDraggable(document.getElementById("chatPanelStudent"), document.getElementById("chatHeaderStudent"));
-makeResizable(document.getElementById("chatPanelStudent"));
-
-makeResizable(document.getElementById("remoteBoxStudent"));
 
 // ====== ЛОКАЛЬНОЕ ВИДЕО УЧЕНИКА (камера) ======
 async function startLocalVideoStudent() {
-    const preview = document.getElementById("selfPreviewStudent");
+    const previewVideo = document.getElementById("localVideoStudent");
+    const placeholder = document.getElementById("localPlaceholderStudent");
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         localStreamStudent = stream;
-        const video = document.createElement("video");
-        video.autoplay = true;
-        video.muted = true;
-        video.playsInline = true;
-        video.srcObject = stream;
-        preview.innerHTML = "";
-        preview.appendChild(video);
+        previewVideo.srcObject = stream;
+        previewVideo.muted = true;
+        previewVideo.playsInline = true;
+        if (placeholder) placeholder.style.display = "none";
     } catch (err) {
         console.error(err);
-        preview.textContent = "Не удалось включить камеру. Разрешите доступ к камере в браузере.";
+        if (placeholder) {
+            placeholder.textContent = "Не удалось включить камеру. Разрешите доступ к камере в браузере.";
+        }
     }
 }
-
-startLocalVideoStudent();
 </script>
-
 </body>
 </html>
