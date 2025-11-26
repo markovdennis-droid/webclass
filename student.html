@@ -7,9 +7,7 @@
   <style>
     :root {
       --bg-main: radial-gradient(circle at top, #0f172a 0, #020617 38%, #000 100%);
-      --card-bg: rgba(15, 23, 42, 0.96);
       --card-border: rgba(30, 64, 175, 0.45);
-      --accent: #4f46e5;
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
       --radius-lg: 18px;
@@ -66,7 +64,7 @@
       font-size: 18px;
       color: #020617;
       box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.75),
-        0 10px 25px rgba(15, 23, 42, 0.8);
+                  0 10px 25px rgba(15, 23, 42, 0.8);
     }
 
     .brand-text strong {
@@ -209,9 +207,7 @@
       gap: 6px;
     }
 
-    .fs-btn-icon {
-      font-size: 14px;
-    }
+    .fs-btn-icon { font-size: 14px; }
 
     .video-body {
       border-radius: 14px;
@@ -219,6 +215,9 @@
       padding: 8px;
       position: relative;
       min-height: 0;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     .main-video-wrapper {
@@ -228,13 +227,13 @@
       border: 1px solid rgba(30, 64, 175, 0.7);
       background: #000;
       box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
-      min-height: 240px;
+      flex: 1;
+      min-height: 0;
     }
 
     #mainVideo {
       width: 100%;
       height: 100%;
-      max-height: calc(100vh - 220px);
       display: block;
       object-fit: cover;
       background: #000;
@@ -460,15 +459,12 @@
       gap: 4px;
     }
 
-    .chat-send-btn span {
-      font-size: 16px;
-    }
+    .chat-send-btn span { font-size: 16px; }
 
     @media (max-width: 980px) {
       .app-main {
         grid-template-columns: 1fr;
       }
-
       .self-box {
         width: 60vw;
         max-width: 280px;
@@ -581,14 +577,15 @@
       const params = new URLSearchParams(window.location.search);
       const roomId = params.get("room") || "default-room";
 
-      const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
+      const signalingUrl =
+        `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
 
       const selfVideo = document.getElementById("selfVideo");
       const mainVideo = document.getElementById("mainVideo");
 
       if (!selfVideo || !mainVideo) return;
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Ваш браузер не поддерживает видеосвязь.");
+        alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
         return;
       }
 
@@ -646,7 +643,8 @@
 
           switch (msg.type) {
             case "ready":
-              break; // ждём offer от учителя
+              // ждём offer от учителя
+              break;
             case "offer":
               await ensurePeerConnection();
               await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
@@ -694,7 +692,9 @@
         });
 
         if (localStream) {
-          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+          localStream.getTracks().forEach(track =>
+            pc.addTrack(track, localStream)
+          );
         }
 
         pc.onicecandidate = (event) => {
@@ -735,7 +735,7 @@
         if (statusEl) statusEl.textContent = "student: " + code;
       }
 
-      // -------- UI: перетаскивание, микрофон, mute, качество, чат --------
+      // ----- UI: перетаскивание, микрофон, mute, качество, чат -----
 
       function initUIControls() {
         const input = document.getElementById("chatInput");
@@ -779,7 +779,8 @@
           mainVideo.muted = false;
           muteRemoteBtn.addEventListener("click", () => {
             mainVideo.muted = !mainVideo.muted;
-            muteRemoteBtn.textContent = mainVideo.muted ? "🔇 Звук учителя" : "🔊 Звук учителя";
+            muteRemoteBtn.textContent =
+              mainVideo.muted ? "🔇 Звук учителя" : "🔊 Звук учителя";
           });
         }
 
@@ -854,7 +855,7 @@
           });
         }
 
-        // чат
+        // ЧАТ
         if (input && sendBtn && messages) {
           let pendingFiles = [];
 
@@ -878,16 +879,14 @@
 
           function addMessageLocal(text, from = "Вы") {
             const wrap = document.createElement("div");
-            wrap.className = "chat-message " + (from === "Вы" ? "me" : "other");
-
+            wrap.className =
+              "chat-message " + (from === "Вы" ? "me" : "other");
             const meta = document.createElement("div");
             meta.className = "chat-message-meta";
             meta.textContent = from;
-
             const body = document.createElement("div");
             body.className = "chat-message-text";
             body.textContent = text;
-
             wrap.appendChild(meta);
             wrap.appendChild(body);
             messages.appendChild(wrap);
@@ -923,7 +922,9 @@
       }
 
       function addMessage(text, from = "Учитель") {
-        if (window.__studentAddMessage) window.__studentAddMessage(text, from);
+        if (window.__studentAddMessage) {
+          window.__studentAddMessage(text, from);
+        }
       }
 
       function initDraggable(el) {
@@ -950,7 +951,7 @@
           const clientX = e.touches ? e.touches[0].clientX : e.clientX;
           const clientY = e.touches ? e.touches[0].clientY : e.clientY;
           el.style.left = (clientX - offsetX) + "px";
-          el.style.top = (clientY - offsetY) + "px";
+          el.style.top  = (clientY - offsetY) + "px";
         }
 
         function onUp() {
