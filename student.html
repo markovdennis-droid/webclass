@@ -84,6 +84,7 @@ h2 {
     background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
     padding: 12px;
     min-height: 420px;
+    overflow: visible;
 }
 
 /* ---------- БОЛЬШОЕ ОКНО (УЧИТЕЛЬ) ---------- */
@@ -384,6 +385,10 @@ h2 {
             <div class="video-wrapper">
                 <div class="remote-box" id="remoteBoxStudent">
                     <video id="remoteVideoStudent" autoplay playsinline muted></video>
+                    <div class="remote-controls">
+                        <button id="remoteFullscreenStudent" class="remote-btn" title="На весь экран">⤢</button>
+                        <button id="remoteMuteStudent" class="remote-btn" title="Выкл/вкл звук">🔇</button>
+                    </div>
                     <div class="remote-placeholder">
                         <div class="remote-label">Окно учителя</div>
                         <div class="remote-name" id="teacherNameLabel">Учитель</div>
@@ -395,6 +400,9 @@ h2 {
                     <div class="self-header" id="selfHeaderStudent">
                         <span class="self-tag">Вы (ученик)</span>
                         <span>предпросмотр</span>
+                    </div>
+                    <div class="self-controls">
+                        <button id="selfMuteStudent" class="self-btn" title="Выкл/вкл микрофон">🎤</button>
                     </div>
                     <div class="self-preview" id="selfPreviewStudent">
                         Включаем камеру...
@@ -499,6 +507,62 @@ chatFileS.addEventListener("change", () => {
     chatFileS.value = "";
 });
 
+
+// ====== УПРАВЛЕНИЕ ЗВУКОМ И ФУЛЛСКРИНОМ (УЧЕНИК) ======
+let localStreamStudent = null;
+let isMicMutedStudent = false;
+let isRemoteMutedStudent = true;
+
+function toggleStudentMic() {
+    if (!localStreamStudent) return;
+    isMicMutedStudent = !isMicMutedStudent;
+    localStreamStudent.getAudioTracks().forEach(t => t.enabled = !isMicMutedStudent);
+    const btn = document.getElementById("selfMuteStudent");
+    if (btn) btn.textContent = isMicMutedStudent ? "🎤✕" : "🎤";
+}
+
+function toggleRemoteMuteStudent() {
+    const video = document.getElementById("remoteVideoStudent");
+    if (!video) return;
+    isRemoteMutedStudent = !isRemoteMutedStudent;
+    video.muted = isRemoteMutedStudent;
+    const btn = document.getElementById("remoteMuteStudent");
+    if (btn) btn.textContent = isRemoteMutedStudent ? "🔇" : "🔊";
+}
+
+function toggleFullscreen(el, btn) {
+    if (!document.fullscreenElement) {
+        if (el.requestFullscreen) {
+            el.requestFullscreen();
+            if (btn) btn.textContent = "⤡";
+        }
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+document.addEventListener("fullscreenchange", () => {
+    const btn = document.getElementById("remoteFullscreenStudent");
+    if (!btn) return;
+    if (!document.fullscreenElement) {
+        btn.textContent = "⤢";
+    }
+});
+
+window.addEventListener("DOMContentLoaded", () => {
+    const micBtn = document.getElementById("selfMuteStudent");
+    if (micBtn) micBtn.addEventListener("click", toggleStudentMic);
+
+    const remoteMuteBtn = document.getElementById("remoteMuteStudent");
+    if (remoteMuteBtn) remoteMuteBtn.addEventListener("click", toggleRemoteMuteStudent);
+
+    const fsBtn = document.getElementById("remoteFullscreenStudent");
+    const remoteBox = document.getElementById("remoteBoxStudent");
+    if (fsBtn && remoteBox) {
+        fsBtn.addEventListener("click", () => toggleFullscreen(remoteBox, fsBtn));
+    }
+});
+
 // ====== DRAG + RESIZE ======
 function makeDraggable(element, handle) {
     let startX, startY, startTx = 0, startTy = 0;
@@ -588,6 +652,7 @@ async function startLocalVideoStudent() {
     const preview = document.getElementById("selfPreviewStudent");
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        localStreamStudent = stream;
         const video = document.createElement("video");
         video.autoplay = true;
         video.muted = true;
