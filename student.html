@@ -38,18 +38,6 @@
       justify-content: center;
     }
 
-    body.light-mode {
-      --bg-main: #e5e7eb;
-      --bg-panel: #ffffff;
-      --bg-panel-soft: #f3f4f6;
-      --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --text-main: #020617;
-      --text-dim: #4b5563;
-      --danger: #b91c1c;
-      background: radial-gradient(circle at top, #e5e7eb 0, #cbd5f5 50%, #9ca3af 100%);
-    }
-
     .app-shell {
       width: 100%;
       max-width: 1320px;
@@ -66,6 +54,7 @@
       justify-content: space-between;
       gap: 12px;
       margin-bottom: 6px;
+      flex-wrap: wrap;
     }
 
     .brand-block {
@@ -129,10 +118,6 @@
       cursor: pointer;
     }
 
-    body.light-mode .layout-btn {
-      background: #e5e7eb;
-    }
-
     .layout-btn.active {
       border-color: var(--accent);
       background: var(--accent-soft);
@@ -148,10 +133,6 @@
       outline: none;
     }
 
-    body.light-mode .quality-select {
-      background: #e5e7eb;
-    }
-
     .settings-toggle {
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.6);
@@ -163,14 +144,6 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-    }
-
-    body.light-mode .settings-toggle {
-      background: #e5e7eb;
-    }
-
-    .settings-toggle span {
-      font-size: 15px;
     }
 
     .theme-toggle-btn {
@@ -186,20 +159,11 @@
       justify-content: center;
     }
 
-    body.light-mode .theme-toggle-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
     .app-main {
       display: grid;
       grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
       gap: 14px;
       align-items: stretch;
-    }
-
-    .dragging {
-      cursor: grabbing !important;
     }
 
     .video-panel {
@@ -221,7 +185,6 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      cursor: grab;
       user-select: none;
       padding: 4px 4px 4px 6px;
       border-radius: 999px;
@@ -278,14 +241,7 @@
       gap: 4px;
     }
 
-    body.light-mode .fs-btn,
-    body.light-mode .swap-btn {
-      background: #e5e7eb;
-    }
-
     .fs-btn-icon {
-      display: inline-block;
-      transform-origin: center;
       font-size: 16px;
     }
 
@@ -345,12 +301,7 @@
       font-size: 11px;
       background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9));
       border-bottom: 1px solid rgba(129, 140, 248, 0.5);
-      cursor: grab;
       user-select: none;
-    }
-
-    .self-box-header span {
-      opacity: 0.9;
     }
 
     #selfVideo {
@@ -371,12 +322,6 @@
       border-top: 1px solid rgba(129, 140, 248, 0.5);
     }
 
-    .self-controls {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
     .pill-btn {
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.65);
@@ -388,16 +333,6 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-    }
-
-    body.light-mode .pill-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    .pill-btn.danger {
-      border-color: rgba(248, 113, 113, 0.9);
-      color: #fecaca;
     }
 
     .pill-btn .dot-mic {
@@ -423,11 +358,6 @@
       cursor: pointer;
     }
 
-    body.light-mode .toggle-self-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
     .fs-hint {
       margin-top: 4px;
       font-size: 11px;
@@ -437,21 +367,12 @@
       gap: 4px;
     }
 
-    .fs-hint span {
-      opacity: 0.85;
-    }
-
     .icon-kbd {
       padding: 2px 5px;
       border-radius: 4px;
       border: 1px solid rgba(148, 163, 184, 0.7);
       font-size: 10px;
       background: rgba(15, 23, 42, 0.95);
-    }
-
-    body.light-mode .icon-kbd {
-      background: #e5e7eb;
-      border-color: rgba(107, 114, 128, 0.9);
     }
 
     .side-panel {
@@ -470,7 +391,6 @@
       display: flex;
       flex-direction: column;
       gap: 2px;
-      cursor: grab;
       user-select: none;
       padding: 4px 6px;
       border-radius: 10px;
@@ -604,31 +524,6 @@
       font-size: 16px;
     }
 
-    .fs-toggle-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 11px;
-      padding: 3px 8px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .grid-resizer {
-      position: absolute;
-      right: 6px;
-      bottom: 6px;
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-      background: rgba(148, 163, 184, 0.85);
-      cursor: nwse-resize;
-      opacity: 0.9;
-    }
-
     @media (max-width: 980px) {
       .app-main {
         grid-template-columns: 1fr;
@@ -664,7 +559,7 @@
           <option value="low">Low</option>
         </select>
         <button id="settingsToggle" class="settings-toggle">
-          <span>⚙️</span> Настройки
+          ⚙️ Настройки
         </button>
         <button id="themeToggle" class="theme-toggle-btn">🌙</button>
       </div>
@@ -672,7 +567,7 @@
 
     <main class="app-main">
       <section class="video-panel" id="videoPanel">
-        <div class="video-header" id="videoPanelHandle">
+        <div class="video-header">
           <div class="video-header-left">
             <div class="teacher-dot"></div>
             <div class="video-header-text">
@@ -696,17 +591,15 @@
             <video id="mainVideo" autoplay playsinline></video>
 
             <div class="self-box" id="selfBox">
-              <div class="self-box-header" id="selfBoxHandle">
+              <div class="self-box-header">
                 <span>Вы</span>
                 <span style="opacity:0.75;">PiP</span>
               </div>
               <video id="selfVideo" autoplay playsinline muted></video>
               <div class="self-box-footer">
-                <div class="self-controls">
-                  <button class="pill-btn" id="micToggleBtn">
-                    <span class="dot-mic"></span> Микрофон
-                  </button>
-                </div>
+                <button class="pill-btn" id="micToggleBtn">
+                  <span class="dot-mic"></span> Микрофон
+                </button>
                 <button class="toggle-self-btn" id="toggleSelfBtn">
                   🙈 Скрыть
                 </button>
@@ -721,7 +614,7 @@
       </section>
 
       <aside class="side-panel" id="sidePanel">
-        <div class="side-header" id="sidePanelHandle">
+        <div class="side-header">
           <h2>Чат с учителем</h2>
           <span>Локальный чат (без сервера)</span>
         </div>
@@ -743,20 +636,17 @@
             </button>
           </div>
         </div>
-
-        <button class="fs-toggle-btn" id="sideFsBtn">
-          ↕ Развернуть / свернуть
-        </button>
       </aside>
     </main>
   </div>
 
-  <!-- WEBRTC -->
+  <!-- WebRTC + локальный чат -->
   <script>
   (function () {
     const ROLE = "student";
     const params = new URLSearchParams(window.location.search);
     const roomId = params.get("room") || "default-room";
+
     const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
 
     const selfVideo = document.getElementById("selfVideo");
@@ -777,6 +667,9 @@
     let pc = null;
     let ws = null;
 
+    const statusEl = createStatusBadge("student");
+    status("init");
+
     start();
 
     async function start() {
@@ -785,11 +678,12 @@
           video: true,
           audio: true
         });
-        // ученик: себя — в PiP
         selfVideo.srcObject = localStream;
+        status("local-stream");
       } catch (err) {
-        console.error("WebRTC: ошибка доступа к камере/микрофону:", err);
+        console.error("gUM error:", err);
         alert("Не удалось получить доступ к камере/микрофону.");
+        status("gUM-error");
         return;
       }
       setupWebSocket();
@@ -798,13 +692,16 @@
     function setupWebSocket() {
       try {
         ws = new WebSocket(signalingUrl);
+        status("ws-connecting");
       } catch (err) {
-        console.error("WebRTC: ошибка создания WebSocket:", err);
+        console.error("WS create error:", err);
+        status("ws-error");
         return;
       }
 
       ws.onopen = () => {
-        console.log("WebRTC WS open, room =", roomId);
+        console.log("WS open (student), room =", roomId);
+        status("ws-open");
         send({ type: "ready", role: ROLE });
       };
 
@@ -817,10 +714,11 @@
         }
 
         if (msg.role === ROLE) return;
+        console.log("[student] msg:", msg.type);
 
         switch (msg.type) {
           case "ready":
-            // студент не инициирует, ждём offer от учителя
+            // студент не инициирует, ждём offer
             break;
 
           case "offer":
@@ -829,30 +727,35 @@
             const answer = await pc.createAnswer();
             await pc.setLocalDescription(answer);
             send({ type: "answer", sdp: pc.localDescription, role: ROLE });
+            status("answer-sent");
             break;
 
           case "answer":
             if (!pc) return;
             await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            status("answer-set");
             break;
 
           case "candidate":
             if (!pc || !msg.candidate) return;
             try {
               await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+              status("candidate-add");
             } catch (err) {
-              console.warn("Ошибка addIceCandidate:", err);
+              console.warn("addIceCandidate error:", err);
             }
             break;
         }
       };
 
       ws.onclose = () => {
-        console.log("WebRTC WS closed");
+        console.log("WS closed (student)");
+        status("ws-closed");
       };
 
       ws.onerror = (err) => {
-        console.error("WebRTC WS error:", err);
+        console.error("WS error (student):", err);
+        status("ws-error");
       };
     }
 
@@ -864,9 +767,10 @@
 
     async function ensurePeerConnection() {
       if (pc) return;
+      status("pc-creating");
 
       pc = new RTCPeerConnection({
-        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
       });
 
       if (localStream) {
@@ -880,13 +784,14 @@
           send({
             type: "candidate",
             candidate: event.candidate,
-            role: ROLE,
+            role: ROLE
           });
         }
       };
 
       pc.ontrack = (event) => {
         const stream = event.streams[0];
+        console.log("[student] ontrack", stream);
         if (!remoteStream) {
           remoteStream = new MediaStream();
           mainVideo.srcObject = remoteStream; // сюда придёт учитель
@@ -894,7 +799,107 @@
         stream.getTracks().forEach((track) => {
           remoteStream.addTrack(track);
         });
+        status("remote-track");
       };
+    }
+
+    function createStatusBadge(label) {
+      const el = document.createElement("div");
+      el.style.position = "fixed";
+      el.style.left = "8px";
+      el.style.bottom = "26px"; // над teacher-бейджем
+      el.style.zIndex = "9999";
+      el.style.fontSize = "10px";
+      el.style.padding = "3px 6px";
+      el.style.borderRadius = "999px";
+      el.style.background = "rgba(15,23,42,0.9)";
+      el.style.border = "1px solid rgba(148,163,184,.6)";
+      el.style.color = "#e5e7eb";
+      el.textContent = label + ": …";
+      document.body.appendChild(el);
+      return el;
+    }
+
+    function status(code) {
+      if (statusEl) statusEl.textContent = "student: " + code;
+    }
+
+    // 2) Локальный чат
+    const input = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("chatSendBtn");
+    const messages = document.getElementById("chatMessages");
+    const attachBox = document.getElementById("chatAttachments");
+    const fileInput = document.getElementById("chatFileInput");
+
+    if (input && sendBtn && messages) {
+      let pendingFiles = [];
+
+      if (fileInput) {
+        fileInput.addEventListener("change", () => {
+          pendingFiles = Array.from(fileInput.files || []);
+          renderAttachments();
+        });
+      }
+
+      function renderAttachments() {
+        if (!attachBox) return;
+        attachBox.innerHTML = "";
+        pendingFiles.forEach((f) => {
+          const pill = document.createElement("div");
+          pill.className = "chat-attachment-pill";
+          pill.textContent = "📎 " + f.name;
+          attachBox.appendChild(pill);
+        });
+      }
+
+      function addMessage(text, from = "Вы") {
+        const wrap = document.createElement("div");
+        wrap.className = "chat-message me";
+
+        const header = document.createElement("div");
+        header.className = "chat-message-header";
+        const time = new Date().toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+        header.innerHTML = `<span>${from}</span><span>${time}</span>`;
+        wrap.appendChild(header);
+
+        if (text) {
+          const body = document.createElement("div");
+          body.className = "chat-message-body";
+          body.textContent = text;
+          wrap.appendChild(body);
+        }
+
+        pendingFiles.forEach((f) => {
+          const pill = document.createElement("div");
+          pill.className = "chat-attachment-pill";
+          pill.textContent = "📎 " + f.name;
+          wrap.appendChild(pill);
+        });
+
+        messages.appendChild(wrap);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function sendMsg() {
+        const text = input.value.trim();
+        if (!text && pendingFiles.length === 0) return;
+        addMessage(text);
+        input.value = "";
+        pendingFiles = [];
+        if (fileInput) fileInput.value = "";
+        renderAttachments();
+      }
+
+      sendBtn.addEventListener("click", sendMsg);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          sendMsg();
+        }
+      });
     }
   })();
   </script>
