@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -39,6 +38,18 @@
       justify-content: center;
     }
 
+    body.light-mode {
+      --bg-main: #e5e7eb;
+      --bg-panel: #ffffff;
+      --bg-panel-soft: #f3f4f6;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --text-main: #020617;
+      --text-dim: #4b5563;
+      --danger: #b91c1c;
+      background: radial-gradient(circle at top, #e5e7eb 0, #cbd5f5 50%, #9ca3af 100%);
+    }
+
     .app-shell {
       width: 100%;
       max-width: 1320px;
@@ -60,6 +71,12 @@
       box-shadow: 0 10px 32px rgba(15, 23, 42, 0.85);
       border: 1px solid rgba(148, 163, 184, 0.35);
       backdrop-filter: blur(18px);
+    }
+
+    body.light-mode header {
+      background: linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(229, 231, 235, 0.95));
+      box-shadow: 0 10px 32px rgba(148, 163, 184, 0.4);
+      border-color: rgba(148, 163, 184, 0.6);
     }
 
     .brand-block {
@@ -103,6 +120,8 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     .status-pill {
@@ -123,6 +142,46 @@
       border-radius: 999px;
       background: #22c55e;
       box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+    }
+
+    .theme-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 5px 9px;
+      font-size: 14px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.light-mode .theme-toggle-btn {
+      background: #e5e7eb;
+      color: #020617;
+    }
+
+    .layout-presets {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .layout-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 4px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+    }
+
+    body.light-mode .layout-btn {
+      background: #e5e7eb;
+      color: #020617;
     }
 
     main {
@@ -176,6 +235,11 @@
       background: radial-gradient(circle at center, #111827 0, #020617 70%);
       box-shadow: 0 18px 44px rgba(15, 23, 42, 0.95);
       border: 1px solid rgba(15, 23, 42, 0.9);
+    }
+
+    body.light-mode .main-video-wrapper {
+      background: radial-gradient(circle at center, #e5e7eb 0, #cbd5e1 70%);
+      border-color: rgba(148, 163, 184, 0.8);
     }
 
     .main-video {
@@ -292,6 +356,11 @@
       max-height: 320px;
     }
 
+    body.light-mode .chat-panel {
+      background: rgba(248, 250, 252, 0.96);
+      border-color: rgba(148, 163, 184, 0.7);
+    }
+
     .chat-messages {
       flex: 1;
       overflow-y: auto;
@@ -363,6 +432,10 @@
       outline: none;
     }
 
+    body.light-mode .chat-input {
+      background: #ffffff;
+    }
+
     .chat-input::placeholder {
       color: rgba(148, 163, 184, 0.8);
     }
@@ -377,6 +450,12 @@
       justify-content: center;
       cursor: pointer;
       background: rgba(15, 23, 42, 0.95);
+      color: var(--text-main);
+    }
+
+    body.light-mode .file-btn-label {
+      background: #e5e7eb;
+      color: #020617;
     }
 
     .send-btn {
@@ -436,6 +515,98 @@
       opacity: 0.9;
     }
 
+    /* SETTINGS PANEL */
+    .settings-panel {
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      z-index: 90;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .settings-toggle {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      width: 34px;
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--text-main);
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
+    }
+
+    body.light-mode .settings-toggle {
+      background: #e5e7eb;
+      color: #020617;
+      box-shadow: 0 10px 25px rgba(148, 163, 184, 0.7);
+    }
+
+    .settings-body {
+      min-width: 210px;
+      border-radius: 16px;
+      padding: 8px 10px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.96);
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    body.light-mode .settings-body {
+      background: rgba(248, 250, 252, 0.98);
+      border-color: rgba(148, 163, 184, 0.9);
+      box-shadow: 0 18px 40px rgba(148, 163, 184, 0.7);
+    }
+
+    .settings-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+
+    .settings-label {
+      color: var(--text-dim);
+    }
+
+    .settings-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 3px 8px;
+      font-size: 11px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+    }
+
+    body.light-mode .settings-toggle-btn {
+      background: #e5e7eb;
+      color: #020617;
+    }
+
+    .settings-select {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 3px 6px;
+      outline: none;
+    }
+
+    body.light-mode .settings-select {
+      background: #ffffff;
+      color: #020617;
+    }
+
     /* PIP */
     .self-box {
       position: fixed;
@@ -455,6 +626,11 @@
       z-index: 70;
       backdrop-filter: blur(12px);
       cursor: grab;
+    }
+
+    body.light-mode .self-box {
+      background: rgba(248, 250, 252, 0.98);
+      box-shadow: 0 16px 36px rgba(148, 163, 184, 0.7);
     }
 
     .self-header {
@@ -502,10 +678,16 @@
         box-shadow 0.16s ease;
     }
 
+    body.light-mode .swap-btn {
+      background: #e5e7eb;
+      color: #020617;
+    }
+
     .swap-btn:hover {
       background: rgba(30, 64, 175, 0.95);
       box-shadow: 0 6px 18px rgba(59, 130, 246, 0.65);
       transform: translateY(-0.5px);
+      color: #f9fafb;
     }
 
     .self-video-frame {
@@ -644,6 +826,14 @@
         </div>
       </div>
       <div class="header-actions">
+        <div class="layout-presets">
+          <button class="layout-btn" data-layout="zoom">Zoom</button>
+          <button class="layout-btn" data-layout="teams">Teams</button>
+          <button class="layout-btn" data-layout="stack">Стек</button>
+        </div>
+
+        <button class="theme-toggle-btn" id="themeToggle" type="button">🌙</button>
+
         <div class="status-pill">
           <span class="status-dot"></span>
           <span>Подключено</span>
@@ -744,11 +934,35 @@
           playsinline
         ></video>
         <div class="self-overlay">
-          <div class="self-label">Предпросмотр камеры</div>
-          <div class="mute-pill">
-            <span class="mute-dot"></span>
-            <span>Микрофон включён</span>
+          <div class="self-label" id="selfLabel">Предпросмотр камеры</div>
+          <div class="mute-pill" id="mutePill">
+            <span class="mute-dot" id="muteDot"></span>
+            <span id="muteStatusText">Микрофон включён</span>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS PANEL -->
+    <div class="settings-panel">
+      <button class="settings-toggle" id="settingsToggle" type="button">⚙️</button>
+      <div class="settings-body" id="settingsBody">
+        <div class="settings-row">
+          <span class="settings-label">Камера</span>
+          <button class="settings-toggle-btn" id="camToggleBtn" type="button">Выключить</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Микрофон</span>
+          <button class="settings-toggle-btn" id="micToggleBtn" type="button">Выключить</button>
+        </div>
+        <div class="settings-row">
+          <span class="settings-label">Качество видео</span>
+          <select class="settings-select" id="qualitySelect">
+            <option value="auto">Авто</option>
+            <option value="high">Высокое (HD)</option>
+            <option value="medium">Среднее (SD)</option>
+            <option value="low">Низкое</option>
+          </select>
         </div>
       </div>
     </div>
@@ -756,6 +970,7 @@
 
   <script>
     let dragZIndex = 80;
+    let localStream = null;
 
     function makeDraggable(box, handle) {
       if (!box) return;
@@ -891,6 +1106,24 @@
       }
     }
 
+    // Тема
+    (function () {
+      const btn = document.getElementById("themeToggle");
+      if (!btn) return;
+
+      const saved = localStorage.getItem("webclass-theme");
+      if (saved === "light") {
+        document.body.classList.add("light-mode");
+        btn.textContent = "🌙";
+      }
+
+      btn.addEventListener("click", () => {
+        const isLight = document.body.classList.toggle("light-mode");
+        btn.textContent = isLight ? "🌙" : "☀️";
+        localStorage.setItem("webclass-theme", isLight ? "light" : "dark");
+      });
+    })();
+
     // Камера/звук (локально)
     (async function initMedia() {
       const selfVideo = document.getElementById("selfVideo");
@@ -906,6 +1139,7 @@
           video: true,
           audio: true,
         });
+        localStream = stream;
 
         if (mainVideo) mainVideo.srcObject = stream;
         if (selfVideo) selfVideo.srcObject = stream;
@@ -1077,6 +1311,136 @@
           e.preventDefault();
           send();
         }
+      });
+    })();
+
+    // Settings: cam/mic/quality
+    (function () {
+      const toggle = document.getElementById("settingsToggle");
+      const body = document.getElementById("settingsBody");
+      const camBtn = document.getElementById("camToggleBtn");
+      const micBtn = document.getElementById("micToggleBtn");
+      const qualitySelect = document.getElementById("qualitySelect");
+      const selfLabel = document.getElementById("selfLabel");
+      const muteStatusText = document.getElementById("muteStatusText");
+
+      if (!toggle || !body) return;
+
+      toggle.addEventListener("click", () => {
+        const visible = body.style.display === "flex";
+        body.style.display = visible ? "none" : "flex";
+      });
+
+      if (camBtn) {
+        let camOn = true;
+        camBtn.addEventListener("click", () => {
+          if (!localStream) return;
+          camOn = !camOn;
+          localStream.getVideoTracks().forEach((t) => (t.enabled = camOn));
+          camBtn.textContent = camOn ? "Выключить" : "Включить";
+          if (selfLabel) {
+            selfLabel.textContent = camOn ? "Предпросмотр камеры" : "Камера выключена";
+          }
+        });
+      }
+
+      if (micBtn) {
+        let micOn = true;
+        micBtn.addEventListener("click", () => {
+          if (!localStream) return;
+          micOn = !micOn;
+          localStream.getAudioTracks().forEach((t) => (t.enabled = micOn));
+          micBtn.textContent = micOn ? "Выключить" : "Включить";
+          if (muteStatusText) {
+            muteStatusText.textContent = micOn
+              ? "Микрофон включён"
+              : "Микрофон выключен";
+          }
+        });
+      }
+
+      if (qualitySelect) {
+        qualitySelect.addEventListener("change", async () => {
+          if (!localStream) return;
+          const track = localStream.getVideoTracks()[0];
+          if (!track) return;
+
+          let constraints = {};
+          switch (qualitySelect.value) {
+            case "high":
+              constraints = { width: { ideal: 1280 }, height: { ideal: 720 } };
+              break;
+            case "medium":
+              constraints = { width: { ideal: 854 }, height: { ideal: 480 } };
+              break;
+            case "low":
+              constraints = { width: { ideal: 640 }, height: { ideal: 360 } };
+              break;
+            case "auto":
+            default:
+              constraints = {};
+          }
+
+          try {
+            await track.applyConstraints(constraints);
+          } catch (e) {
+            console.error("Не удалось применить ограничения качества", e);
+          }
+        });
+      }
+    })();
+
+    // Layout presets
+    (function () {
+      const buttons = document.querySelectorAll(".layout-btn");
+      const videoPanel = document.getElementById("videoPanel");
+      const sidePanel = document.getElementById("sidePanel");
+      const selfBox = document.getElementById("selfBox");
+      if (!videoPanel || !sidePanel || !selfBox || !buttons.length) return;
+
+      function applyLayout(mode) {
+        const vw = window.innerWidth;
+        const margin = 16;
+
+        function placeFixed(el, left, top, widthPx) {
+          el.style.position = "fixed";
+          el.style.left = left + "px";
+          el.style.top = top + "px";
+          el.style.right = "auto";
+          el.style.bottom = "auto";
+          if (widthPx) el.style.width = widthPx + "px";
+          el.style.zIndex = ++dragZIndex;
+        }
+
+        if (mode === "zoom") {
+          const vpWidth = Math.min(vw * 0.6, 900);
+          const spWidth = Math.min(vw * 0.32, 420);
+          placeFixed(videoPanel, margin, 90, vpWidth);
+          placeFixed(sidePanel, margin + vpWidth + 8, 90, spWidth);
+        } else if (mode === "teams") {
+          const vpWidth = Math.min(vw * 0.75, 980);
+          const left = (vw - vpWidth) / 2;
+          placeFixed(videoPanel, left, 80, vpWidth);
+          placeFixed(sidePanel, left, 80 + 320, vpWidth);
+        } else if (mode === "stack") {
+          const vpWidth = Math.min(vw * 0.7, 900);
+          const left = (vw - vpWidth) / 2;
+          placeFixed(videoPanel, left, 70, vpWidth);
+          placeFixed(sidePanel, left, 70 + 320, vpWidth);
+        }
+
+        selfBox.style.right = "2.2vw";
+        selfBox.style.bottom = "2.2vh";
+        selfBox.style.left = "auto";
+        selfBox.style.top = "auto";
+        selfBox.style.zIndex = ++dragZIndex;
+      }
+
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const mode = btn.getAttribute("data-layout");
+          applyLayout(mode);
+        });
       });
     })();
 
