@@ -10,19 +10,15 @@
       --card-bg: rgba(15, 23, 42, 0.96);
       --card-border: rgba(30, 64, 175, 0.45);
       --accent: #4f46e5;
-      --accent-soft: rgba(79, 70, 229, 0.2);
       --text-main: #e5e7eb;
       --text-soft: #9ca3af;
       --radius-lg: 18px;
       --radius-pill: 999px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html,
-    body {
+    html, body {
       margin: 0;
       padding: 0;
       height: 100%;
@@ -157,6 +153,7 @@
       flex-direction: column;
       gap: 8px;
       position: relative;
+      min-height: 0;
     }
 
     .video-header {
@@ -198,7 +195,8 @@
     }
 
     .swap-btn,
-    .fs-btn {
+    .fs-btn,
+    .mute-remote-btn {
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.7);
       background: rgba(15, 23, 42, 0.9);
@@ -220,6 +218,7 @@
       background: radial-gradient(circle at top left, #1f2937, #020617);
       padding: 8px;
       position: relative;
+      min-height: 0;
     }
 
     .main-video-wrapper {
@@ -229,6 +228,7 @@
       border: 1px solid rgba(30, 64, 175, 0.7);
       background: #000;
       box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
+      min-height: 240px;
     }
 
     #mainVideo {
@@ -254,6 +254,8 @@
       display: flex;
       flex-direction: column;
       backdrop-filter: blur(6px);
+      cursor: move;
+      z-index: 10;
     }
 
     .self-box-header,
@@ -474,7 +476,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="app-shell">
     <header>
@@ -496,9 +497,7 @@
           <option value="medium">Medium</option>
           <option value="low">Low</option>
         </select>
-        <button id="settingsToggle" class="settings-toggle">
-          ⚙️ Настройки
-        </button>
+        <button id="settingsToggle" class="settings-toggle">⚙️ Настройки</button>
         <button id="themeToggle" class="theme-toggle-btn">🌙</button>
       </div>
     </header>
@@ -514,12 +513,10 @@
             </div>
           </div>
           <div class="video-header-actions">
-            <button class="swap-btn" id="swapBtn">
-              ↔ Поменять местами
-            </button>
+            <button class="mute-remote-btn" id="muteRemoteBtn">🔊 Звук учителя</button>
+            <button class="swap-btn" id="swapBtn">↔ Поменять местами</button>
             <button class="fs-btn" id="fullscreenBtn">
-              <span class="fs-btn-icon" id="fsIcon">⛶</span>
-              На весь экран
+              <span class="fs-btn-icon" id="fsIcon">⛶</span> На весь экран
             </button>
           </div>
         </div>
@@ -578,7 +575,6 @@
     </main>
   </div>
 
-  <!-- WebRTC + общий чат -->
   <script>
     (function () {
       const ROLE = "student";
@@ -590,13 +586,9 @@
       const selfVideo = document.getElementById("selfVideo");
       const mainVideo = document.getElementById("mainVideo");
 
-      if (!selfVideo || !mainVideo) {
-        console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
-        return;
-      }
-
+      if (!selfVideo || !mainVideo) return;
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
+        alert("Ваш браузер не поддерживает видеосвязь.");
         return;
       }
 
@@ -625,6 +617,7 @@
           return;
         }
         setupWebSocket();
+        initUIControls();
       }
 
       function setupWebSocket() {
@@ -638,7 +631,6 @@
         }
 
         ws.onopen = () => {
-          console.log("WS open (student), room =", roomId);
           status("ws-open");
           send({ type: "ready", role: ROLE });
         };
@@ -650,15 +642,11 @@
           } catch {
             return;
           }
-
           if (msg.role === ROLE) return;
-          console.log("[student] msg:", msg.type);
 
           switch (msg.type) {
             case "ready":
-              // студент не инициирует, ждём offer
-              break;
-
+              break; // ждём offer от учителя
             case "offer":
               await ensurePeerConnection();
               await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
@@ -667,40 +655,28 @@
               send({ type: "answer", sdp: pc.localDescription, role: ROLE });
               status("answer-sent");
               break;
-
             case "answer":
               if (!pc) return;
               await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
               status("answer-set");
               break;
-
             case "candidate":
               if (!pc || !msg.candidate) return;
               try {
                 await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
                 status("candidate-add");
-              } catch (err) {
-                console.warn("addIceCandidate error:", err);
+              } catch (e) {
+                console.warn("addIceCandidate error", e);
               }
               break;
-
             case "chat":
-              if (msg.text) {
-                addMessage(msg.text, "Учитель");
-              }
+              if (msg.text) addMessage(msg.text, "Учитель");
               break;
           }
         };
 
-        ws.onclose = () => {
-          console.log("WS closed (student)");
-          status("ws-closed");
-        };
-
-        ws.onerror = (err) => {
-          console.error("WS error (student):", err);
-          status("ws-error");
-        };
+        ws.onclose = () => status("ws-closed");
+        ws.onerror = () => status("ws-error");
       }
 
       function send(payload) {
@@ -718,31 +694,22 @@
         });
 
         if (localStream) {
-          localStream.getTracks().forEach((track) => {
-            pc.addTrack(track, localStream);
-          });
+          localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
         }
 
         pc.onicecandidate = (event) => {
           if (event.candidate) {
-            send({
-              type: "candidate",
-              candidate: event.candidate,
-              role: ROLE
-            });
+            send({ type: "candidate", candidate: event.candidate, role: ROLE });
           }
         };
 
         pc.ontrack = (event) => {
           const stream = event.streams[0];
-          console.log("[student] ontrack", stream);
           if (!remoteStream) {
             remoteStream = new MediaStream();
-            mainVideo.srcObject = remoteStream; // сюда придёт учитель
+            mainVideo.srcObject = remoteStream;
           }
-          stream.getTracks().forEach((track) => {
-            remoteStream.addTrack(track);
-          });
+          stream.getTracks().forEach(track => remoteStream.addTrack(track));
           status("remote-track");
         };
       }
@@ -768,98 +735,35 @@
         if (statusEl) statusEl.textContent = "student: " + code;
       }
 
-      // 3) Чат – общий
-      const input = document.getElementById("chatInput");
-      const sendBtn = document.getElementById("chatSendBtn");
-      const messages = document.getElementById("chatMessages");
-      const attachBox = document.getElementById("chatAttachments");
-      const fileInput = document.getElementById("chatFileInput");
+      // -------- UI: перетаскивание, микрофон, mute, качество, чат --------
 
-      if (input && sendBtn && messages) {
-        let pendingFiles = [];
-
-        if (fileInput) {
-          fileInput.addEventListener("change", () => {
-            pendingFiles = Array.from(fileInput.files || []);
-            renderAttachments();
-          });
-        }
-
-        function renderAttachments() {
-          if (!attachBox) return;
-          attachBox.innerHTML = "";
-          pendingFiles.forEach((f) => {
-            const pill = document.createElement("div");
-            pill.className = "chat-attachment-pill";
-            pill.textContent = "📎 " + f.name;
-            attachBox.appendChild(pill);
-          });
-        }
-
-        function addMessage(text, from = "Вы") {
-          const wrap = document.createElement("div");
-          wrap.className = "chat-message " + (from === "Вы" ? "me" : "other");
-
-          const meta = document.createElement("div");
-          meta.className = "chat-message-meta";
-          meta.textContent = from;
-
-          const body = document.createElement("div");
-          body.className = "chat-message-text";
-          body.textContent = text;
-
-          wrap.appendChild(meta);
-          wrap.appendChild(body);
-          messages.appendChild(wrap);
-          messages.scrollTop = messages.scrollHeight;
-        }
-
-        window.__studentAddMessage = addMessage;
-
-        function sendChatMessage() {
-          const text = (input.value || "").trim();
-          if (!text && (!pendingFiles || pendingFiles.length === 0)) return;
-
-          if (text) addMessage(text, "Вы");
-
-          if (text) {
-            send({
-              type: "chat",
-              role: ROLE,
-              text
-            });
-          }
-
-          pendingFiles = [];
-          renderAttachments();
-          input.value = "";
-        }
-
-        sendBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          sendChatMessage();
-        });
-
-        input.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" && !e.shiftKey) {
-            e.preventDefault();
-            sendChatMessage();
-          }
-        });
-
-        // микрофон / скрыть себя
+      function initUIControls() {
+        const input = document.getElementById("chatInput");
+        const sendBtn = document.getElementById("chatSendBtn");
+        const messages = document.getElementById("chatMessages");
+        const attachBox = document.getElementById("chatAttachments");
+        const fileInput = document.getElementById("chatFileInput");
         const micBtn = document.getElementById("micToggleBtn");
         const toggleSelfBtn = document.getElementById("toggleSelfBtn");
         const selfBox = document.getElementById("selfBox");
+        const swapBtn = document.getElementById("swapBtn");
+        const fsBtn = document.getElementById("fullscreenBtn");
+        const fsIcon = document.getElementById("fsIcon");
+        const videoPanel = document.getElementById("videoPanel");
+        const muteRemoteBtn = document.getElementById("muteRemoteBtn");
+        const layoutButtons = document.querySelectorAll(".layout-btn");
+        const themeToggle = document.getElementById("themeToggle");
+        const qualitySelect = document.getElementById("qualitySelect");
+
+        if (selfBox) initDraggable(selfBox);
 
         if (micBtn) {
           micBtn.addEventListener("click", () => {
             if (!localStream) return;
-            localStream.getAudioTracks().forEach((t) => {
-              t.enabled = !t.enabled;
-            });
-            const enabled = localStream.getAudioTracks().some((t) => t.enabled);
-            micBtn.querySelector(".dot-mic").style.backgroundColor = enabled ? "#22c55e" : "#ef4444";
+            localStream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
+            const enabled = localStream.getAudioTracks().some(t => t.enabled);
+            micBtn.querySelector(".dot-mic").style.backgroundColor =
+              enabled ? "#22c55e" : "#ef4444";
           });
         }
 
@@ -871,11 +775,35 @@
           });
         }
 
-        // swap / fullscreen
-        const swapBtn = document.getElementById("swapBtn");
-        const fsBtn = document.getElementById("fullscreenBtn");
-        const fsIcon = document.getElementById("fsIcon");
-        const videoPanel = document.getElementById("videoPanel");
+        if (muteRemoteBtn && mainVideo) {
+          mainVideo.muted = false;
+          muteRemoteBtn.addEventListener("click", () => {
+            mainVideo.muted = !mainVideo.muted;
+            muteRemoteBtn.textContent = mainVideo.muted ? "🔇 Звук учителя" : "🔊 Звук учителя";
+          });
+        }
+
+        if (qualitySelect && localStream) {
+          applyQuality(qualitySelect.value);
+          qualitySelect.addEventListener("change", () => {
+            applyQuality(qualitySelect.value);
+          });
+        }
+
+        function applyQuality(level) {
+          if (!localStream) return;
+          const track = localStream.getVideoTracks()[0];
+          if (!track || !track.applyConstraints) return;
+          let constraints;
+          if (level === "low") {
+            constraints = { width: 640, height: 360, frameRate: 20 };
+          } else if (level === "medium") {
+            constraints = { width: 960, height: 540, frameRate: 25 };
+          } else {
+            constraints = { width: 1280, height: 720, frameRate: 30 };
+          }
+          track.applyConstraints(constraints).catch(console.warn);
+        }
 
         if (swapBtn) {
           swapBtn.addEventListener("click", () => {
@@ -905,41 +833,138 @@
               console.warn("FS error", e);
             }
           });
-
           document.addEventListener("fullscreenchange", () => {
-            if (!document.fullscreenElement) {
-              fsIcon.textContent = "⛶";
-            }
+            if (!document.fullscreenElement) fsIcon.textContent = "⛶";
           });
         }
 
-        // простые заглушки для layout / theme – чтобы кнопки не были «мертвыми»
-        const layoutButtons = document.querySelectorAll(".layout-btn");
-        layoutButtons.forEach((btn) => {
-          btn.addEventListener("click", () => {
-            layoutButtons.forEach((b) => b.classList.remove("active"));
-            btn.classList.add("active");
+        if (layoutButtons) {
+          layoutButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+              layoutButtons.forEach(b => b.classList.remove("active"));
+              btn.classList.add("active");
+            });
           });
-        });
+        }
 
-        const themeToggle = document.getElementById("themeToggle");
         if (themeToggle) {
           themeToggle.addEventListener("click", () => {
             document.body.dataset.theme =
               document.body.dataset.theme === "light" ? "dark" : "light";
           });
         }
+
+        // чат
+        if (input && sendBtn && messages) {
+          let pendingFiles = [];
+
+          if (fileInput) {
+            fileInput.addEventListener("change", () => {
+              pendingFiles = Array.from(fileInput.files || []);
+              renderAttachments();
+            });
+          }
+
+          function renderAttachments() {
+            if (!attachBox) return;
+            attachBox.innerHTML = "";
+            pendingFiles.forEach(f => {
+              const pill = document.createElement("div");
+              pill.className = "chat-attachment-pill";
+              pill.textContent = "📎 " + f.name;
+              attachBox.appendChild(pill);
+            });
+          }
+
+          function addMessageLocal(text, from = "Вы") {
+            const wrap = document.createElement("div");
+            wrap.className = "chat-message " + (from === "Вы" ? "me" : "other");
+
+            const meta = document.createElement("div");
+            meta.className = "chat-message-meta";
+            meta.textContent = from;
+
+            const body = document.createElement("div");
+            body.className = "chat-message-text";
+            body.textContent = text;
+
+            wrap.appendChild(meta);
+            wrap.appendChild(body);
+            messages.appendChild(wrap);
+            messages.scrollTop = messages.scrollHeight;
+          }
+
+          window.__studentAddMessage = addMessageLocal;
+
+          function sendChatMessage() {
+            const text = (input.value || "").trim();
+            if (!text && (!pendingFiles || pendingFiles.length === 0)) return;
+
+            if (text) addMessageLocal(text, "Вы");
+            if (text) send({ type: "chat", role: ROLE, text });
+
+            pendingFiles = [];
+            renderAttachments();
+            input.value = "";
+          }
+
+          sendBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            sendChatMessage();
+          });
+
+          input.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              sendChatMessage();
+            }
+          });
+        }
       }
 
       function addMessage(text, from = "Учитель") {
-        if (window.__studentAddMessage) {
-          window.__studentAddMessage(text, from);
-        } else {
-          console.log("chat:", from, text);
+        if (window.__studentAddMessage) window.__studentAddMessage(text, from);
+      }
+
+      function initDraggable(el) {
+        let dragging = false;
+        let offsetX = 0, offsetY = 0;
+
+        function onDown(e) {
+          dragging = true;
+          const rect = el.getBoundingClientRect();
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          offsetX = clientX - rect.left;
+          offsetY = clientY - rect.top;
+          el.style.right = "auto";
+          el.style.bottom = "auto";
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+          document.addEventListener("touchmove", onMove, { passive: false });
+          document.addEventListener("touchend", onUp);
         }
+
+        function onMove(e) {
+          if (!dragging) return;
+          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+          el.style.left = (clientX - offsetX) + "px";
+          el.style.top = (clientY - offsetY) + "px";
+        }
+
+        function onUp() {
+          dragging = false;
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+          document.removeEventListener("touchmove", onMove);
+          document.removeEventListener("touchend", onUp);
+        }
+
+        el.addEventListener("mousedown", onDown);
+        el.addEventListener("touchstart", onDown, { passive: false });
       }
     })();
   </script>
 </body>
-
 </html>
