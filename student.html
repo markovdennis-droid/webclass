@@ -27,7 +27,7 @@ body {
     -webkit-backdrop-filter: blur(14px);
     padding: 20px 20px 24px;
     border-radius: 18px;
-    width: 1100px;
+    width: 1180px;
     max-width: 96vw;
     border: 1px solid rgba(255,255,255,0.1);
     box-shadow: 0 25px 50px rgba(0,0,0,0.45);
@@ -61,7 +61,7 @@ h2 {
 
 /* ---------- ВИДЕО-КОЛОНКА ---------- */
 .video-column {
-    flex: 2.5;
+    flex: 2.7;
     background: rgba(15,23,42,0.92);
     border-radius: 16px;
     padding: 14px;
@@ -83,7 +83,7 @@ h2 {
     overflow: hidden;
     background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
     padding: 12px;
-    min-height: 360px;
+    min-height: 420px;
 }
 
 /* ---------- БОЛЬШОЕ ОКНО (УЧИТЕЛЬ) ---------- */
@@ -91,22 +91,37 @@ h2 {
     border-radius: 12px;
     background: rgba(15,23,42,0.90);
     border: 1px solid rgba(129,140,248,0.55);
-    height: 400px;
+    height: 440px;
+    min-height: 320px;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     color: #e5e7eb;
     font-size: 14px;
     text-align: center;
-    padding: 12px;
+    padding: 0;
+    resize: both;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.remote-box video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.remote-placeholder {
+    position: absolute;
+    text-align: center;
+    pointer-events: none;
 }
 
 .remote-label {
     font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    opacity: 0.75;
+    opacity: 0.8;
     margin-bottom: 6px;
 }
 
@@ -119,6 +134,7 @@ h2 {
 .remote-sub {
     font-size: 12px;
     opacity: 0.9;
+    max-width: 280px;
 }
 
 /* ---------- МАЛЕНЬКОЕ ОКНО (УЧЕНИК) ---------- */
@@ -127,7 +143,7 @@ h2 {
     right: 14px;
     bottom: 14px;
     width: 28%;
-    min-width: 140px;
+    min-width: 150px;
     border-radius: 10px;
     background: rgba(15,23,42,0.98);
     border: 1px solid rgba(148,163,184,0.65);
@@ -137,6 +153,8 @@ h2 {
     gap: 4px;
     font-size: 12px;
     color: #e5e7eb;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+    z-index: 20;
 }
 
 .self-header {
@@ -145,6 +163,7 @@ h2 {
     align-items: center;
     opacity: 0.8;
     font-size: 11px;
+    cursor: move;
 }
 
 .self-tag {
@@ -155,12 +174,19 @@ h2 {
     margin-top: 4px;
     border-radius: 7px;
     background: linear-gradient(135deg, #22c55e, #6366f1);
-    height: 85px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 11px;
     text-align: center;
+    overflow: hidden;
+}
+
+.self-preview video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 /* ---------- ТЕКСТ И КНОПКА ---------- */
@@ -190,13 +216,14 @@ h2 {
 /* ---------- ЧАТ ---------- */
 .chat-panel {
     flex: 0.9;
-    background: rgba(15,23,42,0.85);
+    background: rgba(15,23,42,0.90);
     border-radius: 16px;
     border: 1px solid rgba(148,163,184,0.25);
     padding: 12px;
     display: flex;
     flex-direction: column;
     color: #e5e7eb;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
 }
 
 .chat-header {
@@ -204,6 +231,7 @@ h2 {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 6px;
+    cursor: move;
 }
 
 .chat-title {
@@ -354,21 +382,22 @@ h2 {
             <div class="video-title">Комната</div>
 
             <div class="video-wrapper">
-
-                <div class="remote-box">
-                    <div class="remote-label">Окно учителя</div>
-                    <div class="remote-name" id="teacherNameLabel">Учитель</div>
-                    <div class="remote-sub">Когда учитель начнёт урок, здесь появится его видео.</div>
+                <div class="remote-box" id="remoteBoxStudent">
+                    <video id="remoteVideoStudent" autoplay playsinline muted></video>
+                    <div class="remote-placeholder">
+                        <div class="remote-label">Окно учителя</div>
+                        <div class="remote-name" id="teacherNameLabel">Учитель</div>
+                        <div class="remote-sub">Когда учитель начнёт урок, здесь появится его видео.</div>
+                    </div>
                 </div>
 
-                <div class="self-box">
-                    <div class="self-header">
+                <div class="self-box" id="selfBoxStudent">
+                    <div class="self-header" id="selfHeaderStudent">
                         <span class="self-tag">Вы (ученик)</span>
                         <span>предпросмотр</span>
                     </div>
-                    <div class="self-preview">
-                        Здесь позже будет ваше видео.
-                        <br>Камера включится после подключения.
+                    <div class="self-preview" id="selfPreviewStudent">
+                        Включаем камеру...
                     </div>
                 </div>
             </div>
@@ -379,8 +408,8 @@ h2 {
         </div>
 
         <!-- ЧАТ -->
-        <div class="chat-panel">
-            <div class="chat-header">
+        <div class="chat-panel" id="chatPanelStudent">
+            <div class="chat-header" id="chatHeaderStudent">
                 <div class="chat-title">Чат урока</div>
                 <div class="chat-status">Сообщения пока только у вас</div>
             </div>
@@ -412,13 +441,15 @@ h2 {
 <script>
 const params = new URLSearchParams(window.location.search);
 const room = params.get("room") || "неизвестная комната";
+const teacherName = params.get("teacher") || "Учитель";
 document.getElementById("roomInfo").textContent = "Комната: " + room;
+document.getElementById("teacherNameLabel").textContent = teacherName;
 
 function goHome() {
     window.location.href = "/";
 }
 
-// ЧАТ УЧЕНИКА
+// ЧАТ УЧЕНИКА (демо локальный)
 const chatMessagesS = document.getElementById("chatMessagesStudent");
 const chatInputS = document.getElementById("chatInputStudent");
 const chatSendS = document.getElementById("chatSendStudent");
@@ -467,6 +498,110 @@ chatFileS.addEventListener("change", () => {
     addStudentMessage(`Файл: ${file.name} (демо)`, true);
     chatFileS.value = "";
 });
+
+// ====== DRAG + RESIZE ======
+function makeDraggable(element, handle) {
+    let startX, startY, startTx = 0, startTy = 0;
+    let dragging = false;
+
+    const target = handle || element;
+
+    target.addEventListener("mousedown", (e) => {
+        dragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+
+        const style = window.getComputedStyle(element);
+        const transform = style.transform;
+        if (transform && transform !== "none") {
+            const match = transform.match(/matrix\\(([^)]+)\\)/);
+            if (match) {
+                const values = match[1].split(",").map(parseFloat);
+                startTx = values[4] || 0;
+                startTy = values[5] || 0;
+            }
+        } else {
+            startTx = 0;
+            startTy = 0;
+        }
+        e.preventDefault();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        element.style.transform = `translate(${startTx + dx}px, ${startTy + dy}px)`;
+    });
+
+    window.addEventListener("mouseup", () => dragging = false);
+}
+
+function makeResizable(el) {
+    el.style.position = "relative";
+    const grip = document.createElement("div");
+    grip.style.width = "14px";
+    grip.style.height = "14px";
+    grip.style.position = "absolute";
+    grip.style.right = "2px";
+    grip.style.bottom = "2px";
+    grip.style.borderRadius = "3px";
+    grip.style.background = "rgba(255,255,255,0.7)";
+    grip.style.cursor = "nwse-resize";
+    grip.style.zIndex = "30";
+    el.appendChild(grip);
+
+    let startX, startY, startW, startH, resizing = false;
+
+    grip.addEventListener("mousedown", (e) => {
+        e.stopPropagation();
+        resizing = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        startW = el.offsetWidth;
+        startH = el.offsetHeight;
+        e.preventDefault();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+        if (!resizing) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        el.style.width = (startW + dx) + "px";
+        el.style.height = (startH + dy) + "px";
+    });
+
+    window.addEventListener("mouseup", () => resizing = false);
+}
+
+// применяем к элементам
+makeDraggable(document.getElementById("selfBoxStudent"), document.getElementById("selfHeaderStudent"));
+makeResizable(document.getElementById("selfBoxStudent"));
+
+makeDraggable(document.getElementById("chatPanelStudent"), document.getElementById("chatHeaderStudent"));
+makeResizable(document.getElementById("chatPanelStudent"));
+
+makeResizable(document.getElementById("remoteBoxStudent"));
+
+// ====== ЛОКАЛЬНОЕ ВИДЕО УЧЕНИКА (камера) ======
+async function startLocalVideoStudent() {
+    const preview = document.getElementById("selfPreviewStudent");
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const video = document.createElement("video");
+        video.autoplay = true;
+        video.muted = true;
+        video.playsInline = true;
+        video.srcObject = stream;
+        preview.innerHTML = "";
+        preview.appendChild(video);
+    } catch (err) {
+        console.error(err);
+        preview.textContent = "Не удалось включить камеру. Разрешите доступ к камере в браузере.";
+    }
+}
+
+startLocalVideoStudent();
 </script>
 
 </body>
