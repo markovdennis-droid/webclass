@@ -1,971 +1,473 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <title>WebClass • Student</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root {
-      --bg-main: radial-gradient(circle at top, #0f172a 0, #020617 38%, #000 100%);
-      --card-border: rgba(30, 64, 175, 0.45);
-      --text-main: #e5e7eb;
-      --text-soft: #9ca3af;
-      --radius-lg: 18px;
-      --radius-pill: 999px;
+    <meta charset="UTF-8">
+    <title>WebClass — Комната ученика</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+/* ---------- ОБЩИЙ ФОН, КАК У УЧИТЕЛЯ ---------- */
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
+    background-attachment: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #f1f5f9;
+}
+
+/* ---------- ОСНОВНАЯ КАРТОЧКА ---------- */
+.card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    padding: 20px 20px 24px;
+    border-radius: 18px;
+    width: 1100px;
+    max-width: 96vw;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.45);
+}
+
+/* ---------- ВЕРХНЯЯ СТРОКА ---------- */
+.top-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    align-items: baseline;
+    margin-bottom: 12px;
+}
+
+h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.room {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+/* ---------- НИЖНИЙ БЛОК ---------- */
+.bottom-row {
+    display: flex;
+    gap: 18px;
+    align-items: stretch;
+}
+
+/* ---------- ВИДЕО-КОЛОНКА ---------- */
+.video-column {
+    flex: 2.5;
+    background: rgba(15,23,42,0.92);
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid rgba(148,163,184,0.25);
+    color: #e5e7eb;
+    display: flex;
+    flex-direction: column;
+}
+
+.video-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.video-wrapper {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    background: radial-gradient(circle at top, #1d4ed8, #0f172a 60%);
+    padding: 12px;
+    min-height: 360px;
+}
+
+/* ---------- БОЛЬШОЕ ОКНО (УЧИТЕЛЬ) ---------- */
+.remote-box {
+    border-radius: 12px;
+    background: rgba(15,23,42,0.90);
+    border: 1px solid rgba(129,140,248,0.55);
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #e5e7eb;
+    font-size: 14px;
+    text-align: center;
+    padding: 12px;
+}
+
+.remote-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+    margin-bottom: 6px;
+}
+
+.remote-name {
+    font-size: 19px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.remote-sub {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+/* ---------- МАЛЕНЬКОЕ ОКНО (УЧЕНИК) ---------- */
+.self-box {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 28%;
+    min-width: 140px;
+    border-radius: 10px;
+    background: rgba(15,23,42,0.98);
+    border: 1px solid rgba(148,163,184,0.65);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    color: #e5e7eb;
+}
+
+.self-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    opacity: 0.8;
+    font-size: 11px;
+}
+
+.self-tag {
+    font-weight: 600;
+}
+
+.self-preview {
+    margin-top: 4px;
+    border-radius: 7px;
+    background: linear-gradient(135deg, #22c55e, #6366f1);
+    height: 85px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    text-align: center;
+}
+
+/* ---------- ТЕКСТ И КНОПКА ---------- */
+.hint {
+    font-size: 13px;
+    opacity: 0.9;
+    margin-top: 12px;
+}
+
+.btn-exit {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    font-size: 13px;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: background .2s;
+}
+
+.btn-exit:hover {
+    background: #b91c1c;
+}
+
+/* ---------- ЧАТ ---------- */
+.chat-panel {
+    flex: 0.9;
+    background: rgba(15,23,42,0.85);
+    border-radius: 16px;
+    border: 1px solid rgba(148,163,184,0.25);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    color: #e5e7eb;
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.chat-title {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.chat-status {
+    font-size: 11px;
+    color: #9ca3af;
+}
+
+.chat-messages {
+    flex: 1;
+    background: rgba(15,23,42,0.5);
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 8px;
+    overflow-y: auto;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.chat-empty {
+    font-size: 12px;
+    color: #9ca3af;
+    text-align: center;
+    margin-top: 18px;
+}
+
+.chat-input-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.chat-input-row input[type="text"] {
+    flex: 1;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.14);
+    padding: 8px 10px;
+    font-size: 13px;
+    background: rgba(0,0,0,0.25);
+    color: #e5e7eb;
+}
+
+.chat-input-row input::placeholder {
+    color: #9ca3af;
+}
+
+.chat-send-btn {
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: none;
+    background: #16a34a;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.chat-send-btn:hover {
+    background: #15803d;
+}
+
+.chat-attach {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+    color: #e5e7eb;
+}
+
+.chat-attach:hover {
+    background: rgba(255,255,255,0.12);
+}
+
+.chat-note {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+/* ---------- СООБЩЕНИЯ ---------- */
+.msg {
+    margin-bottom: 7px;
+    line-height: 1.35;
+}
+
+.msg-you {
+    text-align: right;
+}
+
+.msg-author {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+.msg-bubble {
+    display: inline-block;
+    margin-top: 2px;
+    padding: 6px 9px;
+    border-radius: 9px;
+    background: rgba(255,255,255,0.1);
+}
+
+.msg-you .msg-bubble {
+    background: #4f46e5;
+    color: white;
+}
+
+/* ---------- МОБИЛЬНАЯ АДАПТАЦИЯ ---------- */
+@media (max-width: 900px) {
+    .card {
+        width: 100%;
+        margin: 8px;
+        padding: 14px;
     }
-
-    * { box-sizing: border-box; }
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Segoe UI", sans-serif;
-      background: #020617;
-      color: var(--text-main);
+    .bottom-row {
+        flex-direction: column;
     }
-
-    body {
-      background-image: var(--bg-main);
-      background-attachment: fixed;
+    .video-wrapper {
+        min-height: 280px;
     }
-
-    .app-shell {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      padding: 10px 16px 16px;
-      gap: 10px;
+    .remote-box {
+        height: 280px;
     }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .brand-block {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-logo {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      background: radial-gradient(circle at 20% 0, #4f46e5, #22d3ee);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 18px;
-      color: #020617;
-      box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.75),
-                  0 10px 25px rgba(15, 23, 42, 0.8);
-    }
-
-    .brand-text strong {
-      display: block;
-      font-size: 16px;
-    }
-
-    .brand-text span {
-      display: block;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-    }
-
-    .layout-presets {
-      display: flex;
-      gap: 4px;
-      background: rgba(15, 23, 42, 0.9);
-      border-radius: 999px;
-      padding: 2px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-    }
-
-    .layout-btn {
-      border-radius: 999px;
-      border: none;
-      background: transparent;
-      color: var(--text-soft);
-      padding: 4px 8px;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .layout-btn.active {
-      background: rgba(79, 70, 229, 0.2);
-      color: #e5e7eb;
-    }
-
-    .quality-select {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 12px;
-      padding: 4px 8px;
-    }
-
-    .settings-toggle,
-    .theme-toggle-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.96);
-      color: var(--text-main);
-      font-size: 12px;
-      padding: 4px 9px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .app-main {
-      flex: 1;
-      display: grid;
-      grid-template-columns: minmax(0, 3fr) minmax(260px, 1.2fr);
-      gap: 12px;
-      min-height: 0;
-    }
-
-    .video-panel {
-      background: rgba(15, 23, 42, 0.94);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--card-border);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
-      padding: 10px 12px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      position: relative;
-      min-height: 0;
-    }
-
-    .video-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .video-header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .teacher-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.18);
-    }
-
-    .video-header-text strong {
-      display: block;
-      font-size: 14px;
-    }
-
-    .video-header-text span {
-      display: block;
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .video-header-actions {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .swap-btn,
-    .fs-btn,
-    .mute-remote-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 12px;
-      padding: 5px 10px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .fs-btn-icon { font-size: 14px; }
-
-    .video-body {
-      border-radius: 14px;
-      background: radial-gradient(circle at top left, #1f2937, #020617);
-      padding: 8px;
-      position: relative;
-      min-height: 0;
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .main-video-wrapper {
-      position: relative;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(30, 64, 175, 0.7);
-      background: #000;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.8);
-      flex: 1;
-      min-height: 0;
-    }
-
-    #mainVideo {
-      width: 100%;
-      height: 100%;
-      display: block;
-      object-fit: cover;
-      background: #000;
-    }
-
-    .self-box {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      width: 260px;
-      max-width: 32vw;
-      border-radius: 16px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.8);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      backdrop-filter: blur(6px);
-      cursor: move;
-      z-index: 10;
-    }
-
-    .self-box-header,
-    .self-box-footer {
-      padding: 4px 8px;
-      font-size: 11px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-soft);
-      background: radial-gradient(circle at top, rgba(15, 23, 42, 0.95), #020617);
-    }
-
-    .self-box-header span:first-child {
-      font-weight: 500;
-      color: var(--text-main);
-    }
-
-    #selfVideo {
-      width: 100%;
-      height: 150px;
-      object-fit: cover;
-      background: #020617;
-    }
-
-    .pill-btn,
-    .toggle-self-btn {
-      border-radius: 999px;
-      border: none;
-      padding: 4px 9px;
-      font-size: 11px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-    }
-
-    .pill-btn {
-      border: 1px solid rgba(148, 163, 184, 0.7);
-    }
-
-    .dot-mic {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #22c55e;
-    }
-
-    .fs-hint {
-      margin-top: 5px;
-      font-size: 11px;
-      color: var(--text-soft);
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .icon-kbd {
-      border-radius: 6px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 0 5px;
-      font-size: 10px;
-    }
-
-    .side-panel {
-      background: rgba(15, 23, 42, 0.96);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--card-border);
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.95);
-      padding: 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      min-height: 0;
-    }
-
-    .side-header h2 {
-      margin: 0;
-      font-size: 15px;
-    }
-
-    .side-header span {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .chat-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      min-height: 0;
-    }
-
-    .chat-messages {
-      flex: 1;
-      min-height: 0;
-      border-radius: 12px;
-      background: radial-gradient(circle at top, #020617, #020617);
-      border: 1px solid rgba(30, 64, 175, 0.6);
-      padding: 6px 6px 8px;
-      overflow-y: auto;
-      font-size: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .chat-message {
-      max-width: 92%;
-      padding: 6px 8px;
-      border-radius: 11px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(30, 64, 175, 0.5);
-    }
-
-    .chat-message.me {
-      align-self: flex-end;
-      background: radial-gradient(circle at top, #4f46e5, #6366f1);
-      border-color: transparent;
-      color: #e5e7eb;
-    }
-
-    .chat-message.other {
-      align-self: flex-start;
-    }
-
-    .chat-message-meta {
-      font-size: 10px;
-      opacity: 0.8;
-      margin-bottom: 2px;
-    }
-
-    .chat-message-text {
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-
-    .chat-attachments {
-      min-height: 0;
-      max-height: 56px;
-      overflow-y: auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      font-size: 11px;
-    }
-
-    .chat-attachment-pill {
-      border-radius: 999px;
-      padding: 2px 7px;
-      background: rgba(79, 70, 229, 0.25);
-      border: 1px solid rgba(129, 140, 248, 0.65);
-    }
-
-    .chat-footer {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding-top: 2px;
-    }
-
-    .file-btn-label {
-      width: 32px;
-      height: 32px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    .chat-input {
-      flex: 1;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.96);
-      padding: 6px 10px;
-      color: var(--text-main);
-      font-size: 13px;
-      outline: none;
-    }
-
-    .chat-input::placeholder {
-      color: rgba(148, 163, 184, 0.7);
-    }
-
-    .chat-send-btn {
-      border-radius: 999px;
-      border: none;
-      background: linear-gradient(135deg, #4f46e5, #6366f1);
-      color: #e5e7eb;
-      font-size: 13px;
-      padding: 7px 10px;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .chat-send-btn span { font-size: 16px; }
-
-    @media (max-width: 980px) {
-      .app-main {
-        grid-template-columns: 1fr;
-      }
-      .self-box {
-        width: 60vw;
-        max-width: 280px;
-      }
-    }
-  </style>
+}
+</style>
 </head>
+
 <body>
-  <div class="app-shell">
-    <header>
-      <div class="brand-block">
-        <div class="brand-logo">W</div>
-        <div class="brand-text">
-          <strong>WebClass • Student</strong>
-          <span>Кабинет ученика · подключение к учителю</span>
-        </div>
-      </div>
-      <div class="header-actions">
-        <div class="layout-presets">
-          <button class="layout-btn active" data-layout="zoom">Zoom</button>
-          <button class="layout-btn" data-layout="teams">Teams</button>
-          <button class="layout-btn" data-layout="stack">Стек</button>
-        </div>
-        <select id="qualitySelect" class="quality-select">
-          <option value="high">Качество: High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
-        </select>
-        <button id="settingsToggle" class="settings-toggle">⚙️ Настройки</button>
-        <button id="themeToggle" class="theme-toggle-btn">🌙</button>
-      </div>
-    </header>
+<div class="card">
+    <div class="top-row">
+        <h2>Урок WebClass</h2>
+        <div id="roomInfo" class="room"></div>
+    </div>
 
-    <main class="app-main">
-      <section class="video-panel" id="videoPanel">
-        <div class="video-header">
-          <div class="video-header-left">
-            <div class="teacher-dot"></div>
-            <div class="video-header-text">
-              <strong>Ваш учитель</strong>
-              <span>Онлайн-видеосвязь</span>
+    <div class="bottom-row">
+
+        <!-- ВИДЕО -->
+        <div class="video-column">
+            <div class="video-title">Комната</div>
+
+            <div class="video-wrapper">
+
+                <div class="remote-box">
+                    <div class="remote-label">Окно учителя</div>
+                    <div class="remote-name" id="teacherNameLabel">Учитель</div>
+                    <div class="remote-sub">Когда учитель начнёт урок, здесь появится его видео.</div>
+                </div>
+
+                <div class="self-box">
+                    <div class="self-header">
+                        <span class="self-tag">Вы (ученик)</span>
+                        <span>предпросмотр</span>
+                    </div>
+                    <div class="self-preview">
+                        Здесь позже будет ваше видео.
+                        <br>Камера включится после подключения.
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="video-header-actions">
-            <button class="mute-remote-btn" id="muteRemoteBtn">🔊 Звук учителя</button>
-            <button class="swap-btn" id="swapBtn">↔ Поменять местами</button>
-            <button class="fs-btn" id="fullscreenBtn">
-              <span class="fs-btn-icon" id="fsIcon">⛶</span> На весь экран
-            </button>
-          </div>
+
+            <div class="hint">Вы уже в комнате. Если связи пока нет — просто дождитесь учителя.</div>
+
+            <button class="btn-exit" onclick="goHome()">Выйти из урока</button>
         </div>
 
-        <div class="video-body" id="mainVideoWrapper">
-          <div class="main-video-wrapper">
-            <video id="mainVideo" autoplay playsinline></video>
-
-            <div class="self-box" id="selfBox">
-              <div class="self-box-header">
-                <span>Вы</span>
-                <span style="opacity:0.75;">PiP</span>
-              </div>
-              <video id="selfVideo" autoplay playsinline muted></video>
-              <div class="self-box-footer">
-                <button class="pill-btn" id="micToggleBtn">
-                  <span class="dot-mic"></span> Микрофон
-                </button>
-                <button class="toggle-self-btn" id="toggleSelfBtn">
-                  🙈 Скрыть
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="fs-hint">
-            <span class="icon-kbd">Esc</span>
-            <span>— выход из полноэкранного режима</span>
-          </div>
-        </div>
-      </section>
-
-      <aside class="side-panel" id="sidePanel">
-        <div class="side-header">
-          <h2>Чат с учителем</h2>
-          <span>Общий чат (онлайн)</span>
-        </div>
-
+        <!-- ЧАТ -->
         <div class="chat-panel">
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-attachments" id="chatAttachments"></div>
-          <div class="chat-footer">
-            <label class="file-btn-label" for="chatFileInput">📎</label>
-            <input type="file" id="chatFileInput" multiple style="display:none;" />
-            <input
-              type="text"
-              id="chatInput"
-              class="chat-input"
-              placeholder="Написать сообщение..."
-            />
-            <button class="chat-send-btn" id="chatSendBtn">
-              <span>➤</span> Отпр.
-            </button>
-          </div>
+            <div class="chat-header">
+                <div class="chat-title">Чат урока</div>
+                <div class="chat-status">Сообщения пока только у вас</div>
+            </div>
+
+            <div id="chatMessagesStudent" class="chat-messages">
+                <div class="chat-empty">
+                    Задайте вопрос учителю — позже мы сделаем так, чтобы он видел это сообщение.
+                </div>
+            </div>
+
+            <div class="chat-input-row">
+                <label class="chat-attach" title="Прикрепить файл">
+                    📎
+                    <input type="file" id="chatFileStudent" style="display:none;">
+                </label>
+
+                <input id="chatInputStudent" type="text" placeholder="Написать сообщение учителю...">
+
+                <button id="chatSendStudent" class="chat-send-btn">Отправить</button>
+            </div>
+
+            <div class="chat-note">
+                Прикрепление файлов до 10 МБ (PDF, изображения). Это демо — без реальной загрузки.
+            </div>
         </div>
-      </aside>
-    </main>
-  </div>
+    </div>
+</div>
 
-  <script>
-    (function () {
-      const ROLE = "student";
-      const params = new URLSearchParams(window.location.search);
-      const roomId = params.get("room") || "default-room";
+<script>
+const params = new URLSearchParams(window.location.search);
+const room = params.get("room") || "неизвестная комната";
+document.getElementById("roomInfo").textContent = "Комната: " + room;
 
-      const signalingUrl =
-        `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
+function goHome() {
+    window.location.href = "/";
+}
 
-      const selfVideo = document.getElementById("selfVideo");
-      const mainVideo = document.getElementById("mainVideo");
+// ЧАТ УЧЕНИКА
+const chatMessagesS = document.getElementById("chatMessagesStudent");
+const chatInputS = document.getElementById("chatInputStudent");
+const chatSendS = document.getElementById("chatSendStudent");
+const chatFileS = document.getElementById("chatFileStudent");
 
-      if (!selfVideo || !mainVideo) return;
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
-        return;
-      }
+function addStudentMessage(text, isFile = false) {
+    if (!text.trim()) return;
 
-      let localStream = null;
-      let remoteStream = null;
-      let pc = null;
-      let ws = null;
+    const empty = chatMessagesS.querySelector(".chat-empty");
+    if (empty) empty.remove();
 
-      const statusEl = createStatusBadge("student");
-      status("init");
+    const wrapper = document.createElement("div");
+    wrapper.className = "msg msg-you";
 
-      start();
+    const author = document.createElement("div");
+    author.className = "msg-author";
+    author.textContent = isFile ? "Файл (демо)" : "Вы";
 
-      async function start() {
-        try {
-          localStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
-            audio: true
-          });
-          selfVideo.srcObject = localStream;
-          status("local-stream");
-        } catch (err) {
-          console.error("gUM error:", err);
-          alert("Не удалось получить доступ к камере/микрофону.");
-          status("gUM-error");
-          return;
-        }
-        setupWebSocket();
-        initUIControls();
-      }
+    const bubble = document.createElement("div");
+    bubble.className = "msg-bubble";
+    bubble.textContent = text;
 
-      function setupWebSocket() {
-        try {
-          ws = new WebSocket(signalingUrl);
-          status("ws-connecting");
-        } catch (err) {
-          console.error("WS create error:", err);
-          status("ws-error");
-          return;
-        }
+    wrapper.appendChild(author);
+    wrapper.appendChild(bubble);
+    chatMessagesS.appendChild(wrapper);
 
-        ws.onopen = () => {
-          status("ws-open");
-          send({ type: "ready", role: ROLE });
-        };
+    chatMessagesS.scrollTop = chatMessagesS.scrollHeight;
+}
 
-        ws.onmessage = async (event) => {
-          let msg;
-          try {
-            msg = JSON.parse(event.data);
-          } catch {
-            return;
-          }
-          if (msg.role === ROLE) return;
+chatSendS.addEventListener("click", () => {
+    addStudentMessage(chatInputS.value);
+    chatInputS.value = "";
+});
 
-          switch (msg.type) {
-            case "ready":
-              // ждём offer от учителя
-              break;
-            case "offer":
-              await ensurePeerConnection();
-              await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-              const answer = await pc.createAnswer();
-              await pc.setLocalDescription(answer);
-              send({ type: "answer", sdp: pc.localDescription, role: ROLE });
-              status("answer-sent");
-              break;
-            case "answer":
-              if (!pc) return;
-              await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-              status("answer-set");
-              break;
-            case "candidate":
-              if (!pc || !msg.candidate) return;
-              try {
-                await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-                status("candidate-add");
-              } catch (e) {
-                console.warn("addIceCandidate error", e);
-              }
-              break;
-            case "chat":
-              if (msg.text) addMessage(msg.text, "Учитель");
-              break;
-          }
-        };
+chatInputS.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        addStudentMessage(chatInputS.value);
+        chatInputS.value = "";
+    }
+});
 
-        ws.onclose = () => status("ws-closed");
-        ws.onerror = () => status("ws-error");
-      }
+chatFileS.addEventListener("change", () => {
+    if (!chatFileS.files || chatFileS.files.length === 0) return;
+    const file = chatFileS.files[0];
+    addStudentMessage(`Файл: ${file.name} (демо)`, true);
+    chatFileS.value = "";
+});
+</script>
 
-      function send(payload) {
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify(payload));
-        }
-      }
-
-      async function ensurePeerConnection() {
-        if (pc) return;
-        status("pc-creating");
-
-        pc = new RTCPeerConnection({
-          iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-        });
-
-        if (localStream) {
-          localStream.getTracks().forEach(track =>
-            pc.addTrack(track, localStream)
-          );
-        }
-
-        pc.onicecandidate = (event) => {
-          if (event.candidate) {
-            send({ type: "candidate", candidate: event.candidate, role: ROLE });
-          }
-        };
-
-        pc.ontrack = (event) => {
-          const stream = event.streams[0];
-          if (!remoteStream) {
-            remoteStream = new MediaStream();
-            mainVideo.srcObject = remoteStream;
-          }
-          stream.getTracks().forEach(track => remoteStream.addTrack(track));
-          status("remote-track");
-        };
-      }
-
-      function createStatusBadge(label) {
-        const el = document.createElement("div");
-        el.style.position = "fixed";
-        el.style.left = "8px";
-        el.style.bottom = "28px";
-        el.style.zIndex = "9999";
-        el.style.fontSize = "10px";
-        el.style.padding = "3px 6px";
-        el.style.borderRadius = "999px";
-        el.style.background = "rgba(15,23,42,0.9)";
-        el.style.border = "1px solid rgba(148,163,184,.6)";
-        el.style.color = "#e5e7eb";
-        el.textContent = label + ": …";
-        document.body.appendChild(el);
-        return el;
-      }
-
-      function status(code) {
-        if (statusEl) statusEl.textContent = "student: " + code;
-      }
-
-      // ----- UI: перетаскивание, микрофон, mute, качество, чат -----
-
-      function initUIControls() {
-        const input = document.getElementById("chatInput");
-        const sendBtn = document.getElementById("chatSendBtn");
-        const messages = document.getElementById("chatMessages");
-        const attachBox = document.getElementById("chatAttachments");
-        const fileInput = document.getElementById("chatFileInput");
-        const micBtn = document.getElementById("micToggleBtn");
-        const toggleSelfBtn = document.getElementById("toggleSelfBtn");
-        const selfBox = document.getElementById("selfBox");
-        const swapBtn = document.getElementById("swapBtn");
-        const fsBtn = document.getElementById("fullscreenBtn");
-        const fsIcon = document.getElementById("fsIcon");
-        const videoPanel = document.getElementById("videoPanel");
-        const muteRemoteBtn = document.getElementById("muteRemoteBtn");
-        const layoutButtons = document.querySelectorAll(".layout-btn");
-        const themeToggle = document.getElementById("themeToggle");
-        const qualitySelect = document.getElementById("qualitySelect");
-
-        if (selfBox) initDraggable(selfBox);
-
-        if (micBtn) {
-          micBtn.addEventListener("click", () => {
-            if (!localStream) return;
-            localStream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
-            const enabled = localStream.getAudioTracks().some(t => t.enabled);
-            micBtn.querySelector(".dot-mic").style.backgroundColor =
-              enabled ? "#22c55e" : "#ef4444";
-          });
-        }
-
-        if (toggleSelfBtn && selfBox) {
-          toggleSelfBtn.addEventListener("click", () => {
-            const hidden = selfBox.style.display === "none";
-            selfBox.style.display = hidden ? "flex" : "none";
-            toggleSelfBtn.textContent = hidden ? "🙈 Скрыть" : "👁 Показать";
-          });
-        }
-
-        if (muteRemoteBtn && mainVideo) {
-          mainVideo.muted = false;
-          muteRemoteBtn.addEventListener("click", () => {
-            mainVideo.muted = !mainVideo.muted;
-            muteRemoteBtn.textContent =
-              mainVideo.muted ? "🔇 Звук учителя" : "🔊 Звук учителя";
-          });
-        }
-
-        if (qualitySelect && localStream) {
-          applyQuality(qualitySelect.value);
-          qualitySelect.addEventListener("change", () => {
-            applyQuality(qualitySelect.value);
-          });
-        }
-
-        function applyQuality(level) {
-          if (!localStream) return;
-          const track = localStream.getVideoTracks()[0];
-          if (!track || !track.applyConstraints) return;
-          let constraints;
-          if (level === "low") {
-            constraints = { width: 640, height: 360, frameRate: 20 };
-          } else if (level === "medium") {
-            constraints = { width: 960, height: 540, frameRate: 25 };
-          } else {
-            constraints = { width: 1280, height: 720, frameRate: 30 };
-          }
-          track.applyConstraints(constraints).catch(console.warn);
-        }
-
-        if (swapBtn) {
-          swapBtn.addEventListener("click", () => {
-            if (!localStream || !remoteStream) return;
-            const mainIsRemote = mainVideo.srcObject === remoteStream;
-            if (mainIsRemote) {
-              mainVideo.srcObject = localStream;
-              selfVideo.srcObject = remoteStream;
-            } else {
-              mainVideo.srcObject = remoteStream;
-              selfVideo.srcObject = localStream;
-            }
-          });
-        }
-
-        if (fsBtn && videoPanel) {
-          fsBtn.addEventListener("click", async () => {
-            try {
-              if (!document.fullscreenElement) {
-                await videoPanel.requestFullscreen();
-                fsIcon.textContent = "🡼";
-              } else {
-                await document.exitFullscreen();
-                fsIcon.textContent = "⛶";
-              }
-            } catch (e) {
-              console.warn("FS error", e);
-            }
-          });
-          document.addEventListener("fullscreenchange", () => {
-            if (!document.fullscreenElement) fsIcon.textContent = "⛶";
-          });
-        }
-
-        if (layoutButtons) {
-          layoutButtons.forEach(btn => {
-            btn.addEventListener("click", () => {
-              layoutButtons.forEach(b => b.classList.remove("active"));
-              btn.classList.add("active");
-            });
-          });
-        }
-
-        if (themeToggle) {
-          themeToggle.addEventListener("click", () => {
-            document.body.dataset.theme =
-              document.body.dataset.theme === "light" ? "dark" : "light";
-          });
-        }
-
-        // ЧАТ
-        if (input && sendBtn && messages) {
-          let pendingFiles = [];
-
-          if (fileInput) {
-            fileInput.addEventListener("change", () => {
-              pendingFiles = Array.from(fileInput.files || []);
-              renderAttachments();
-            });
-          }
-
-          function renderAttachments() {
-            if (!attachBox) return;
-            attachBox.innerHTML = "";
-            pendingFiles.forEach(f => {
-              const pill = document.createElement("div");
-              pill.className = "chat-attachment-pill";
-              pill.textContent = "📎 " + f.name;
-              attachBox.appendChild(pill);
-            });
-          }
-
-          function addMessageLocal(text, from = "Вы") {
-            const wrap = document.createElement("div");
-            wrap.className =
-              "chat-message " + (from === "Вы" ? "me" : "other");
-            const meta = document.createElement("div");
-            meta.className = "chat-message-meta";
-            meta.textContent = from;
-            const body = document.createElement("div");
-            body.className = "chat-message-text";
-            body.textContent = text;
-            wrap.appendChild(meta);
-            wrap.appendChild(body);
-            messages.appendChild(wrap);
-            messages.scrollTop = messages.scrollHeight;
-          }
-
-          window.__studentAddMessage = addMessageLocal;
-
-          function sendChatMessage() {
-            const text = (input.value || "").trim();
-            if (!text && (!pendingFiles || pendingFiles.length === 0)) return;
-
-            if (text) addMessageLocal(text, "Вы");
-            if (text) send({ type: "chat", role: ROLE, text });
-
-            pendingFiles = [];
-            renderAttachments();
-            input.value = "";
-          }
-
-          sendBtn.addEventListener("click", (e) => {
-            e.preventDefault();
-            sendChatMessage();
-          });
-
-          input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              sendChatMessage();
-            }
-          });
-        }
-      }
-
-      function addMessage(text, from = "Учитель") {
-        if (window.__studentAddMessage) {
-          window.__studentAddMessage(text, from);
-        }
-      }
-
-      function initDraggable(el) {
-        let dragging = false;
-        let offsetX = 0, offsetY = 0;
-
-        function onDown(e) {
-          dragging = true;
-          const rect = el.getBoundingClientRect();
-          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-          offsetX = clientX - rect.left;
-          offsetY = clientY - rect.top;
-          el.style.right = "auto";
-          el.style.bottom = "auto";
-          document.addEventListener("mousemove", onMove);
-          document.addEventListener("mouseup", onUp);
-          document.addEventListener("touchmove", onMove, { passive: false });
-          document.addEventListener("touchend", onUp);
-        }
-
-        function onMove(e) {
-          if (!dragging) return;
-          const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-          const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-          el.style.left = (clientX - offsetX) + "px";
-          el.style.top  = (clientY - offsetY) + "px";
-        }
-
-        function onUp() {
-          dragging = false;
-          document.removeEventListener("mousemove", onMove);
-          document.removeEventListener("mouseup", onUp);
-          document.removeEventListener("touchmove", onMove);
-          document.removeEventListener("touchend", onUp);
-        }
-
-        el.addEventListener("mousedown", onDown);
-        el.addEventListener("touchstart", onDown, { passive: false });
-      }
-    })();
-  </script>
 </body>
 </html>
