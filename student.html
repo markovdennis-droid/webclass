@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <title>WebClass — Ученик</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
   <style>
     :root {
       --bg-main: #050816;
@@ -14,11 +13,12 @@
       --accent-soft: rgba(79, 70, 229, 0.25);
       --text-main: #f9fafb;
       --text-dim: #9ca3af;
+      --danger: #ef4444;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.95);
+      --shadow-pip: 0 16px 40px rgba(15, 23, 42, 1);
+      --border-soft: 1px solid rgba(148, 163, 184, 0.4);
       --radius-lg: 18px;
       --radius-xl: 22px;
-      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
-      --shadow-pip: 0 16px 40px rgba(0, 0, 0, 0.65);
-      --border-soft: 1px solid rgba(148, 163, 184, 0.28);
     }
 
     * {
@@ -34,529 +34,869 @@
       color: var(--text-main);
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
+      align-items: stretch;
+      justify-content: center;
     }
 
-    .shell {
+    body.light-mode {
+      --bg-main: #e5e7eb;
+      --bg-panel: #ffffff;
+      --bg-panel-soft: #f3f4f6;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --text-main: #020617;
+      --text-dim: #4b5563;
+      --danger: #b91c1c;
+      background: radial-gradient(circle at top, #e5e7eb 0, #cbd5f5 50%, #9ca3af 100%);
+    }
+
+    .app-shell {
       width: 100%;
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 16px;
+      max-width: 1320px;
+      margin: 10px auto;
+      padding: 10px 10px 24px;
       display: flex;
-      flex-direction: row;
-      gap: 14px;
-      position: relative;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    /* ---------- SIDE PANEL (CHAT) ---------- */
-
-    #sidePanel {
-      background: var(--bg-panel);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-soft);
-      border: var(--border-soft);
-      width: 360px;
-      min-width: 280px;
-      position: relative;
-      overflow: hidden;
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
     }
 
-    #sidePanelHandle {
-      padding: 10px;
-      background: var(--bg-panel-soft);
-      cursor: grab;
-      user-select: none;
-      border-bottom: var(--border-soft);
-      font-size: 14px;
-      text-align: center;
+    .brand-block {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 20%, #a5b4fc 0, #4f46e5 32%, #111827 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #e5e7eb;
+      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.6),
+        0 12px 35px rgba(79, 70, 229, 0.9);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .brand-text strong {
+      font-size: 15px;
+    }
+
+    .brand-text span {
+      font-size: 12px;
       color: var(--text-dim);
     }
 
-    .chat-area {
+    .header-actions {
       display: flex;
-      flex-direction: column;
-      height: 100%;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
-    #chatMessages {
-      flex: 1;
-      padding: 10px;
-      overflow-y: auto;
+    .layout-presets {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .layout-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 4px 10px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    body.light-mode .layout-btn {
+      background: #e5e7eb;
+    }
+
+    .layout-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .quality-select {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      padding: 4px 10px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      outline: none;
+    }
+
+    body.light-mode .quality-select {
+      background: #e5e7eb;
+    }
+
+    .settings-toggle {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 4px 10px;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    body.light-mode .settings-toggle {
+      background: #e5e7eb;
+    }
+
+    .settings-toggle span {
+      font-size: 15px;
+    }
+
+    .theme-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      padding: 5px 9px;
       font-size: 14px;
+      cursor: pointer;
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    body.light-mode .theme-toggle-btn {
+      background: #e5e7eb;
+      color: #020617;
+    }
+
+    .app-main {
+      display: grid;
+      grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+
+    .dragging {
+      cursor: grabbing !important;
+    }
+
+    .video-panel {
+      position: relative;
+      border-radius: var(--radius-xl);
+      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.2), transparent 60%),
+        var(--bg-panel);
+      box-shadow: var(--shadow-soft);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      padding: 10px 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .video-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: grab;
+      user-select: none;
+      padding: 4px 4px 4px 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(17, 24, 39, 0.8));
+      border: 1px solid rgba(148, 163, 184, 0.45);
+    }
+
+    .video-header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .teacher-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+    }
+
+    .video-header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .video-header-text strong {
+      font-size: 13px;
+    }
+
+    .video-header-text span {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .video-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fs-btn,
+    .swap-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    body.light-mode .fs-btn,
+    body.light-mode .swap-btn {
+      background: #e5e7eb;
+    }
+
+    .fs-btn-icon {
+      display: inline-block;
+      transform-origin: center;
+      font-size: 16px;
+    }
+
+    .video-body {
+      position: relative;
+      border-radius: 18px;
+      padding: 8px;
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.2), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(59, 130, 246, 0.3), transparent 60%),
+        #020617;
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .main-video-wrapper {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    #mainVideo {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+      background: #000;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+    }
+
+    .self-box {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      width: 26vw;
+      max-width: 260px;
+      min-width: 180px;
+      background: radial-gradient(circle at top, rgba(148, 163, 248, 0.18), transparent 60%),
+        #020617;
+      border-radius: 16px;
+      border: 1px solid rgba(129, 140, 248, 0.75);
+      box-shadow: var(--shadow-pip);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .self-box.hidden {
+      display: none;
+    }
+
+    .self-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 4px 7px;
+      font-size: 11px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.95), rgba(30, 64, 175, 0.9));
+      border-bottom: 1px solid rgba(129, 140, 248, 0.5);
+      cursor: grab;
+      user-select: none;
+    }
+
+    .self-box-header span {
+      opacity: 0.9;
+    }
+
+    #selfVideo {
+      width: 100%;
+      display: block;
+      background: #020617;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+
+    .self-box-footer {
+      padding: 4px 6px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(30, 64, 175, 0.92));
+      border-top: 1px solid rgba(129, 140, 248, 0.5);
+    }
+
+    .self-controls {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pill-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    body.light-mode .pill-btn {
+      background: #e5e7eb;
+      color: #020617;
+    }
+
+    .pill-btn.danger {
+      border-color: rgba(248, 113, 113, 0.9);
+      color: #fecaca;
+    }
+
+    .pill-btn .dot-mic {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+    }
+
+    .pill-btn.muted .dot-mic {
+      background: #ef4444;
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.35);
+    }
+
+    .toggle-self-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.92);
+      color: #e5e7eb;
+      font-size: 11px;
+      padding: 3px 6px;
+      cursor: pointer;
+    }
+
+    body.light-mode .toggle-self-btn {
+      background: #e5e7eb;
+      color: #020617;
+    }
+
+    .fs-hint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .fs-hint span {
+      opacity: 0.85;
+    }
+
+    .icon-kbd {
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 10px;
+      background: rgba(15, 23, 42, 0.95);
+    }
+
+    body.light-mode .icon-kbd {
+      background: #e5e7eb;
+      border-color: rgba(107, 114, 128, 0.9);
+    }
+
+    .side-panel {
+      position: relative;
+      border-radius: var(--radius-xl);
+      background: var(--bg-panel-soft);
+      border: 1px solid rgba(148, 163, 184, 0.28);
+      box-shadow: var(--shadow-soft);
+      padding: 10px 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .side-header {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      cursor: grab;
+      user-select: none;
+      padding: 4px 6px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.94), rgba(17, 24, 39, 0.88));
+      border: 1px solid rgba(148, 163, 184, 0.5);
+    }
+
+    .side-header h2 {
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .side-header span {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .chat-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.95);
+      overflow: hidden;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 10px 10px 6px;
+      overflow-y: auto;
+      font-size: 13px;
     }
 
     .chat-message {
-      margin-bottom: 10px;
-      padding: 8px 10px;
+      margin-bottom: 8px;
+      padding: 7px 8px;
       border-radius: 12px;
-      background: var(--bg-panel-soft);
-      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
     }
 
     .chat-message.me {
-      background: rgba(79, 70, 229, 0.22);
-      border: 1px solid rgba(129, 140, 248, 0.4);
+      background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.36), rgba(17, 24, 39, 0.95));
+      border-color: rgba(129, 140, 248, 0.8);
     }
 
     .chat-message-header {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 4px;
+      margin-bottom: 2px;
       font-size: 11px;
       color: var(--text-dim);
     }
 
-    #chatInput {
-      width: 100%;
-      padding: 10px;
-      background: #1a2035;
-      border: none;
-      outline: none;
-      color: var(--text-main);
-      border-top: var(--border-soft);
-      resize: none;
-      height: 48px;
+    .chat-message-body {
+      font-size: 13px;
     }
 
-    .chat-send-row {
-      display: flex;
-      align-items: center;
-      padding: 6px;
-      gap: 6px;
-      border-top: var(--border-soft);
-      background: #0e1425;
-    }
-
-    #chatSendBtn {
-      padding: 8px 12px;
-      border-radius: 12px;
-      border: none;
-      background: var(--accent);
-      color: #fff;
-      cursor: pointer;
-      font-size: 14px;
-    }
-
-    .attach-btn {
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 12px;
-      background: #1f2937;
-      border: var(--border-soft);
-      color: #d1d5db;
-    }
-
-    #chatAttachments {
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border-top: var(--border-soft);
+    .chat-attachments {
+      padding: 4px 8px;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      min-height: 0;
     }
 
     .chat-attachment-pill {
-      background: rgba(79, 70, 229, 0.2);
-      padding: 4px 8px;
-      border-radius: 6px;
-      margin-bottom: 4px;
-      font-size: 12px;
-      color: #cbd5e1;
-      border: 1px solid rgba(129, 140, 248, 0.4);
-    }
-
-    /* ---------- MAIN VIDEO PANEL ---------- */
-
-    #videoPanel {
-      position: relative;
-      flex: 1;
-      background: var(--bg-panel);
-      border-radius: var(--radius-xl);
-      border: var(--border-soft);
-      box-shadow: var(--shadow-soft);
-      overflow: hidden;
-    }
-
-    #videoPanelHandle {
-      padding: 10px;
-      background: var(--bg-panel-soft);
-      cursor: grab;
-      text-align: center;
-      font-size: 14px;
-      color: var(--text-dim);
-      user-select: none;
-      border-bottom: var(--border-soft);
-    }
-
-    #mainVideoWrapper {
-      position: relative;
-      padding: 10px;
-    }
-
-    #mainVideo {
-      width: 100%;
-      border-radius: 16px;
-      background: #000;
-      aspect-ratio: 16/9;
-      object-fit: cover;
-      display: block;
-    }
-
-    #selfBox {
-      position: absolute;
-      right: 16px;
-      bottom: 16px;
-      width: 260px;
-      background: #111827;
-      border-radius: 12px;
-      box-shadow: var(--shadow-pip);
-      border: var(--border-soft);
-      overflow: hidden;
-    }
-
-    #selfBoxHandle {
-      padding: 6px 10px;
-      font-size: 12px;
-      cursor: grab;
-      background: #1f2937;
-      user-select: none;
-      border-bottom: var(--border-soft);
-    }
-
-    #selfVideo {
-      width: 100%;
-      height: auto;
-      display: block;
-      aspect-ratio: 4/3;
-      object-fit: cover;
-    }
-
-    #toggleSelfBtn {
-      width: 100%;
-      padding: 6px;
-      border: none;
-      background: #1e293b;
-      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 2px;
+      padding: 3px 7px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.2);
+      border: 1px solid rgba(129, 140, 248, 0.7);
+      font-size: 11px;
       color: #e5e7eb;
-      cursor: pointer;
-      border-top: var(--border-soft);
     }
 
-    /* RESIZE HANDLES */
-    #videoResizeHandle,
-    #sideResizeHandle {
+    .chat-footer {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 8px 8px;
+      border-top: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .file-btn-label {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+    }
+
+    .chat-input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.96);
+      padding: 6px 10px;
+      color: var(--text-main);
+      font-size: 13px;
+      outline: none;
+    }
+
+    .chat-input::placeholder {
+      color: rgba(148, 163, 184, 0.7);
+    }
+
+    .chat-send-btn {
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #e5e7eb;
+      font-size: 13px;
+      padding: 7px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .chat-send-btn span {
+      font-size: 16px;
+    }
+
+    .fs-toggle-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .grid-resizer {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
       width: 12px;
       height: 12px;
-      position: absolute;
-      right: 6px;
-      bottom: 6px;
-      cursor: nwse-resize;
-      background: rgba(255,255,255,0.25);
       border-radius: 3px;
+      background: rgba(148, 163, 184, 0.85);
+      cursor: nwse-resize;
+      opacity: 0.9;
     }
 
-    #sideResizeHandle {
-      right: 6px;
-      bottom: 6px;
+    @media (max-width: 980px) {
+      .app-main {
+        grid-template-columns: 1fr;
+      }
+
+      .self-box {
+        width: 60vw;
+        max-width: 280px;
+      }
     }
   </style>
 </head>
 
 <body>
-
-<div class="shell">
-
-  <!-- ================== SIDE PANEL (CHAT) ================== -->
-  <div id="sidePanel">
-    <div id="sidePanelHandle">Чат</div>
-
-    <div class="chat-area">
-      <div id="chatMessages"></div>
-
-      <div id="chatAttachments"></div>
-
-      <textarea id="chatInput" placeholder="Написать сообщение..."></textarea>
-
-      <div class="chat-send-row">
-        <label class="attach-btn">
-          📎
-          <input type="file" id="chatFileInput" multiple style="display:none" />
-        </label>
-        <button id="chatSendBtn">Отправить</button>
+  <div class="app-shell">
+    <header>
+      <div class="brand-block">
+        <div class="brand-logo">W</div>
+        <div class="brand-text">
+          <strong>WebClass • Student</strong>
+          <span>Кабинет ученика · подключение к учителю</span>
+        </div>
       </div>
-    </div>
+      <div class="header-actions">
+        <div class="layout-presets">
+          <button class="layout-btn" data-layout="zoom">Zoom</button>
+          <button class="layout-btn" data-layout="teams">Teams</button>
+          <button class="layout-btn" data-layout="stack">Стек</button>
+        </div>
+        <select id="qualitySelect" class="quality-select">
+          <option value="high">Качество: High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </select>
+        <button id="settingsToggle" class="settings-toggle">
+          <span>⚙️</span> Настройки
+        </button>
+        <button id="themeToggle" class="theme-toggle-btn">🌙</button>
+      </div>
+    </header>
 
-    <div id="sideResizeHandle"></div>
+    <main class="app-main">
+      <section class="video-panel" id="videoPanel">
+        <div class="video-header" id="videoPanelHandle">
+          <div class="video-header-left">
+            <div class="teacher-dot"></div>
+            <div class="video-header-text">
+              <strong>Ваш учитель</strong>
+              <span>Онлайн-видеосвязь</span>
+            </div>
+          </div>
+          <div class="video-header-actions">
+            <button class="swap-btn" id="swapBtn">
+              ↔ Поменять местами
+            </button>
+            <button class="fs-btn" id="fullscreenBtn">
+              <span class="fs-btn-icon" id="fsIcon">⛶</span>
+              На весь экран
+            </button>
+          </div>
+        </div>
+
+        <div class="video-body" id="mainVideoWrapper">
+          <div class="main-video-wrapper">
+            <video id="mainVideo" autoplay playsinline></video>
+
+            <div class="self-box" id="selfBox">
+              <div class="self-box-header" id="selfBoxHandle">
+                <span>Вы</span>
+                <span style="opacity:0.75;">PiP</span>
+              </div>
+              <video id="selfVideo" autoplay playsinline muted></video>
+              <div class="self-box-footer">
+                <div class="self-controls">
+                  <button class="pill-btn" id="micToggleBtn">
+                    <span class="dot-mic"></span> Микрофон
+                  </button>
+                </div>
+                <button class="toggle-self-btn" id="toggleSelfBtn">
+                  🙈 Скрыть
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="fs-hint">
+            <span class="icon-kbd">Esc</span>
+            <span>— выход из полноэкранного режима</span>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side-panel" id="sidePanel">
+        <div class="side-header" id="sidePanelHandle">
+          <h2>Чат с учителем</h2>
+          <span>Локальный чат (без сервера)</span>
+        </div>
+
+        <div class="chat-panel">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-attachments" id="chatAttachments"></div>
+          <div class="chat-footer">
+            <label class="file-btn-label" for="chatFileInput">📎</label>
+            <input type="file" id="chatFileInput" multiple style="display:none;" />
+            <input
+              type="text"
+              id="chatInput"
+              class="chat-input"
+              placeholder="Написать сообщение..."
+            />
+            <button class="chat-send-btn" id="chatSendBtn">
+              <span>➤</span> Отпр.
+            </button>
+          </div>
+        </div>
+
+        <button class="fs-toggle-btn" id="sideFsBtn">
+          ↕ Развернуть / свернуть
+        </button>
+      </aside>
+    </main>
   </div>
 
-  <!-- ================== VIDEO PANEL ================== -->
-  <div id="videoPanel">
-    <div id="videoPanelHandle">Ваш учитель</div>
+  <!-- WEBRTC -->
+  <script>
+  (function () {
+    const ROLE = "student";
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get("room") || "default-room";
+    const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
 
-    <div id="mainVideoWrapper">
-      <video id="mainVideo" autoplay playsinline></video>
+    const selfVideo = document.getElementById("selfVideo");
+    const mainVideo = document.getElementById("mainVideo");
 
-      <div id="selfBox">
-        <div id="selfBoxHandle">Вы</div>
-        <video id="selfVideo" autoplay playsinline muted></video>
-        <button id="toggleSelfBtn">Скрыть себя</button>
-      </div>
-    </div>
-
-    <div id="videoResizeHandle"></div>
-  </div>
-
-</div>
-
-<!-- ================== WEBRTC + CHAT + DRAG + RESIZE ================== -->
-<script>
-(function () {
-  const ROLE = "student";
-  const params = new URLSearchParams(window.location.search);
-  const roomId = params.get("room") || "default-room";
-
-  const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
-
-  const selfVideo = document.getElementById("selfVideo");
-  const mainVideo = document.getElementById("mainVideo");
-
-  let localStream = null;
-  let remoteStream = null;
-  let pc = null;
-  let ws = null;
-
-  start();
-
-  async function start() {
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
-
-      selfVideo.srcObject = localStream;
-    } catch (err) {
-      alert("Нет доступа к камере или микрофону.");
+    if (!selfVideo || !mainVideo) {
+      console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
       return;
     }
 
-    setupWebSocket();
-  }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
+      return;
+    }
 
-  function setupWebSocket() {
-    ws = new WebSocket(signalingUrl);
+    let localStream = null;
+    let remoteStream = null;
+    let pc = null;
+    let ws = null;
 
-    ws.onopen = () => send({ type: "ready", role: ROLE });
+    start();
 
-    ws.onmessage = async (event) => {
-      let msg = JSON.parse(event.data);
-
-      if (msg.role === ROLE) return;
-
-      switch (msg.type) {
-        case "offer":
-          await ensurePeer();
-          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-          const answer = await pc.createAnswer();
-          await pc.setLocalDescription(answer);
-          send({ type: "answer", sdp: pc.localDescription, role: ROLE });
-          break;
-
-        case "answer":
-          if (pc) await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-          break;
-
-        case "candidate":
-          if (pc && msg.candidate) {
-            try { await pc.addIceCandidate(new RTCIceCandidate(msg.candidate)); }
-            catch (e) { console.warn(e); }
-          }
-          break;
+    async function start() {
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: true,
+          audio: true
+        });
+        // ученик: себя — в PiP
+        selfVideo.srcObject = localStream;
+      } catch (err) {
+        console.error("WebRTC: ошибка доступа к камере/микрофону:", err);
+        alert("Не удалось получить доступ к камере/микрофону.");
+        return;
       }
-    };
-  }
-
-  function send(payload) {
-    if (ws?.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(payload));
+      setupWebSocket();
     }
-  }
 
-  async function ensurePeer() {
-    if (pc) return;
-
-    pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-    });
-
-    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-
-    pc.onicecandidate = e => {
-      if (e.candidate)
-        send({ type: "candidate", candidate: e.candidate, role: ROLE });
-    };
-
-    pc.ontrack = e => {
-      const stream = e.streams[0];
-      if (!remoteStream) {
-        remoteStream = new MediaStream();
-        mainVideo.srcObject = remoteStream;
+    function setupWebSocket() {
+      try {
+        ws = new WebSocket(signalingUrl);
+      } catch (err) {
+        console.error("WebRTC: ошибка создания WebSocket:", err);
+        return;
       }
-      stream.getTracks().forEach(t => remoteStream.addTrack(t));
-    };
-  }
-})();
-</script>
 
-<!-- DRAG / RESIZE / CHAT ------------------------------- -->
-<script>
-(function () {
-  const boxes = [
-    { box: sidePanel, handle: sidePanelHandle },
-    { box: videoPanel, handle: videoPanelHandle },
-    { box: selfBox, handle: selfBoxHandle }
-  ];
+      ws.onopen = () => {
+        console.log("WebRTC WS open, room =", roomId);
+        send({ type: "ready", role: ROLE });
+      };
 
-  boxes.forEach(({box, handle}) => makeDraggable(box, handle));
+      ws.onmessage = async (event) => {
+        let msg;
+        try {
+          msg = JSON.parse(event.data);
+        } catch {
+          return;
+        }
 
-  makeResizable(sidePanel, sideResizeHandle);
-  makeResizable(videoPanel, videoResizeHandle);
+        if (msg.role === ROLE) return;
 
-  function makeDraggable(box, handle) {
-    let startX, startY, boxX, boxY, dragging = false;
+        switch (msg.type) {
+          case "ready":
+            // студент не инициирует, ждём offer от учителя
+            break;
 
-    handle.addEventListener("pointerdown", e => {
-      dragging = true;
-      const rect = box.getBoundingClientRect();
-      startX = e.clientX;
-      startY = e.clientY;
-      boxX = rect.left;
-      boxY = rect.top;
-      box.style.position = "fixed";
-      box.style.zIndex = 999;
-    });
+          case "offer":
+            await ensurePeerConnection();
+            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            send({ type: "answer", sdp: pc.localDescription, role: ROLE });
+            break;
 
-    document.addEventListener("pointermove", e => {
-      if (!dragging) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      box.style.left = boxX + dx + "px";
-      box.style.top = boxY + dy + "px";
-    });
+          case "answer":
+            if (!pc) return;
+            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            break;
 
-    document.addEventListener("pointerup", () => dragging = false);
-  }
+          case "candidate":
+            if (!pc || !msg.candidate) return;
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+            } catch (err) {
+              console.warn("Ошибка addIceCandidate:", err);
+            }
+            break;
+        }
+      };
 
-  function makeResizable(box, handle) {
-    let startX, startY, startW, startH, resizing = false;
+      ws.onclose = () => {
+        console.log("WebRTC WS closed");
+      };
 
-    handle.addEventListener("pointerdown", e => {
-      e.stopPropagation();
-      resizing = true;
-
-      const rect = box.getBoundingClientRect();
-      startX = e.clientX;
-      startY = e.clientY;
-      startW = rect.width;
-      startH = rect.height;
-
-      box.style.position = "fixed";
-      box.style.width = rect.width + "px";
-      box.style.height = rect.height + "px";
-    });
-
-    document.addEventListener("pointermove", e => {
-      if (!resizing) return;
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      box.style.width = startW + dx + "px";
-      box.style.height = startH + dy + "px";
-    });
-
-    document.addEventListener("pointerup", () => resizing = false);
-  }
-
-  // TOGGLE SELF PIP
-  toggleSelfBtn.onclick = () => {
-    if (selfVideo.style.display === "none") {
-      selfVideo.style.display = "block";
-      toggleSelfBtn.textContent = "Скрыть себя";
-    } else {
-      selfVideo.style.display = "none";
-      toggleSelfBtn.textContent = "Показать себя";
-    }
-  };
-
-  // CHAT
-  const sendBtn = document.getElementById("chatSendBtn");
-  const chatInput = document.getElementById("chatInput");
-  const chatMessages = document.getElementById("chatMessages");
-  const chatAttachments = document.getElementById("chatAttachments");
-  const chatFileInput = document.getElementById("chatFileInput");
-
-  let pendingFiles = [];
-
-  chatFileInput.onchange = () => {
-    pendingFiles = [...chatFileInput.files];
-    renderAttachments();
-  };
-
-  function renderAttachments() {
-    chatAttachments.innerHTML = "";
-    pendingFiles.forEach(f => {
-      const div = document.createElement("div");
-      div.className = "chat-attachment-pill";
-      div.textContent = f.name;
-      chatAttachments.appendChild(div);
-    });
-  }
-
-  sendBtn.onclick = sendMessage;
-  chatInput.onkeydown = e => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  };
-
-  function sendMessage() {
-    const text = chatInput.value.trim();
-    if (!text && pendingFiles.length === 0) return;
-
-    addMessage("Вы", text, pendingFiles);
-
-    chatInput.value = "";
-    pendingFiles = [];
-    chatFileInput.value = "";
-    renderAttachments();
-  }
-
-  function addMessage(sender, text, files) {
-    const msg = document.createElement("div");
-    msg.className = "chat-message me";
-
-    const header = document.createElement("div");
-    header.className = "chat-message-header";
-    header.innerHTML = `<span>${sender}</span><span>${new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>`;
-    msg.appendChild(header);
-
-    if (text) {
-      const body = document.createElement("div");
-      body.textContent = text;
-      msg.appendChild(body);
+      ws.onerror = (err) => {
+        console.error("WebRTC WS error:", err);
+      };
     }
 
-    if (files?.length > 0) {
-      files.forEach(f => {
-        const pill = document.createElement("div");
-        pill.className = "chat-attachment-pill";
-        pill.textContent = "📎 " + f.name;
-        msg.appendChild(pill);
+    function send(payload) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(payload));
+      }
+    }
+
+    async function ensurePeerConnection() {
+      if (pc) return;
+
+      pc = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
       });
+
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          pc.addTrack(track, localStream);
+        });
+      }
+
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          send({
+            type: "candidate",
+            candidate: event.candidate,
+            role: ROLE,
+          });
+        }
+      };
+
+      pc.ontrack = (event) => {
+        const stream = event.streams[0];
+        if (!remoteStream) {
+          remoteStream = new MediaStream();
+          mainVideo.srcObject = remoteStream; // сюда придёт учитель
+        }
+        stream.getTracks().forEach((track) => {
+          remoteStream.addTrack(track);
+        });
+      };
     }
-
-    chatMessages.appendChild(msg);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-})();
-</script>
-
+  })();
+  </script>
 </body>
 </html>
