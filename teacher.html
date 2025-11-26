@@ -14,11 +14,11 @@
       --text-main: #f9fafb;
       --text-dim: #9ca3af;
       --danger: #ef4444;
+      --shadow-soft: 0 18px 45px rgba(15, 23, 42, 0.95);
+      --shadow-pip: 0 16px 40px rgba(15, 23, 42, 1);
+      --border-soft: 1px solid rgba(148, 163, 184, 0.4);
       --radius-lg: 18px;
       --radius-xl: 22px;
-      --shadow-soft: 0 18px 45px rgba(0, 0, 0, 0.55);
-      --shadow-pip: 0 16px 40px rgba(0, 0, 0, 0.65);
-      --border-soft: 1px solid rgba(148, 163, 184, 0.28);
     }
 
     * {
@@ -38,19 +38,6 @@
       justify-content: center;
     }
 
-    /* Светлый режим (перезаписываем переменные и фон) */
-    body.light-mode {
-      --bg-main: #e5e7eb;
-      --bg-panel: #ffffff;
-      --bg-panel-soft: #f3f4f6;
-      --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.12);
-      --text-main: #020617;
-      --text-dim: #4b5563;
-      --danger: #b91c1c;
-      background: radial-gradient(circle at top, #e5e7eb 0, #cbd5f5 50%, #9ca3af 100%);
-    }
-
     .app-shell {
       width: 100%;
       max-width: 1320px;
@@ -66,18 +53,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 12px;
-      padding: 10px 14px;
-      border-radius: var(--radius-xl);
-      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(15, 23, 42, 0.86));
-      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      backdrop-filter: blur(18px);
-    }
-
-    body.light-mode header {
-      background: linear-gradient(135deg, rgba(248, 250, 252, 0.98), rgba(229, 231, 235, 0.95));
-      box-shadow: 0 10px 32px rgba(148, 163, 184, 0.4);
-      border-color: rgba(148, 163, 184, 0.6);
+      margin-bottom: 6px;
     }
 
     .brand-block {
@@ -90,15 +66,15 @@
       width: 34px;
       height: 34px;
       border-radius: 50%;
-      background: radial-gradient(circle at 30% 20%, #a5b4fc 0, #4f46e5 32%, #111827 100%);
+      background: radial-gradient(circle at 30% 20%, #facc15 0, #f97316 32%, #111827 100%);
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 700;
       font-size: 16px;
-      color: #e5e7eb;
-      box-shadow: 0 0 0 1px rgba(129, 140, 248, 0.6),
-        0 12px 35px rgba(79, 70, 229, 0.9);
+      color: #0f172a;
+      box-shadow: 0 0 0 1px rgba(251, 191, 36, 0.6),
+        0 12px 35px rgba(250, 204, 21, 0.9);
     }
 
     .brand-text {
@@ -109,7 +85,6 @@
 
     .brand-text strong {
       font-size: 15px;
-      letter-spacing: 0.03em;
     }
 
     .brand-text span {
@@ -120,137 +95,67 @@
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
       justify-content: flex-end;
     }
 
-    .copy-link-wrap {
+    .invite-block {
+      padding: 6px 10px;
+      border-radius: 12px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      max-width: 520px;
       display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 5px 8px 5px 10px;
-      border-radius: 999px;
-      border: 1px dashed rgba(148, 163, 184, 0.55);
-      background: radial-gradient(circle at 0 0, rgba(56, 189, 248, 0.28), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.3), transparent 55%),
-        rgba(15, 23, 42, 0.9);
+      flex-direction: column;
+      gap: 4px;
     }
 
-    body.light-mode .copy-link-wrap {
-      background: rgba(248, 250, 252, 0.96);
-      border-color: rgba(148, 163, 184, 0.7);
-    }
-
-    .copy-link-wrap small {
-      font-size: 11px;
+    .invite-title {
+      font-size: 12px;
       color: var(--text-dim);
     }
 
-    .copy-link-button {
-      border: none;
-      outline: none;
-      border-radius: 999px;
-      padding: 5px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.35);
-      transition: background 0.16s ease, transform 0.08s ease,
-        box-shadow 0.16s ease;
-    }
-
-    body.light-mode .copy-link-button {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    .copy-link-button:hover {
-      background: rgba(30, 64, 175, 0.95);
-      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.7);
-      transform: translateY(-0.5px);
-      color: #f9fafb;
-    }
-
-    .copy-link-button span {
-      font-size: 13px;
-    }
-
-    .status-pill {
-      padding: 4px 9px;
-      border-radius: 999px;
-      font-size: 11px;
-      border: 1px solid rgba(52, 211, 153, 0.8);
-      color: #bbf7d0;
-      background: linear-gradient(135deg, rgba(22, 163, 74, 0.12), rgba(5, 46, 22, 0.85));
+    .invite-url-row {
       display: flex;
       align-items: center;
       gap: 6px;
     }
 
-    .status-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
+    #inviteUrl {
+      font-size: 12px;
+      word-break: break-all;
+      color: #e5e7eb;
+      padding: 4px 6px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      flex: 1;
     }
 
-    .theme-toggle-btn {
+    #copyInviteBtn {
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 5px 9px;
-      font-size: 14px;
+      border: none;
+      background: linear-gradient(135deg, #4f46e5, #6366f1);
+      color: #e5e7eb;
+      font-size: 12px;
+      padding: 5px 10px;
       cursor: pointer;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-    }
-
-    body.light-mode .theme-toggle-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    .layout-presets {
-      display: flex;
-      align-items: center;
       gap: 4px;
-      flex-wrap: wrap;
+      white-space: nowrap;
     }
 
-    .layout-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 4px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
+    #copyInviteBtn span {
+      font-size: 14px;
     }
 
-    body.light-mode .layout-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .main-layout {
+    .app-main {
       display: grid;
       grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr);
       gap: 14px;
+      align-items: stretch;
     }
 
     .dragging {
@@ -260,111 +165,212 @@
     .video-panel {
       position: relative;
       border-radius: var(--radius-xl);
-      background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.12), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(129, 140, 248, 0.2), transparent 60%),
+      background: radial-gradient(circle at top left, rgba(96, 165, 250, 0.22), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.28), transparent 60%),
         var(--bg-panel);
       box-shadow: var(--shadow-soft);
-      border: 1px solid rgba(148, 163, 184, 0.25);
+      border: 1px solid rgba(148, 163, 184, 0.48);
+      padding: 10px 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
       overflow: hidden;
-      padding: 12px;
     }
 
-    .video-panel-header {
+    .video-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 8px;
       cursor: grab;
       user-select: none;
+      padding: 4px 4px 4px 6px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.9), rgba(17, 24, 39, 0.88));
+      border: 1px solid rgba(148, 163, 184, 0.5);
     }
 
-    .video-panel-header span {
-      font-size: 12px;
+    .video-header-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
+    }
+
+    .video-header-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .video-header-text strong {
+      font-size: 13px;
+    }
+
+    .video-header-text span {
+      font-size: 11px;
       color: var(--text-dim);
+    }
+
+    .video-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .fs-btn,
+    .swap-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 4px 8px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .fs-btn-icon {
+      font-size: 16px;
+    }
+
+    .video-body {
+      position: relative;
+      border-radius: 18px;
+      padding: 8px;
+      background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.2), transparent 55%),
+        radial-gradient(circle at bottom right, rgba(250, 204, 21, 0.22), transparent 60%),
+        #020617;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      box-shadow: var(--shadow-soft);
     }
 
     .main-video-wrapper {
       position: relative;
-      width: 100%;
-      border-radius: 20px;
+      border-radius: 14px;
       overflow: hidden;
-      background: radial-gradient(circle at center, #111827 0, #020617 70%);
-      box-shadow: 0 18px 44px rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(15, 23, 42, 0.9);
-    }
-
-    body.light-mode .main-video-wrapper {
-      background: radial-gradient(circle at center, #e5e7eb 0, #cbd5e1 70%);
-      border-color: rgba(148, 163, 184, 0.8);
-    }
-
-    .main-video {
-      width: 100%;
-      height: auto;
-      display: block;
       background: #000;
-      aspect-ratio: 16 / 9;
+    }
+
+    #mainVideo {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+      background: #000;
+      aspect-ratio: 16/9;
       object-fit: cover;
     }
 
-    .main-video-controls {
+    .self-box {
       position: absolute;
-      inset: 10px 10px auto auto;
+      right: 10px;
+      bottom: 10px;
+      width: 26vw;
+      max-width: 260px;
+      min-width: 180px;
+      background: radial-gradient(circle at top, rgba(250, 204, 21, 0.2), transparent 60%),
+        #020617;
+      border-radius: 16px;
+      border: 1px solid rgba(250, 204, 21, 0.8);
+      box-shadow: var(--shadow-pip);
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+    }
+
+    .self-box.hidden {
+      display: none;
+    }
+
+    .self-box-header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      pointer-events: none;
-    }
-
-    .control-chip {
-      pointer-events: auto;
-      border-radius: 999px;
-      padding: 5px 10px;
+      justify-content: space-between;
+      padding: 4px 7px;
       font-size: 11px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.92);
-      color: var(--text-main);
-      display: inline-flex;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(234, 179, 8, 0.95));
+      border-bottom: 1px solid rgba(250, 204, 21, 0.75);
+      cursor: grab;
+      user-select: none;
+    }
+
+    #selfVideo {
+      width: 100%;
+      display: block;
+      background: #020617;
+      aspect-ratio: 4/3;
+      object-fit: cover;
+    }
+
+    .self-box-footer {
+      padding: 4px 6px 6px;
+      display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 6px;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.9);
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.96), rgba(234, 179, 8, 0.94));
+      border-top: 1px solid rgba(250, 204, 21, 0.7);
     }
 
-    .fs-btn {
-      pointer-events: auto;
-      border: none;
-      outline: none;
+    .pill-btn {
       border-radius: 999px;
-      width: 30px;
-      height: 30px;
+      border: 1px solid rgba(148, 163, 184, 0.65);
+      background: rgba(15, 23, 42, 0.9);
+      color: var(--text-main);
+      font-size: 11px;
+      padding: 3px 8px;
+      cursor: pointer;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      cursor: pointer;
+      gap: 4px;
+    }
+
+    .pill-btn .dot-mic {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+    }
+
+    .pill-btn.muted .dot-mic {
+      background: #ef4444;
+      box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.35);
+    }
+
+    .toggle-self-btn {
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
       background: rgba(15, 23, 42, 0.92);
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 14px;
-      transition: transform 0.08s ease, box-shadow 0.14s ease,
-        background 0.16s ease;
-      border: 1px solid rgba(148, 163, 184, 0.55);
+      color: #e5e7eb;
+      font-size: 11px;
+      padding: 3px 6px;
+      cursor: pointer;
     }
 
-    .fs-btn:hover {
-      transform: translateY(-1px) scale(1.03);
-      box-shadow: 0 15px 32px rgba(59, 130, 246, 0.75);
-      background: rgba(30, 64, 175, 0.96);
+    .fs-hint {
+      margin-top: 4px;
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 4px;
     }
 
-    .fs-btn:active {
-      transform: translateY(0) scale(0.98);
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.9);
-    }
-
-    .fs-btn-icon {
-      display: inline-block;
-      transform-origin: center;
-      font-size: 16px;
+    .icon-kbd {
+      padding: 2px 5px;
+      border-radius: 4px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      font-size: 10px;
+      background: rgba(15, 23, 42, 0.95);
     }
 
     .side-panel {
@@ -381,1347 +387,443 @@
 
     .side-header {
       display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
+      flex-direction: column;
+      gap: 2px;
       cursor: grab;
       user-select: none;
+      padding: 4px 6px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(15, 23, 42, 0.94), rgba(17, 24, 39, 0.88));
+      border: 1px solid rgba(148, 163, 184, 0.5);
     }
 
     .side-header h2 {
       font-size: 13px;
+      margin: 0;
     }
 
     .side-header span {
       font-size: 11px;
       color: var(--text-dim);
-      font-weight: 400;
     }
 
     .chat-panel {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 6px;
-      border-radius: 13px;
-      border: 1px dashed rgba(148, 163, 184, 0.45);
-      padding: 8px;
-      background: radial-gradient(circle at top left, rgba(30, 64, 175, 0.14), transparent 55%),
-        radial-gradient(circle at bottom right, rgba(8, 47, 73, 0.26), transparent 55%),
-        rgba(15, 23, 42, 0.78);
-      height: 260px;
-      max-height: 320px;
-    }
-
-    body.light-mode .chat-panel {
-      background: rgba(248, 250, 252, 0.96);
-      border-color: rgba(148, 163, 184, 0.7);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(15, 23, 42, 0.98), rgba(15, 23, 42, 0.92));
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.95);
+      overflow: hidden;
     }
 
     .chat-messages {
       flex: 1;
+      padding: 10px 10px 6px;
       overflow-y: auto;
-      padding-right: 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      font-size: 12px;
+      font-size: 13px;
     }
 
     .chat-message {
-      padding: 4px 6px;
-      border-radius: 8px;
+      margin-bottom: 8px;
+      padding: 7px 8px;
+      border-radius: 12px;
       background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.4);
-      max-width: 100%;
-      word-wrap: break-word;
+      border: 1px solid rgba(148, 163, 184, 0.5);
     }
 
     .chat-message.me {
-      background: rgba(37, 99, 235, 0.2);
-      border-color: rgba(96, 165, 250, 0.8);
-      align-self: flex-end;
+      background: radial-gradient(circle at top left, rgba(250, 204, 21, 0.36), rgba(17, 24, 39, 0.95));
+      border-color: rgba(250, 204, 21, 0.85);
     }
 
     .chat-message-header {
-      font-size: 10px;
-      color: var(--text-dim);
-      margin-bottom: 2px;
       display: flex;
       justify-content: space-between;
-      gap: 4px;
+      margin-bottom: 2px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .chat-message-body {
+      font-size: 13px;
     }
 
     .chat-attachments {
-      font-size: 10px;
-      color: var(--text-dim);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
+      padding: 4px 8px;
+      border-top: 1px solid rgba(148, 163, 184, 0.35);
+      min-height: 0;
     }
 
     .chat-attachment-pill {
-      padding: 2px 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin: 2px;
+      padding: 3px 7px;
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.5);
-      background: rgba(15, 23, 42, 0.9);
-      max-width: 100%;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      background: rgba(250, 204, 21, 0.2);
+      border: 1px solid rgba(250, 204, 21, 0.7);
+      font-size: 11px;
+      color: #fefce8;
     }
 
     .chat-footer {
       display: flex;
       align-items: center;
       gap: 6px;
-      margin-top: 2px;
+      padding: 6px 8px 8px;
+      border-top: 1px solid rgba(148, 163, 184, 0.45);
+      background: rgba(15, 23, 42, 0.98);
+    }
+
+    .file-btn-label {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
     }
 
     .chat-input {
       flex: 1;
       border-radius: 999px;
       border: 1px solid rgba(148, 163, 184, 0.6);
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-main);
+      background: rgba(15, 23, 42, 0.96);
       padding: 6px 10px;
-      font-size: 12px;
+      color: var(--text-main);
+      font-size: 13px;
       outline: none;
-    }
-
-    body.light-mode .chat-input {
-      background: #ffffff;
     }
 
     .chat-input::placeholder {
-      color: rgba(148, 163, 184, 0.8);
+      color: rgba(148, 163, 184, 0.7);
     }
 
-    .file-btn-label {
+    .chat-send-btn {
       border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      padding: 4px 8px;
-      font-size: 14px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      background: rgba(15, 23, 42, 0.95);
-      color: var(--text-main);
-    }
-
-    body.light-mode .file-btn-label {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    .send-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(96, 165, 250, 0.8);
-      padding: 5px 10px;
+      border: none;
+      background: linear-gradient(135deg, #facc15, #f97316);
+      color: #0f172a;
       font-size: 13px;
+      padding: 7px 10px;
       cursor: pointer;
-      background: rgba(37, 99, 235, 0.9);
-      color: white;
       display: inline-flex;
       align-items: center;
-      justify-content: center;
-      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.6);
+      gap: 4px;
     }
 
-    .send-btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 3px 10px rgba(37, 99, 235, 0.6);
+    .chat-send-btn span {
+      font-size: 16px;
     }
 
-    .side-panel-footer {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 2px;
-    }
-
-    .small-pill {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      color: var(--text-dim);
-    }
-
-    .resize-handle {
+    .grid-resizer {
       position: absolute;
-      right: 4px;
-      bottom: 4px;
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: radial-gradient(circle at 0 0, rgba(148, 163, 184, 0.6), transparent 65%);
-      cursor: se-resize;
-      opacity: 0.8;
-    }
-
-    .resize-handle::after {
-      content: "";
-      position: absolute;
-      inset: 3px;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.7);
-      border-right: 1px solid rgba(148, 163, 184, 0.7);
+      right: 6px;
+      bottom: 6px;
+      width: 12px;
+      height: 12px;
       border-radius: 3px;
+      background: rgba(148, 163, 184, 0.85);
+      cursor: nwse-resize;
       opacity: 0.9;
     }
 
-    /* === SETTINGS PANEL === */
-    .settings-panel {
-      position: fixed;
-      left: 14px;
-      bottom: 14px;
-      z-index: 90;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 6px;
-    }
-
-    .settings-toggle {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      width: 34px;
-      height: 34px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      background: rgba(15, 23, 42, 0.96);
-      color: var(--text-main);
-      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.9);
-    }
-
-    body.light-mode .settings-toggle {
-      background: #e5e7eb;
-      color: #020617;
-      box-shadow: 0 10px 25px rgba(148, 163, 184, 0.7);
-    }
-
-    .settings-body {
-      min-width: 210px;
-      border-radius: 16px;
-      padding: 8px 10px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.96);
-      display: none;
-      flex-direction: column;
-      gap: 6px;
-      font-size: 11px;
-    }
-
-    body.light-mode .settings-body {
-      background: rgba(248, 250, 252, 0.98);
-      border-color: rgba(148, 163, 184, 0.9);
-      box-shadow: 0 18px 40px rgba(148, 163, 184, 0.7);
-    }
-
-    .settings-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-    }
-
-    .settings-label {
-      color: var(--text-dim);
-    }
-
-    .settings-toggle-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      padding: 3px 8px;
-      font-size: 11px;
-      cursor: pointer;
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-    }
-
-    body.light-mode .settings-toggle-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    .settings-select {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.7);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 11px;
-      padding: 3px 6px;
-      outline: none;
-    }
-
-    body.light-mode .settings-select {
-      background: #ffffff;
-      color: #020617;
-    }
-
-    /* === PIP SELF BOX === */
-    .self-box {
-      position: fixed;
-      right: 2.2vw;
-      bottom: 2.2vh;
-      width: 40vw;
-      max-width: 420px;
-      border-radius: var(--radius-xl);
-      background: radial-gradient(circle at top left, rgba(248, 250, 252, 0.02), transparent 55%),
-        rgba(5, 10, 25, 0.96);
-      box-shadow: var(--shadow-pip);
-      border: 1px solid rgba(148, 163, 184, 0.55);
-      padding: 8px 10px 10px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      z-index: 70;
-      backdrop-filter: blur(12px);
-      cursor: grab;
-    }
-
-    body.light-mode .self-box {
-      background: rgba(248, 250, 252, 0.98);
-      box-shadow: 0 16px 36px rgba(148, 163, 184, 0.7);
-    }
-
-    .self-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      user-select: none;
-    }
-
-    .self-title {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      color: var(--text-dim);
-    }
-
-    .self-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.28);
-    }
-
-    .self-actions {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .swap-btn {
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.45);
-      background: rgba(15, 23, 42, 0.9);
-      color: var(--text-main);
-      font-size: 11px;
-      padding: 3px 7px;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      transition: background 0.16s ease, transform 0.08s ease,
-        box-shadow 0.16s ease;
-    }
-
-    body.light-mode .swap-btn {
-      background: #e5e7eb;
-      color: #020617;
-    }
-
-    .swap-btn:hover {
-      background: rgba(30, 64, 175, 0.95);
-      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.65);
-      transform: translateY(-0.5px);
-      color: #f9fafb;
-    }
-
-    .self-video-frame {
-      position: relative;
-      border-radius: 14px;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #020617 0, #000 70%);
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.85);
-      border: 1px solid rgba(15, 23, 42, 0.9);
-    }
-
-    .self-video {
-      width: 100%;
-      display: block;
-      background: #000;
-      object-fit: cover;
-      aspect-ratio: 16 / 9;
-    }
-
-    .self-overlay {
-      position: absolute;
-      inset: auto 8px 6px 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 6px;
-      pointer-events: none;
-    }
-
-    .self-label {
-      pointer-events: auto;
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: var(--text-dim);
-    }
-
-    .mute-pill {
-      pointer-events: auto;
-      font-size: 11px;
-      padding: 2px 7px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: #fee2e2;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .mute-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 999px;
-      background: var(--danger);
-    }
-
-    .self-box.hidden .self-video-frame {
-      display: none;
-    }
-
-    .self-box.hidden {
-      padding-bottom: 6px;
-    }
-
-    .fullscreen-active {
-      background: #000;
-    }
-
-    @media (max-width: 900px) {
-      .app-shell {
-        padding: 10px 8px 18px;
-      }
-
-      header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 8px;
-      }
-
-      .main-layout {
-        grid-template-columns: minmax(0, 1fr);
+    @media (max-width: 980px) {
+      .app-main {
+        grid-template-columns: 1fr;
       }
 
       .self-box {
-        right: 4vw;
-        bottom: 4vh;
         width: 60vw;
-        max-width: 60vw;
-        padding: 7px 8px 9px;
+        max-width: 280px;
       }
 
-      .main-video-wrapper {
-        border-radius: 18px;
-      }
-    }
-
-    @media (max-width: 600px) {
-      header {
-        padding: 9px 10px;
-      }
-
-      .copy-link-wrap {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .main-video-controls {
-        inset: 8px 8px auto auto;
-      }
-
-      .fs-btn {
-        width: 28px;
-        height: 28px;
-      }
-
-      .self-box {
-        right: 3vw;
-        bottom: 3vh;
-        width: 60vw;
-        max-width: 60vw;
-      }
-
-      .self-label,
-      .mute-pill {
-        font-size: 10px;
+      .invite-block {
+        max-width: 100%;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="app-shell">
     <header>
       <div class="brand-block">
-        <div class="brand-logo">W</div>
+        <div class="brand-logo">T</div>
         <div class="brand-text">
           <strong>WebClass • Teacher</strong>
-          <span>Учительский кабинет · камера + звук включены</span>
+          <span>Кабинет учителя · видеокласс</span>
         </div>
       </div>
+
       <div class="header-actions">
-        <div class="copy-link-wrap">
-          <div style="display:flex; flex-direction:column;">
-            <small id="inviteLabel">Ссылка для ученика:</small>
-            <small id="inviteUrl" style="max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-              https://webclass.example/class/123
-            </small>
+        <div class="invite-block">
+          <div class="invite-title">Ссылка для ученика</div>
+          <div class="invite-url-row">
+            <div id="inviteUrl">…</div>
+            <button id="copyInviteBtn">
+              <span>📋</span> Скопировать
+            </button>
           </div>
-          <button class="copy-link-button" id="copyInviteBtn">
-            <span>📋</span>
-            <span>Копировать</span>
-          </button>
-        </div>
-
-        <div class="layout-presets">
-          <button class="layout-btn" data-layout="zoom">Zoom</button>
-          <button class="layout-btn" data-layout="teams">Teams</button>
-          <button class="layout-btn" data-layout="stack">Стек</button>
-        </div>
-
-        <button class="theme-toggle-btn" id="themeToggle" type="button">🌙</button>
-
-        <div class="status-pill">
-          <span class="status-dot"></span>
-          <span>В эфире</span>
         </div>
       </div>
     </header>
 
-    <main>
-      <div class="main-layout">
-        <section class="video-panel" id="videoPanel">
-          <div class="video-panel-header" id="videoPanelHandle">
-            <span>Главное окно · Ученик</span>
-            <span style="font-size:11px; color:var(--text-dim);">
-              ⛶ — fullscreen · ESC — выход
-            </span>
+    <main class="app-main">
+      <section class="video-panel" id="videoPanel">
+        <div class="video-header" id="videoPanelHandle">
+          <div class="video-header-left">
+            <div class="status-dot"></div>
+            <div class="video-header-text">
+              <strong>Ваш студент</strong>
+              <span>Онлайн-видеосвязь</span>
+            </div>
           </div>
+          <div class="video-header-actions">
+            <button class="swap-btn" id="swapBtn">↔ Поменять местами</button>
+            <button class="fs-btn" id="fullscreenBtn">
+              <span class="fs-btn-icon" id="fsIcon">⛶</span> На весь экран
+            </button>
+          </div>
+        </div>
 
-          <div class="main-video-wrapper" id="mainVideoWrapper">
-            <video
-              id="mainVideo"
-              class="main-video"
-              autoplay
-              playsinline
-            ></video>
+        <div class="video-body" id="mainVideoWrapper">
+          <div class="main-video-wrapper">
+            <video id="mainVideo" autoplay playsinline></video>
 
-            <div class="main-video-controls">
-              <div class="control-chip">
-                🎥 Главный экран
+            <div class="self-box" id="selfBox">
+              <div class="self-box-header" id="selfBoxHandle">
+                <span>Вы</span>
+                <span style="opacity:0.75;">PiP</span>
               </div>
-              <button
-                class="fs-btn"
-                id="fullscreenBtn"
-                type="button"
-                aria-label="Полный экран"
-              >
-                <span class="fs-btn-icon" id="fsIcon">⛶</span>
-              </button>
+              <video id="selfVideo" autoplay playsinline muted></video>
+              <div class="self-box-footer">
+                <button class="pill-btn" id="micToggleBtn">
+                  <span class="dot-mic"></span> Микрофон
+                </button>
+                <button class="toggle-self-btn" id="toggleSelfBtn">
+                  🙈 Скрыть
+                </button>
+              </div>
             </div>
           </div>
-
-          <div class="resize-handle" id="videoResizeHandle"></div>
-        </section>
-
-        <aside class="side-panel" id="sidePanel">
-          <div class="side-header" id="sidePanelHandle">
-            <h2>Чат с учеником</h2>
-            <span>Локальный чат (без сервера)</span>
+          <div class="fs-hint">
+            <span class="icon-kbd">Esc</span>
+            <span>— выход из полноэкранного режима</span>
           </div>
+        </div>
+      </section>
 
-          <div class="chat-panel">
-            <div class="chat-messages" id="chatMessages"></div>
-            <div class="chat-attachments" id="chatAttachments"></div>
-            <div class="chat-footer">
-              <label class="file-btn-label" for="chatFileInput">📎</label>
-              <input type="file" id="chatFileInput" multiple style="display:none;" />
-              <input
-                type="text"
-                id="chatInput"
-                class="chat-input"
-                placeholder="Напишите сообщение..."
-              />
-              <button class="send-btn" id="chatSendBtn">➤</button>
-            </div>
+      <aside class="side-panel" id="sidePanel">
+        <div class="side-header" id="sidePanelHandle">
+          <h2>Чат урока</h2>
+          <span>Локальный чат (для заметок и планов)</span>
+        </div>
+
+        <div class="chat-panel">
+          <div class="chat-messages" id="chatMessages"></div>
+          <div class="chat-attachments" id="chatAttachments"></div>
+          <div class="chat-footer">
+            <label class="file-btn-label" for="chatFileInput">📎</label>
+            <input type="file" id="chatFileInput" multiple style="display:none;" />
+            <input
+              type="text"
+              id="chatInput"
+              class="chat-input"
+              placeholder="Написать заметку к уроку..."
+            />
+            <button class="chat-send-btn" id="chatSendBtn">
+              <span>➤</span> Отпр.
+            </button>
           </div>
-
-          <div class="side-panel-footer">
-            <div class="small-pill">👩‍🏫 Режим: Учитель</div>
-            <div class="small-pill">🎧 Наушники рекомендуются</div>
-          </div>
-
-          <div class="resize-handle" id="sideResizeHandle"></div>
-        </aside>
-      </div>
+        </div>
+      </aside>
     </main>
-
-    <!-- DRAGGABLE + HIDABLE PiP SELF BOX -->
-    <div class="self-box" id="selfBox">
-      <div class="self-header" id="selfBoxHandle">
-        <div class="self-title">
-          <span class="self-dot"></span>
-          <span>Вы (учитель)</span>
-        </div>
-        <div class="self-actions">
-          <button class="swap-btn" id="toggleSelfBtn" type="button">
-            🙈 Скрыть себя
-          </button>
-          <button class="swap-btn" id="swapBtn" type="button">
-            ↔ Поменять местами
-          </button>
-        </div>
-      </div>
-      <div class="self-video-frame">
-        <video
-          id="selfVideo"
-          class="self-video"
-          autoplay
-          muted
-          playsinline
-        ></video>
-        <div class="self-overlay">
-          <div class="self-label" id="selfLabel">Предпросмотр камеры</div>
-          <div class="mute-pill" id="mutePill">
-            <span class="mute-dot" id="muteDot"></span>
-            <span id="muteStatusText">Микрофон включён</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- SETTINGS PANEL (CAM/MIC/QUALITY) -->
-    <div class="settings-panel">
-      <button class="settings-toggle" id="settingsToggle" type="button">⚙️</button>
-      <div class="settings-body" id="settingsBody">
-        <div class="settings-row">
-          <span class="settings-label">Камера</span>
-          <button class="settings-toggle-btn" id="camToggleBtn" type="button">Выключить</button>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Микрофон</span>
-          <button class="settings-toggle-btn" id="micToggleBtn" type="button">Выключить</button>
-        </div>
-        <div class="settings-row">
-          <span class="settings-label">Качество видео</span>
-          <select class="settings-select" id="qualitySelect">
-            <option value="auto">Авто</option>
-            <option value="high">Высокое (HD)</option>
-            <option value="medium">Среднее (SD)</option>
-            <option value="low">Низкое</option>
-          </select>
-        </div>
-      </div>
-    </div>
   </div>
 
+  <!-- WebRTC + приглашение -->
   <script>
-    let dragZIndex = 80;
+  (function () {
+    const ROLE = "teacher";
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get("room") || "default-room";
+
+    // 1) Генерация ссылки для ученика
+    const inviteEl = document.getElementById("inviteUrl");
+    const copyBtn = document.getElementById("copyInviteBtn");
+    if (inviteEl) {
+      const origin = window.location.origin;
+      const studentUrl = `${origin}/student.html?room=${encodeURIComponent(roomId)}`;
+      inviteEl.textContent = studentUrl;
+
+      if (copyBtn) {
+        copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(studentUrl);
+            const old = copyBtn.innerHTML;
+            copyBtn.innerHTML = "<span>✔</span> Скопировано";
+            setTimeout(() => (copyBtn.innerHTML = old), 1200);
+          } catch {
+            alert("Не удалось скопировать ссылку");
+          }
+        });
+      }
+    }
+
+    // 2) WebRTC
+    const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
+    const selfVideo = document.getElementById("selfVideo");
+    const mainVideo = document.getElementById("mainVideo");
+
+    if (!selfVideo || !mainVideo) {
+      console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
+      return;
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
+      return;
+    }
+
     let localStream = null;
+    let remoteStream = null;
+    let pc = null;
+    let ws = null;
 
-    function makeDraggable(box, handle) {
-      if (!box) return;
-      const dragHandle = handle || box;
+    start();
 
-      let isDragging = false;
-      let startX = 0;
-      let startY = 0;
-      let boxStartX = 0;
-      let boxStartY = 0;
-
-      dragHandle.style.touchAction = "none";
-
-      dragHandle.addEventListener("pointerdown", (e) => {
-        if (e.button !== 0) return;
-        isDragging = true;
-
-        const rect = box.getBoundingClientRect();
-        startX = e.clientX;
-        startY = e.clientY;
-        boxStartX = rect.left;
-        boxStartY = rect.top;
-
-        box.style.position = "fixed";
-        box.style.left = rect.left + "px";
-        box.style.top = rect.top + "px";
-        box.style.right = "auto";
-        box.style.bottom = "auto";
-        box.style.zIndex = ++dragZIndex;
-
-        box.classList.add("dragging");
-
-        document.addEventListener("pointermove", pointerMove);
-        document.addEventListener("pointerup", pointerUp);
-      });
-
-      function pointerMove(e) {
-        if (!isDragging) return;
-
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        let newX = boxStartX + dx;
-        let newY = boxStartY + dy;
-
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const rect = box.getBoundingClientRect();
-        const margin = 8;
-        const width = rect.width;
-        const height = rect.height;
-
-        if (newX < margin) newX = margin;
-        if (newY < margin) newY = margin;
-        if (newX + width > vw - margin) newX = vw - width - margin;
-        if (newY + height > vh - margin) newY = vh - height - margin;
-
-        box.style.left = newX + "px";
-        box.style.top = newY + "px";
-      }
-
-      function pointerUp() {
-        if (!isDragging) return;
-        isDragging = false;
-        box.classList.remove("dragging");
-        document.removeEventListener("pointermove", pointerMove);
-        document.removeEventListener("pointerup", pointerUp);
-      }
-    }
-
-    function makeResizable(box, handle) {
-      if (!box || !handle) return;
-
-      let isResizing = false;
-      let startX = 0;
-      let startY = 0;
-      let startWidth = 0;
-      let startHeight = 0;
-
-      handle.addEventListener("pointerdown", (e) => {
-        e.stopPropagation();
-        if (e.button !== 0) return;
-        isResizing = true;
-
-        const rect = box.getBoundingClientRect();
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = rect.width;
-        startHeight = rect.height;
-
-        box.style.position = "fixed";
-        box.style.left = rect.left + "px";
-        box.style.top = rect.top + "px";
-        box.style.right = "auto";
-        box.style.bottom = "auto";
-        box.style.width = rect.width + "px";
-        box.style.height = rect.height + "px";
-        box.style.zIndex = ++dragZIndex;
-
-        document.addEventListener("pointermove", pointerMove);
-        document.addEventListener("pointerup", pointerUp);
-      });
-
-      function pointerMove(e) {
-        if (!isResizing) return;
-
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        let newWidth = startWidth + dx;
-        let newHeight = startHeight + dy;
-
-        const minWidth = 260;
-        const minHeight = 180;
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const rect = box.getBoundingClientRect();
-
-        if (newWidth < minWidth) newWidth = minWidth;
-        if (newHeight < minHeight) newHeight = minHeight;
-        if (rect.left + newWidth > vw - 8) newWidth = vw - 8 - rect.left;
-        if (rect.top + newHeight > vh - 8) newHeight = vh - 8 - rect.top;
-
-        box.style.width = newWidth + "px";
-        box.style.height = newHeight + "px";
-      }
-
-      function pointerUp() {
-        if (!isResizing) return;
-        isResizing = false;
-        document.removeEventListener("pointermove", pointerMove);
-        document.removeEventListener("pointerup", pointerUp);
-      }
-    }
-
-    // Копирование ссылки
-    (function () {
-      const btn = document.getElementById("copyInviteBtn");
-      const urlEl = document.getElementById("inviteUrl");
-      if (!btn || !urlEl) return;
-
-      btn.addEventListener("click", async () => {
-        const text = urlEl.textContent.trim();
-        try {
-          await navigator.clipboard.writeText(text);
-          const old = btn.innerHTML;
-          btn.innerHTML = "✔ Скопировано";
-          setTimeout(() => (btn.innerHTML = old), 1200);
-        } catch (err) {
-          console.error(err);
-          alert("Не удалось скопировать ссылку");
-        }
-      });
-    })();
-
-    // Тема (тёмный/светлый)
-    (function () {
-      const btn = document.getElementById("themeToggle");
-      if (!btn) return;
-
-      const saved = localStorage.getItem("webclass-theme");
-      if (saved === "light") {
-        document.body.classList.add("light-mode");
-        btn.textContent = "🌙";
-      }
-
-      btn.addEventListener("click", () => {
-        const isLight = document.body.classList.toggle("light-mode");
-        btn.textContent = isLight ? "🌙" : "☀️";
-        localStorage.setItem("webclass-theme", isLight ? "light" : "dark");
-      });
-    })();
-
-    // Камера/звук (пока локально)
-    (async function initMedia() {
-      const selfVideo = document.getElementById("selfVideo");
-      const mainVideo = document.getElementById("mainVideo");
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        console.warn("getUserMedia не поддерживается в этом браузере");
-        return;
-      }
-
+    async function start() {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
+        localStream = await navigator.mediaDevices.getUserMedia({
           video: true,
-          audio: true,
+          audio: true
         });
-        localStream = stream;
-
-        if (selfVideo) selfVideo.srcObject = stream;
-        if (mainVideo) mainVideo.srcObject = stream; // позже заменим на WebRTC
+        selfVideo.srcObject = localStream;
       } catch (err) {
-        console.error("Ошибка доступа к камере/микрофону:", err);
-        alert(
-          "Не удалось получить доступ к камере/микрофону. Проверьте разрешения в браузере."
-        );
+        console.error("WebRTC: ошибка доступа к камере/микрофону:", err);
+        alert("Не удалось получить доступ к камере/микрофону.");
+        return;
       }
-    })();
-
-    // Fullscreen
-    (function () {
-      const wrapper = document.getElementById("mainVideoWrapper");
-      const fsBtn = document.getElementById("fullscreenBtn");
-      const fsIcon = document.getElementById("fsIcon");
-      if (!wrapper || !fsBtn || !fsIcon) return;
-
-      function isFullscreen() {
-        return document.fullscreenElement === wrapper;
-      }
-
-      function updateIcon() {
-        if (isFullscreen()) {
-          fsIcon.textContent = "🗗";
-          wrapper.classList.add("fullscreen-active");
-        } else {
-          fsIcon.textContent = "⛶";
-          wrapper.classList.remove("fullscreen-active");
-        }
-      }
-
-      fsBtn.addEventListener("click", async () => {
-        try {
-          if (!isFullscreen()) {
-            await wrapper.requestFullscreen();
-          } else {
-            await document.exitFullscreen();
-          }
-        } catch (err) {
-          console.error("Ошибка fullscreen:", err);
-        }
-      });
-
-      document.addEventListener("fullscreenchange", updateIcon);
-      updateIcon();
-    })();
-
-    // Псевдо-SWAP (пока только текст)
-    (function () {
-      const swapBtn = document.getElementById("swapBtn");
-      const mainVideo = document.getElementById("mainVideo");
-      const selfVideo = document.getElementById("selfVideo");
-      if (!swapBtn || !mainVideo || !selfVideo) return;
-
-      swapBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
-
-      let swapped = false;
-      swapBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        swapped = !swapped;
-        swapBtn.textContent = swapped
-          ? "↔ Вернуть как было"
-          : "↔ Поменять местами";
-      });
-    })();
-
-    // Скрыть/показать PiP
-    (function () {
-      const selfBox = document.getElementById("selfBox");
-      const toggleBtn = document.getElementById("toggleSelfBtn");
-      if (!selfBox || !toggleBtn) return;
-
-      toggleBtn.addEventListener("pointerdown", (e) => e.stopPropagation());
-
-      let hidden = false;
-      toggleBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        hidden = !hidden;
-        selfBox.classList.toggle("hidden", hidden);
-        toggleBtn.textContent = hidden
-          ? "👁 Показать себя"
-          : "🙈 Скрыть себя";
-      });
-    })();
-
-    // Чат (локальный, без сервера)
-    (function () {
-      const messagesEl = document.getElementById("chatMessages");
-      const attachmentsEl = document.getElementById("chatAttachments");
-      const inputEl = document.getElementById("chatInput");
-      const sendBtn = document.getElementById("chatSendBtn");
-      const fileInput = document.getElementById("chatFileInput");
-
-      if (!messagesEl || !inputEl || !sendBtn || !fileInput || !attachmentsEl) return;
-
-      let pendingFiles = [];
-
-      function renderAttachments() {
-        attachmentsEl.innerHTML = "";
-        pendingFiles.forEach((file) => {
-          const pill = document.createElement("div");
-          pill.className = "chat-attachment-pill";
-          pill.textContent = file.name;
-          attachmentsEl.appendChild(pill);
-        });
-      }
-
-      fileInput.addEventListener("change", () => {
-        pendingFiles = Array.from(fileInput.files || []);
-        renderAttachments();
-      });
-
-      function addMessage(text, files) {
-        const wrapper = document.createElement("div");
-        wrapper.className = "chat-message me";
-
-        const header = document.createElement("div");
-        header.className = "chat-message-header";
-        const who = document.createElement("span");
-        who.textContent = "Вы";
-        const when = document.createElement("span");
-        const d = new Date();
-        when.textContent =
-          d.getHours().toString().padStart(2, "0") +
-          ":" +
-          d.getMinutes().toString().padStart(2, "0");
-        header.appendChild(who);
-        header.appendChild(when);
-
-        const body = document.createElement("div");
-        body.textContent = text || "";
-
-        wrapper.appendChild(header);
-        if (text) wrapper.appendChild(body);
-
-        if (files && files.length > 0) {
-          const filesWrap = document.createElement("div");
-          filesWrap.style.marginTop = "2px";
-          filesWrap.style.display = "flex";
-          filesWrap.style.flexDirection = "column";
-          filesWrap.style.gap = "2px";
-          files.forEach((f) => {
-            const pill = document.createElement("div");
-            pill.className = "chat-attachment-pill";
-            pill.textContent = "📎 " + f.name;
-            filesWrap.appendChild(pill);
-          });
-          wrapper.appendChild(filesWrap);
-        }
-
-        messagesEl.appendChild(wrapper);
-        messagesEl.scrollTop = messagesEl.scrollHeight;
-      }
-
-      function send() {
-        const text = inputEl.value.trim();
-        if (!text && pendingFiles.length === 0) return;
-        addMessage(text, pendingFiles);
-        inputEl.value = "";
-        pendingFiles = [];
-        fileInput.value = "";
-        renderAttachments();
-      }
-
-      sendBtn.addEventListener("click", send);
-      inputEl.addEventListener("keydown", (e) => {
-        if (e.key === "Enter" && !e.shiftKey) {
-          e.preventDefault();
-          send();
-        }
-      });
-    })();
-
-    // Settings: cam/mic/quality
-    (function () {
-      const toggle = document.getElementById("settingsToggle");
-      const body = document.getElementById("settingsBody");
-      const camBtn = document.getElementById("camToggleBtn");
-      const micBtn = document.getElementById("micToggleBtn");
-      const qualitySelect = document.getElementById("qualitySelect");
-      const selfLabel = document.getElementById("selfLabel");
-      const muteStatusText = document.getElementById("muteStatusText");
-
-      if (!toggle || !body) return;
-
-      toggle.addEventListener("click", () => {
-        const visible = body.style.display === "flex";
-        body.style.display = visible ? "none" : "flex";
-      });
-
-      if (camBtn) {
-        let camOn = true;
-        camBtn.addEventListener("click", () => {
-          if (!localStream) return;
-          camOn = !camOn;
-          localStream.getVideoTracks().forEach((t) => (t.enabled = camOn));
-          camBtn.textContent = camOn ? "Выключить" : "Включить";
-          if (selfLabel) {
-            selfLabel.textContent = camOn ? "Предпросмотр камеры" : "Камера выключена";
-          }
-        });
-      }
-
-      if (micBtn) {
-        let micOn = true;
-        micBtn.addEventListener("click", () => {
-          if (!localStream) return;
-          micOn = !micOn;
-          localStream.getAudioTracks().forEach((t) => (t.enabled = micOn));
-          micBtn.textContent = micOn ? "Выключить" : "Включить";
-          if (muteStatusText) {
-            muteStatusText.textContent = micOn
-              ? "Микрофон включён"
-              : "Микрофон выключен";
-          }
-        });
-      }
-
-      if (qualitySelect) {
-        qualitySelect.addEventListener("change", async () => {
-          if (!localStream) return;
-          const track = localStream.getVideoTracks()[0];
-          if (!track) return;
-
-          let constraints = {};
-          switch (qualitySelect.value) {
-            case "high":
-              constraints = { width: { ideal: 1280 }, height: { ideal: 720 } };
-              break;
-            case "medium":
-              constraints = { width: { ideal: 854 }, height: { ideal: 480 } };
-              break;
-            case "low":
-              constraints = { width: { ideal: 640 }, height: { ideal: 360 } };
-              break;
-            case "auto":
-            default:
-              constraints = {};
-          }
-
-          try {
-            await track.applyConstraints(constraints);
-          } catch (e) {
-            console.error("Не удалось применить ограничения качества", e);
-          }
-        });
-      }
-    })();
-
-    // Layout presets
-    (function () {
-      const buttons = document.querySelectorAll(".layout-btn");
-      const videoPanel = document.getElementById("videoPanel");
-      const sidePanel = document.getElementById("sidePanel");
-      const selfBox = document.getElementById("selfBox");
-      if (!videoPanel || !sidePanel || !selfBox || !buttons.length) return;
-
-      function applyLayout(mode) {
-        const vw = window.innerWidth;
-        const margin = 16;
-
-        const vpRect = videoPanel.getBoundingClientRect();
-        const spRect = sidePanel.getBoundingClientRect();
-
-        function placeFixed(el, left, top, widthPx) {
-          el.style.position = "fixed";
-          el.style.left = left + "px";
-          el.style.top = top + "px";
-          el.style.right = "auto";
-          el.style.bottom = "auto";
-          if (widthPx) el.style.width = widthPx + "px";
-          el.style.zIndex = ++dragZIndex;
-        }
-
-        if (mode === "zoom") {
-          const vpWidth = Math.min(vw * 0.6, 900);
-          const spWidth = Math.min(vw * 0.32, 420);
-          placeFixed(videoPanel, margin, 90, vpWidth);
-          placeFixed(sidePanel, margin + vpWidth + 8, 90, spWidth);
-        } else if (mode === "teams") {
-          const vpWidth = Math.min(vw * 0.75, 980);
-          const left = (vw - vpWidth) / 2;
-          placeFixed(videoPanel, left, 80, vpWidth);
-          placeFixed(sidePanel, left, 80 + 320, vpWidth);
-        } else if (mode === "stack") {
-          const vpWidth = Math.min(vw * 0.7, 900);
-          const left = (vw - vpWidth) / 2;
-          placeFixed(videoPanel, left, 70, vpWidth);
-          placeFixed(sidePanel, left, 70 + 320, vpWidth);
-        }
-
-        selfBox.style.right = "2.2vw";
-        selfBox.style.bottom = "2.2vh";
-        selfBox.style.left = "auto";
-        selfBox.style.top = "auto";
-        selfBox.style.zIndex = ++dragZIndex;
-      }
-
-      buttons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          const mode = btn.getAttribute("data-layout");
-          applyLayout(mode);
-        });
-      });
-    })();
-
-    // DRAG + RESIZE: видео, чат и PiP
-    (function () {
-      const selfBox = document.getElementById("selfBox");
-      const selfHandle = document.getElementById("selfBoxHandle");
-      const videoPanel = document.getElementById("videoPanel");
-      const videoHandle = document.getElementById("videoPanelHandle");
-      const sidePanel = document.getElementById("sidePanel");
-      const sideHandle = document.getElementById("sidePanelHandle");
-      const videoResize = document.getElementById("videoResizeHandle");
-      const sideResize = document.getElementById("sideResizeHandle");
-
-      makeDraggable(selfBox, selfHandle);
-      makeDraggable(videoPanel, videoHandle);
-      makeDraggable(sidePanel, sideHandle);
-
-      makeResizable(videoPanel, videoResize);
-      makeResizable(sidePanel, sideResize);
-    })();
-  </script>
-  <script>
-(function () {
-  // -------- Настройки --------
-  const ROLE = "teacher";
-  const params = new URLSearchParams(window.location.search);
-  const roomId = params.get("room") || "default-room";
-  const signalingUrl = `wss://webclass-backend-g3uh.onrender.com/ws/${roomId}`;
-
-  const selfVideo = document.getElementById("selfVideo");
-  const mainVideo = document.getElementById("mainVideo");
-
-  if (!selfVideo || !mainVideo) {
-    console.warn("WebRTC: не найдены элементы selfVideo/mainVideo");
-    return;
-  }
-
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    alert("Ваш браузер не поддерживает видеосвязь (getUserMedia).");
-    return;
-  }
-
-  let localStream = null;
-  let remoteStream = null;
-  let pc = null;
-  let ws = null;
-
-  // ---- Стартуем: берём камеру, потом подключаемся к WebSocket ----
-  start();
-
-  async function start() {
-    try {
-      localStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true
-      });
-      // учитель: себя показываем в PiP
-      selfVideo.srcObject = localStream;
-    } catch (err) {
-      console.error("WebRTC: ошибка доступа к камере/микрофону:", err);
-      alert("Не удалось получить доступ к камере/микрофону.");
-      return;
-    }
-    setupWebSocket();
-  }
-
-  function setupWebSocket() {
-    try {
-      ws = new WebSocket(signalingUrl);
-    } catch (err) {
-      console.error("WebRTC: ошибка создания WebSocket:", err);
-      return;
+      setupWebSocket();
     }
 
-    ws.onopen = () => {
-      console.log("WebRTC WS open, room =", roomId);
-      send({ type: "ready", role: ROLE });
-    };
-
-    ws.onmessage = async (event) => {
-      let msg;
+    function setupWebSocket() {
       try {
-        msg = JSON.parse(event.data);
-      } catch {
+        ws = new WebSocket(signalingUrl);
+      } catch (err) {
+        console.error("WebRTC: ошибка создания WebSocket:", err);
         return;
       }
 
-      // игнорируем свои же сообщения по роли
-      if (msg.role === ROLE) return;
+      ws.onopen = () => {
+        console.log("WebRTC WS open, room =", roomId);
+        send({ type: "ready", role: ROLE });
+      };
 
-      switch (msg.type) {
-        case "ready":
-          // учитель инициирует соединение
-          await ensurePeerConnection();
-          await makeOffer();
-          break;
+      ws.onmessage = async (event) => {
+        let msg;
+        try {
+          msg = JSON.parse(event.data);
+        } catch {
+          return;
+        }
 
-        case "offer":
-          await ensurePeerConnection();
-          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-          const answer = await pc.createAnswer();
-          await pc.setLocalDescription(answer);
-          send({ type: "answer", sdp: pc.localDescription, role: ROLE });
-          break;
+        if (msg.role === ROLE) return;
 
-        case "answer":
-          if (!pc) return;
-          await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
-          break;
+        switch (msg.type) {
+          case "ready":
+            // учитель инициирует соединение
+            await ensurePeerConnection();
+            await makeOffer();
+            break;
 
-        case "candidate":
-          if (!pc || !msg.candidate) return;
-          try {
-            await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
-          } catch (err) {
-            console.warn("WebRTC: addIceCandidate error", err);
-          }
-          break;
+          case "offer":
+            await ensurePeerConnection();
+            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            const answer = await pc.createAnswer();
+            await pc.setLocalDescription(answer);
+            send({ type: "answer", sdp: pc.localDescription, role: ROLE });
+            break;
+
+          case "answer":
+            if (!pc) return;
+            await pc.setRemoteDescription(new RTCSessionDescription(msg.sdp));
+            break;
+
+          case "candidate":
+            if (!pc || !msg.candidate) return;
+            try {
+              await pc.addIceCandidate(new RTCIceCandidate(msg.candidate));
+            } catch (err) {
+              console.warn("Ошибка addIceCandidate:", err);
+            }
+            break;
+        }
+      };
+
+      ws.onclose = () => console.log("WebRTC WS closed");
+      ws.onerror = (err) => console.error("WebRTC WS error:", err);
+    }
+
+    function send(payload) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(payload));
       }
-    };
-
-    ws.onclose = () => {
-      console.log("WebRTC WS closed");
-    };
-
-    ws.onerror = (err) => {
-      console.error("WebRTC WS error:", err);
-    };
-  }
-
-  function send(payload) {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify(payload));
     }
-  }
 
-  async function ensurePeerConnection() {
-    if (pc) return;
+    async function ensurePeerConnection() {
+      if (pc) return;
 
-    pc = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-    });
-
-    if (localStream) {
-      localStream.getTracks().forEach((track) => {
-        pc.addTrack(track, localStream);
+      pc = new RTCPeerConnection({
+        iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
       });
-    }
 
-    pc.onicecandidate = (event) => {
-      if (event.candidate) {
-        send({
-          type: "candidate",
-          candidate: event.candidate,
-          role: ROLE
+      if (localStream) {
+        localStream.getTracks().forEach((track) => {
+          pc.addTrack(track, localStream);
         });
       }
-    };
 
-    pc.ontrack = (event) => {
-      const stream = event.streams[0];
-      if (!remoteStream) {
-        remoteStream = new MediaStream();
-        mainVideo.srcObject = remoteStream; // в большое окно кладём ученика
-      }
-      stream.getTracks().forEach((track) => {
-        remoteStream.addTrack(track);
-      });
-    };
-  }
+      pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          send({
+            type: "candidate",
+            candidate: event.candidate,
+            role: ROLE,
+          });
+        }
+      };
 
-  async function makeOffer() {
-    if (!pc) return;
-    try {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
-      send({ type: "offer", sdp: pc.localDescription, role: ROLE });
-    } catch (err) {
-      console.error("WebRTC: ошибка создания offer:", err);
+      pc.ontrack = (event) => {
+        const stream = event.streams[0];
+        if (!remoteStream) {
+          remoteStream = new MediaStream();
+          mainVideo.srcObject = remoteStream; // сюда придёт ученик
+        }
+        stream.getTracks().forEach((track) => {
+          remoteStream.addTrack(track);
+        });
+      };
     }
-  }
-})();
-</script>
 
+    async function makeOffer() {
+      if (!pc) return;
+      try {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        send({ type: "offer", sdp: pc.localDescription, role: ROLE });
+      } catch (err) {
+        console.error("WebRTC: ошибка создания offer:", err);
+      }
+    }
+  })();
+  </script>
 </body>
 </html>
