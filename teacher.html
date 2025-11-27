@@ -673,7 +673,7 @@ let offerSent = false;
 
 function createWebSocketTeacher() {
   const proto = window.location.protocol === "https:" ? "wss" : "ws";
-  const wsUrl = `${proto}://${window.location.host}/ws?room=${encodeURIComponent(room)}&role=teacher`;
+ const wsUrl = `wss://webclass-lzx3.onrender.com/ws?room=${encodeURIComponent(room)}&role=teacher`;
   wsTeacher = new WebSocket(wsUrl);
 
   wsTeacher.onopen = () => {
