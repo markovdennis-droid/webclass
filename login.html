@@ -1,75 +1,209 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>WebClass — вход</title>
-    <style>
-        body {
-    margin: 0; padding: 0;
-    background: linear-gradient(145deg, #0a0f25 0%, #111d45 50%, #2c2f7b 100%);
-    background-attachment: fixed;
-    font-family: Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-}
-
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            width: 360px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.15);
-            text-align: center;
-        }
-        input {
-            width: 90%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-        }
-        button {
-            padding: 12px 25px;
-            background: #3b5bff;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        button:hover { background: #2e46d9; }
-    </style>
+  <meta charset="UTF-8">
+  <title>WebClass — вход</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #243b80, #050816);
+      color: #0b1020;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 24px 28px 28px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      max-width: 420px;
+      width: 100%;
+    }
+    h1 {
+      margin: 0 0 4px;
+      font-size: 22px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 18px;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 16px;
+      background: #f1f3ff;
+      border-radius: 999px;
+      padding: 3px;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 8px 6px;
+      font-size: 13px;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .tab.active {
+      background: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      margin-bottom: 4px;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #d0d4e0;
+      outline: none;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px rgba(59, 130, 246, .35);
+    }
+    button {
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 6px;
+      transition: transform .05s ease, box-shadow .1s ease;
+    }
+    .btn-main {
+      background: #3b82f6;
+      color: #fff;
+      box-shadow: 0 10px 22px rgba(59, 130, 246, .55);
+    }
+    .btn-main:active {
+      transform: translateY(1px);
+      box-shadow: 0 5px 12px rgba(59, 130, 246, .45);
+    }
+    .hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: 8px;
+      line-height: 1.4;
+    }
+    .section { display: none; }
+    .section.active { display: block; }
+  </style>
 </head>
-
 <body>
-<div class="card">
-    <h2>WebClass</h2>
-    <p>Введите ваше имя</p>
+  <div class="card">
+    <h1>WebClass</h1>
+    <div class="subtitle">Выберите роль и войдите в комнату</div>
 
-    <input id="teacherName" placeholder="Ваше имя (например: Денис)">
+    <div class="tabs">
+      <div id="tab-teacher" class="tab active">Я учитель</div>
+      <div id="tab-student" class="tab">Я ученик</div>
+    </div>
 
-    <button onclick="startLesson()">Начать урок</button>
-</div>
+    <!-- БЛОК УЧИТЕЛЯ -->
+    <div id="section-teacher" class="section active">
+      <label for="teacher-name">Ваше имя</label>
+      <input id="teacher-name" placeholder="Например: Денис">
 
-<script>
-    function generateRoomID() {
-        return "room_" + Math.random().toString(36).substring(2, 10);
+      <button class="btn-main" onclick="enterAsTeacher()">Начать урок</button>
+      <div class="hint">
+        Мы создадим новую комнату, покажем её код (например <b>room_ab12cd34</b>)
+        и ссылку для ученика. Этот код вы пришлёте ученику.
+      </div>
+    </div>
+
+    <!-- БЛОК УЧЕНИКА -->
+    <div id="section-student" class="section">
+      <label for="student-name">Ваше имя</label>
+      <input id="student-name" placeholder="Например: Ваня">
+
+      <label for="room-code">Код комнаты</label>
+      <input id="room-code" placeholder="Например: room_ab12cd34">
+
+      <button class="btn-main" onclick="enterAsStudent()">Войти в класс</button>
+      <div class="hint">
+        Код комнаты вам скажет учитель. Его можно увидеть вверху кабинета
+        учителя (поле <b>Комната: room_…</b>).
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const tabTeacher   = document.getElementById('tab-teacher');
+    const tabStudent   = document.getElementById('tab-student');
+    const secTeacher   = document.getElementById('section-teacher');
+    const secStudent   = document.getElementById('section-student');
+
+    tabTeacher.onclick = () => {
+      tabTeacher.classList.add('active');
+      tabStudent.classList.remove('active');
+      secTeacher.classList.add('active');
+      secStudent.classList.remove('active');
+    };
+
+    tabStudent.onclick = () => {
+      tabStudent.classList.add('active');
+      tabTeacher.classList.remove('active');
+      secStudent.classList.add('active');
+      secTeacher.classList.remove('active');
+    };
+
+    function randomRoomId() {
+      return 'room_' + Math.random().toString(36).slice(2, 10);
     }
 
-    function startLesson() {
-        let name = document.getElementById("teacherName").value.trim();
-        if (!name) {
-            alert("Введите имя!");
-            return;
-        }
-
-        const room = generateRoomID();
-        window.location.href = `teacher.html?name=${encodeURIComponent(name)}&room=${room}`;
+    // Вход как учитель: создаём новую комнату
+    function enterAsTeacher() {
+      const name = document.getElementById('teacher-name').value.trim();
+      if (!name) {
+        alert('Введите ваше имя');
+        return;
+      }
+      const room = randomRoomId();
+      const url =
+        'teacher.html?name=' + encodeURIComponent(name) +
+        '&room=' + encodeURIComponent(room);
+      window.location.href = url;
     }
-</script>
 
+    // Вход как ученик: вводит готовый код комнаты
+    function enterAsStudent() {
+      const studentName = document.getElementById('student-name').value.trim();
+      const roomCode    = document.getElementById('room-code').value.trim();
+
+      if (!studentName) {
+        alert('Введите ваше имя');
+        return;
+      }
+      if (!roomCode) {
+        alert('Введите код комнаты, который дал учитель');
+        return;
+      }
+
+      // teacher-параметр нужен только для подписи в интерфейсе.
+      // Если хочешь, можно потом добавить поле "Имя учителя".
+      const url =
+        'student.html?room=' + encodeURIComponent(roomCode) +
+        '&teacher=' + encodeURIComponent('Учитель');
+
+      window.location.href = url;
+    }
+  </script>
 </body>
 </html>
