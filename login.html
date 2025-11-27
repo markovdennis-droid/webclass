@@ -116,19 +116,19 @@
       <div id="tab-student" class="tab">Я ученик</div>
     </div>
 
-    <!-- БЛОК УЧИТЕЛЯ -->
+    <!-- Учитель -->
     <div id="section-teacher" class="section active">
       <label for="teacher-name">Ваше имя</label>
       <input id="teacher-name" placeholder="Например: Денис">
 
       <button class="btn-main" onclick="enterAsTeacher()">Начать урок</button>
       <div class="hint">
-        Мы создадим новую комнату, покажем её код (например <b>room_ab12cd34</b>)
-        и ссылку для ученика. Этот код вы пришлёте ученику.
+        Для вас создадим новую комнату (например <b>room_ab12cd34</b>), код
+        которой вы скажете ученику.
       </div>
     </div>
 
-    <!-- БЛОК УЧЕНИКА -->
+    <!-- Ученик -->
     <div id="section-student" class="section">
       <label for="student-name">Ваше имя</label>
       <input id="student-name" placeholder="Например: Ваня">
@@ -138,17 +138,17 @@
 
       <button class="btn-main" onclick="enterAsStudent()">Войти в класс</button>
       <div class="hint">
-        Код комнаты вам скажет учитель. Его можно увидеть вверху кабинета
-        учителя (поле <b>Комната: room_…</b>).
+        Код комнаты говорит учитель. Он видит его в своём кабинете:
+        строка <b>Комната: room_…</b>.
       </div>
     </div>
   </div>
 
   <script>
-    const tabTeacher   = document.getElementById('tab-teacher');
-    const tabStudent   = document.getElementById('tab-student');
-    const secTeacher   = document.getElementById('section-teacher');
-    const secStudent   = document.getElementById('section-student');
+    const tabTeacher = document.getElementById('tab-teacher');
+    const tabStudent = document.getElementById('tab-student');
+    const secTeacher = document.getElementById('section-teacher');
+    const secStudent = document.getElementById('section-student');
 
     tabTeacher.onclick = () => {
       tabTeacher.classList.add('active');
@@ -168,7 +168,6 @@
       return 'room_' + Math.random().toString(36).slice(2, 10);
     }
 
-    // Вход как учитель: создаём новую комнату
     function enterAsTeacher() {
       const name = document.getElementById('teacher-name').value.trim();
       if (!name) {
@@ -176,13 +175,11 @@
         return;
       }
       const room = randomRoomId();
-      const url =
-        'teacher.html?name=' + encodeURIComponent(name) +
-        '&room=' + encodeURIComponent(room);
+      const url = 'teacher.html?name=' + encodeURIComponent(name) +
+                  '&room=' + encodeURIComponent(room);
       window.location.href = url;
     }
 
-    // Вход как ученик: вводит готовый код комнаты
     function enterAsStudent() {
       const studentName = document.getElementById('student-name').value.trim();
       const roomCode    = document.getElementById('room-code').value.trim();
@@ -192,16 +189,12 @@
         return;
       }
       if (!roomCode) {
-        alert('Введите код комнаты, который дал учитель');
+        alert('Введите код комнаты');
         return;
       }
 
-      // teacher-параметр нужен только для подписи в интерфейсе.
-      // Если хочешь, можно потом добавить поле "Имя учителя".
-      const url =
-        'student.html?room=' + encodeURIComponent(roomCode) +
-        '&teacher=' + encodeURIComponent('Учитель');
-
+      const url = 'student.html?room=' + encodeURIComponent(roomCode) +
+                  '&teacher=' + encodeURIComponent('Учитель');
       window.location.href = url;
     }
   </script>
