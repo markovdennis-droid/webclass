@@ -503,13 +503,14 @@
 </div>
 
 <script>
-// ====== ПАРАМЕТРЫ И ССЫЛКА ДЛЯ УЧЕНИКА ======
+
 const params = new URLSearchParams(window.location.search);
 const room = params.get("room") || "demo-room";
 const name = params.get("name") || "Учитель";
 
 const studentLink = `${window.location.origin}/student.html?room=${encodeURIComponent(room)}&teacher=${encodeURIComponent(name)}`;
 
+// ===== ССЫЛКА ДЛЯ УЧЕНИКА / ШАПКА =====
 const lessonLinkInput = document.getElementById("lessonLink");
 const copyBtn = document.getElementById("copyBtn");
 const roomInfoEl = document.getElementById("roomInfo");
@@ -517,156 +518,281 @@ const teacherNameLabel = document.getElementById("teacherNameLabel");
 const roomShort = document.getElementById("roomShort");
 const remoteNameLabel = document.getElementById("remoteNameLabel");
 
-lessonLinkInput.value = studentLink;
-roomInfoEl.textContent = "Комната: " + room;
-teacherNameLabel.textContent = name;
-roomShort.textContent = room;
-remoteNameLabel.textContent = "Ученик";
+if (lessonLinkInput) lessonLinkInput.value = studentLink;
+if (roomInfoEl) roomInfoEl.textContent = "Комната: " + room;
+if (teacherNameLabel) teacherNameLabel.textContent = name;
+if (roomShort) roomShort.textContent = room;
+if (remoteNameLabel) remoteNameLabel.textContent = "Ученик";
 
-copyBtn.addEventListener("click", () => {
+if (copyBtn) {
+  copyBtn.addEventListener("click", () => {
     navigator.clipboard.writeText(studentLink).then(() => {
-        copyBtn.textContent = "Скопировано ✓";
-        copyBtn.style.backgroundColor = "#22c55e";
-        setTimeout(() => {
-            copyBtn.textContent = "Скопировать";
-            copyBtn.style.backgroundColor = "#4f46e5";
-        }, 2000);
+      copyBtn.textContent = "Скопировано ✓";
+      copyBtn.style.backgroundColor = "#22c55e";
+      setTimeout(() => {
+        copyBtn.textContent = "Скопировать";
+        copyBtn.style.backgroundColor = "#4f46e5";
+      }, 2000);
     });
-});
+  });
+}
 
 const toggleBtn = document.getElementById("toggleLink");
 const linkContent = document.getElementById("linkContent");
-toggleBtn.addEventListener("click", () => {
+if (toggleBtn && linkContent) {
+  toggleBtn.addEventListener("click", () => {
     linkContent.classList.toggle("hidden");
     toggleBtn.textContent = linkContent.classList.contains("hidden") ? "Показать" : "Свернуть";
-});
+  });
+}
 
-// ===== ЛОКАЛЬНЫЙ ЧАТ (демо, только учитель) =====
+// ===== ЧАТ УЧИТЕЛЯ (демо локальный) =====
 const chatMessagesT = document.getElementById("chatMessagesTeacher");
 const chatInputT = document.getElementById("chatInputTeacher");
 const chatSendT = document.getElementById("chatSendTeacher");
 const chatFileT = document.getElementById("chatFileTeacher");
 
 function addTeacherMessage(text, isFile = false) {
-    if (!text.trim()) return;
-    const empty = chatMessagesT.querySelector(".chat-empty");
-    if (empty) empty.remove();
+  if (!text || !text.trim() || !chatMessagesT) return;
+  const empty = chatMessagesT.querySelector(".chat-empty");
+  if (empty) empty.remove();
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "msg msg-you";
+  const wrapper = document.createElement("div");
+  wrapper.className = "msg msg-you";
 
-    const author = document.createElement("div");
-    author.className = "msg-author";
-    author.textContent = isFile ? "Файл (демо)" : "Вы";
+  const author = document.createElement("div");
+  author.className = "msg-author";
+  author.textContent = isFile ? "Файл (демо)" : "Вы";
 
-    const bubble = document.createElement("div");
-    bubble.className = "msg-bubble";
-    bubble.textContent = text;
+  const bubble = document.createElement("div");
+  bubble.className = "msg-bubble";
+  bubble.textContent = text;
 
-    wrapper.appendChild(author);
-    wrapper.appendChild(bubble);
-    chatMessagesT.appendChild(wrapper);
-    chatMessagesT.scrollTop = chatMessagesT.scrollHeight;
+  wrapper.appendChild(author);
+  wrapper.appendChild(bubble);
+  chatMessagesT.appendChild(wrapper);
+  chatMessagesT.scrollTop = chatMessagesT.scrollHeight;
 }
 
-chatSendT.addEventListener("click", () => {
+if (chatSendT && chatInputT) {
+  chatSendT.addEventListener("click", () => {
     addTeacherMessage(chatInputT.value);
     chatInputT.value = "";
     chatInputT.focus();
-});
+  });
 
-chatInputT.addEventListener("keydown", (e) => {
+  chatInputT.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
-        e.preventDefault();
-        addTeacherMessage(chatInputT.value);
-        chatInputT.value = "";
+      e.preventDefault();
+      addTeacherMessage(chatInputT.value);
+      chatInputT.value = "";
     }
-});
+  });
+}
 
-chatFileT.addEventListener("change", () => {
+if (chatFileT) {
+  chatFileT.addEventListener("change", () => {
     if (!chatFileT.files || chatFileT.files.length === 0) return;
     const file = chatFileT.files[0];
     addTeacherMessage(`Файл: ${file.name} (до 10 МБ, демо)`, true);
     chatFileT.value = "";
-});
+  });
+}
 
-// ====== ВИДЕО: ЛОКАЛЬНОЕ (УЧИТЕЛЬ) ======
+// ===== ЛОКАЛЬНОЕ ВИДЕО УЧИТЕЛЯ =====
 let localStreamTeacher = null;
 let isMicMutedTeacher = false;
 
 async function startLocalVideoTeacher() {
-    const video = document.getElementById("localVideoTeacher");
-    const placeholder = document.getElementById("localPlaceholderTeacher");
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        localStreamTeacher = stream;
-        video.srcObject = stream;
-        video.muted = true;
-        video.playsInline = true;
-        if (placeholder) placeholder.style.display = "none";
-    } catch (err) {
-        console.error(err);
-        if (placeholder) {
-            placeholder.innerHTML = "<div>Не удалось включить камеру.</div><div style='font-size:11px;'>Проверьте разрешения браузера.</div>";
-        }
+  const video = document.getElementById("localVideoTeacher");
+  const placeholder = document.getElementById("localPlaceholderTeacher");
+  if (!video) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localStreamTeacher = stream;
+    video.srcObject = stream;
+    video.muted = true;
+    video.playsInline = true;
+    if (placeholder) placeholder.style.display = "none";
+    tryStartOffer(); // попробуем стартовать WebRTC, если всё готово
+  } catch (err) {
+    console.error("Ошибка доступа к камере учителя:", err);
+    if (placeholder) {
+      placeholder.innerHTML = "<div>Не удалось включить камеру.</div><div style='font-size:11px;'>Проверьте разрешения браузера.</div>";
     }
+  }
 }
 
 function toggleTeacherMic() {
-    if (!localStreamTeacher) return;
-    isMicMutedTeacher = !isMicMutedTeacher;
-    localStreamTeacher.getAudioTracks().forEach(t => t.enabled = !isMicMutedTeacher);
-    const btn = document.getElementById("selfMuteTeacher");
-    if (btn) btn.textContent = isMicMutedTeacher ? "🎤✕" : "🎤";
+  if (!localStreamTeacher) return;
+  isMicMutedTeacher = !isMicMutedTeacher;
+  localStreamTeacher.getAudioTracks().forEach(t => t.enabled = !isMicMutedTeacher);
+  const btn = document.getElementById("selfMuteTeacher");
+  if (btn) btn.textContent = isMicMutedTeacher ? "🎤✕" : "🎤";
 }
 
-// ====== ВИДЕО: ОКНО УЧЕНИКА (заглушка + звук/фуллскрин) ======
+// ===== ДИСТАНЦИОННОЕ ВИДЕО УЧЕНИКА (звук + fullscreen) =====
 let isRemoteMutedTeacher = true;
 
 function toggleRemoteMuteTeacher() {
-    const video = document.getElementById("remoteVideoTeacher");
-    if (!video) return;
-    isRemoteMutedTeacher = !isRemoteMutedTeacher;
-    video.muted = isRemoteMutedTeacher;
-    const btn = document.getElementById("remoteMuteTeacher");
-    if (btn) btn.textContent = isRemoteMutedTeacher ? "🔇" : "🔊";
+  const video = document.getElementById("remoteVideoTeacher");
+  if (!video) return;
+  isRemoteMutedTeacher = !isRemoteMutedTeacher;
+  video.muted = isRemoteMutedTeacher;
+  const btn = document.getElementById("remoteMuteTeacher");
+  if (btn) btn.textContent = isRemoteMutedTeacher ? "🔇" : "🔊";
 }
 
 function toggleFullscreen(el, btn) {
-    if (!document.fullscreenElement) {
-        if (el.requestFullscreen) {
-            el.requestFullscreen();
-            if (btn) btn.textContent = "⤡";
-        }
-    } else {
-        document.exitFullscreen();
+  if (!el) return;
+  if (!document.fullscreenElement) {
+    if (el.requestFullscreen) {
+      el.requestFullscreen();
+      if (btn) btn.textContent = "⤡";
     }
+  } else {
+    document.exitFullscreen();
+  }
 }
 
 document.addEventListener("fullscreenchange", () => {
-    const btn = document.getElementById("remoteFullscreenTeacher");
-    if (!btn) return;
-    if (!document.fullscreenElement) {
-        btn.textContent = "⤢";
-    }
+  const btn = document.getElementById("remoteFullscreenTeacher");
+  if (!btn) return;
+  if (!document.fullscreenElement) {
+    btn.textContent = "⤢";
+  }
 });
 
-// навешиваем обработчики
+// ===== WebRTC + WebSocket сигналинг (учитель инициатор) =====
+let wsTeacher = null;
+let pcTeacher = null;
+let wsReady = false;
+let bothReady = false;
+let offerSent = false;
+
+function createWebSocketTeacher() {
+  const proto = window.location.protocol === "https:" ? "wss" : "ws";
+  const wsUrl = `${proto}://${window.location.host}/ws?room=${encodeURIComponent(room)}&role=teacher`;
+  wsTeacher = new WebSocket(wsUrl);
+
+  wsTeacher.onopen = () => {
+    wsReady = true;
+    console.log("[teacher] WebSocket открыт");
+    // сервер сам пришлёт both-ready, когда подключится ученик
+  };
+
+  wsTeacher.onmessage = async (event) => {
+    const msg = JSON.parse(event.data || "{}");
+    const type = msg.type;
+    console.log("[teacher] WS message:", msg);
+
+    if (type === "both-ready") {
+      bothReady = true;
+      tryStartOffer();
+    } else if (type === "answer") {
+      if (!pcTeacher) return;
+      const desc = new RTCSessionDescription(msg.sdp);
+      await pcTeacher.setRemoteDescription(desc);
+      console.log("[teacher] Установлен remote answer");
+    } else if (type === "ice-candidate") {
+      if (!pcTeacher || !msg.candidate) return;
+      try {
+        await pcTeacher.addIceCandidate(msg.candidate);
+      } catch (e) {
+        console.warn("Ошибка addIceCandidate (teacher):", e);
+      }
+    }
+  };
+
+  wsTeacher.onclose = () => {
+    console.log("[teacher] WebSocket закрыт");
+    wsReady = false;
+  };
+
+  wsTeacher.onerror = (e) => {
+    console.error("[teacher] WebSocket error:", e);
+  };
+}
+
+function ensurePeerConnectionTeacher() {
+  if (pcTeacher) return pcTeacher;
+
+  pcTeacher = new RTCPeerConnection({
+    iceServers: [
+      { urls: "stun:stun.l.google.com:19302" }
+    ]
+  });
+
+  if (localStreamTeacher) {
+    localStreamTeacher.getTracks().forEach(track => {
+      pcTeacher.addTrack(track, localStreamTeacher);
+    });
+  }
+
+  pcTeacher.onicecandidate = (event) => {
+    if (event.candidate && wsTeacher && wsTeacher.readyState === WebSocket.OPEN) {
+      wsTeacher.send(JSON.stringify({
+        type: "ice-candidate",
+        candidate: event.candidate
+      }));
+    }
+  };
+
+  pcTeacher.ontrack = (event) => {
+    const remoteVideo = document.getElementById("remoteVideoTeacher");
+    const placeholder = document.getElementById("remotePlaceholderTeacher");
+    if (remoteVideo && !remoteVideo.srcObject) {
+      remoteVideo.srcObject = event.streams[0];
+      remoteVideo.playsInline = true;
+      remoteVideo.muted = isRemoteMutedTeacher; // по умолчанию звук выкл
+    }
+    if (placeholder) placeholder.style.display = "none";
+  };
+
+  return pcTeacher;
+}
+
+async function tryStartOffer() {
+  if (offerSent) return;
+  if (!wsReady || !bothReady || !localStreamTeacher) {
+    return;
+  }
+  const pc = ensurePeerConnectionTeacher();
+  try {
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    if (wsTeacher && wsTeacher.readyState === WebSocket.OPEN) {
+      wsTeacher.send(JSON.stringify({
+        type: "offer",
+        sdp: offer
+      }));
+      offerSent = true;
+      console.log("[teacher] Отправлен offer");
+    }
+  } catch (err) {
+    console.error("[teacher] Ошибка при создании offer:", err);
+  }
+}
+
+// ===== ИНИЦИАЛИЗАЦИЯ =====
 window.addEventListener("DOMContentLoaded", () => {
-    startLocalVideoTeacher();
+  startLocalVideoTeacher();
+  createWebSocketTeacher();
 
-    const micBtn = document.getElementById("selfMuteTeacher");
-    if (micBtn) micBtn.addEventListener("click", toggleTeacherMic);
+  const micBtn = document.getElementById("selfMuteTeacher");
+  if (micBtn) micBtn.addEventListener("click", toggleTeacherMic);
 
-    const remoteMuteBtn = document.getElementById("remoteMuteTeacher");
-    if (remoteMuteBtn) remoteMuteBtn.addEventListener("click", toggleRemoteMuteTeacher);
+  const remoteMuteBtn = document.getElementById("remoteMuteTeacher");
+  if (remoteMuteBtn) remoteMuteBtn.addEventListener("click", toggleRemoteMuteTeacher);
 
-    const fsBtn = document.getElementById("remoteFullscreenTeacher");
-    const remoteViewport = document.getElementById("remoteViewportTeacher");
-    if (fsBtn && remoteViewport) {
-        fsBtn.addEventListener("click", () => toggleFullscreen(remoteViewport, fsBtn));
-    }
+  const fsBtn = document.getElementById("remoteFullscreenTeacher");
+  const remoteViewport = document.getElementById("remoteViewportTeacher");
+  if (fsBtn && remoteViewport) {
+    fsBtn.addEventListener("click", () => toggleFullscreen(remoteViewport, fsBtn));
+  }
 });
+
 </script>
 </body>
 </html>
