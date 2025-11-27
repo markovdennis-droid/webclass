@@ -5,92 +5,159 @@
 <title>Учитель — WebClass</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-body {
-  margin: 0;
-  padding: 20px;
-  background: #020617;
-  color: #e5e7eb;
-  font-family: -apple-system,BlinkMacSystemFont,Roboto,sans-serif;
-}
-.top-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-}
-.top-info {
-  font-size: 14px;
-}
-.top-info b { font-weight: 600; }
-.wrapper {
-  display: flex;
-  gap: 18px;
-}
-.col {
-  flex: 1;
-  background: #020617;
-  border-radius: 16px;
-  padding: 12px;
-  box-shadow: 0 12px 30px rgba(15,23,42,0.8);
-}
-.col h3 {
-  font-size: 14px;
-  margin: 0 0 8px;
-  color: #cbd5f5;
-}
-.video-box {
-  background: #020617;
-  border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #1e293b;
-}
-video {
-  width: 100%;
-  height: 420px;
-  background: #000;
-  display: block;
-}
-#chat {
-  height: 420px;
-  background: radial-gradient(circle at top, #020617, #020617);
-  border-radius: 14px;
-  padding: 10px;
-  font-size: 13px;
-  overflow-y: auto;
-  border: 1px solid #1f2937;
-}
-.msg-me { color: #a5b4fc; margin-bottom: 4px; }
-.msg-other { color: #e5e7eb; margin-bottom: 4px; }
-.chat-input {
-  margin-top: 8px;
-  display: flex;
-  gap: 6px;
-}
-.chat-input input {
-  flex: 1;
-  padding: 8px 10px;
-  border-radius: 999px;
-  border: 1px solid #374151;
-  background: #020617;
-  color: #e5e7eb;
-  outline: none;
-  font-size: 13px;
-}
-.chat-input button {
-  border-radius: 999px;
-  border: none;
-  padding: 8px 14px;
-  background: #22c55e;
-  color: #04101f;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.small-note {
-  font-size: 12px;
-  color: #9ca3af;
-  margin-top: 4px;
-}
+  :root {
+    color-scheme: dark;
+  }
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #020617;
+    color: #e5e7eb;
+    font-family: -apple-system,BlinkMacSystemFont,Roboto,sans-serif;
+  }
+  .top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .top-info {
+    font-size: 14px;
+  }
+  .top-info b { font-weight: 600; }
+  .hint {
+    font-size: 12px;
+    color: #9ca3af;
+    max-width: 280px;
+    text-align: right;
+  }
+
+  .wrapper {
+    display: flex;
+    gap: 18px;
+  }
+  .col {
+    flex: 1;
+    background: #020617;
+    border-radius: 18px;
+    padding: 12px;
+    box-shadow: 0 12px 32px rgba(15,23,42,0.85);
+    border: 1px solid #020617;
+  }
+  .col h3 {
+    font-size: 14px;
+    margin: 0 0 8px;
+    color: #cbd5f5;
+  }
+
+  .video-box {
+    background: #020617;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #1f2937;
+    position: relative;
+  }
+  /* вертикальное окно телефона */
+  .video-inner {
+    width: 100%;
+    max-width: 320px;
+    margin: 0 auto;
+    aspect-ratio: 9 / 16;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+  }
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .video-controls {
+    position: absolute;
+    right: 6px;
+    top: 6px;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+  }
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(15,23,42,0.8);
+    color: #e5e7eb;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+
+  #chat {
+    height: 460px;
+    background: radial-gradient(circle at top, #020617, #020617);
+    border-radius: 16px;
+    padding: 10px;
+    font-size: 13px;
+    overflow-y: auto;
+    border: 1px solid #1f2937;
+  }
+  .msg-me { color: #a5b4fc; margin-bottom: 4px; }
+  .msg-other { color: #e5e7eb; margin-bottom: 4px; }
+  .msg-file a {
+    color: #4ade80;
+    text-decoration: none;
+  }
+
+  .chat-input {
+    margin-top: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .chat-input input[type="text"] {
+    flex: 1;
+    padding: 8px 10px;
+    border-radius: 999px;
+    border: 1px solid #374151;
+    background: #020617;
+    color: #e5e7eb;
+    outline: none;
+    font-size: 13px;
+  }
+  .chat-input button.send-btn {
+    border-radius: 999px;
+    border: none;
+    padding: 8px 14px;
+    background: #22c55e;
+    color: #04101f;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .file-label {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: #111827;
+    border: 1px solid #374151;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  #fileInput {
+    display: none;
+  }
+  .small-note-bottom {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 4px;
+  }
 </style>
 </head>
 <body>
@@ -100,8 +167,8 @@ video {
     Учитель: <b id="teacherName"></b><br>
     Комната: <b id="roomName"></b>
   </div>
-  <div class="small-note">
-    Сообщите код комнаты ученику: он введёт его на странице входа.
+  <div class="hint">
+    Скажите ученику код комнаты (строка «Комната»). Он введёт его на странице входа.
   </div>
 </div>
 
@@ -109,7 +176,13 @@ video {
   <div class="col">
     <h3>Вы (учитель)</h3>
     <div class="video-box">
-      <video id="localVideo" autoplay playsinline muted></video>
+      <div class="video-inner">
+        <video id="localVideo" autoplay playsinline muted></video>
+        <div class="video-controls">
+          <button class="icon-btn" id="toggleMicBtn" title="Вкл/выкл звук">🔊</button>
+          <button class="icon-btn" id="toggleCamBtn" title="Вкл/выкл камеру">🎥</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -117,15 +190,24 @@ video {
     <h3>Чат урока</h3>
     <div id="chat"></div>
     <div class="chat-input">
-      <input id="msgInput" placeholder="Напишите сообщение...">
-      <button onclick="sendMsg()">OK</button>
+      <label for="fileInput" class="file-label" title="Прикрепить файл">
+        📎
+      </label>
+      <input type="file" id="fileInput" accept=".pdf,image/*,.doc,.docx,.ppt,.pptx,.txt,.mp4,.mov,.zip">
+      <input id="msgInput" type="text" placeholder="Напишите сообщение...">
+      <button class="send-btn" onclick="sendMsg()">OK</button>
+    </div>
+    <div class="small-note-bottom">
+      Файлы до 20&nbsp;МБ. Прикреплённые файлы появляются в чате как ссылка (через WebRTC-чат).
     </div>
   </div>
 
   <div class="col">
     <h3>Окно ученика</h3>
     <div class="video-box">
-      <video id="remoteVideo" autoplay playsinline></video>
+      <div class="video-inner">
+        <video id="remoteVideo" autoplay playsinline></video>
+      </div>
     </div>
   </div>
 </div>
@@ -138,22 +220,22 @@ const name   = params.get("name")  || "Учитель";
 document.getElementById("teacherName").textContent = name;
 document.getElementById("roomName").textContent    = room;
 
-const localVideo  = document.getElementById("localVideo");
-const remoteVideo = document.getElementById("remoteVideo");
-const chatBox     = document.getElementById("chat");
-const msgInput    = document.getElementById("msgInput");
+const localVideo   = document.getElementById("localVideo");
+const remoteVideo  = document.getElementById("remoteVideo");
+const chatBox      = document.getElementById("chat");
+const msgInput     = document.getElementById("msgInput");
+const fileInput    = document.getElementById("fileInput");
+const toggleMicBtn = document.getElementById("toggleMicBtn");
+const toggleCamBtn = document.getElementById("toggleCamBtn");
+
+let localStream;
 
 const wsUrl = `wss://webclass-backend-g3uh.onrender.com/ws?room=${encodeURIComponent(room)}&role=teacher`;
 const ws    = new WebSocket(wsUrl);
 
 let pc = new RTCPeerConnection({
   iceServers: [
-    { urls: "stun:stun.l.google.com:19302" },
-    {
-      urls: "turn:global.turn.twilio.com:3478?transport=udp",
-      username: "demo",
-      credential: "demo"
-    }
+    { urls: "stun:stun.l.google.com:19302" }
   ]
 });
 
@@ -169,21 +251,35 @@ pc.ontrack = (e) => {
 
 (async () => {
   try {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    localVideo.srcObject = stream;
-    stream.getTracks().forEach(t => pc.addTrack(t, stream));
+    localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    localVideo.srcObject = localStream;
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
   } catch (err) {
     alert("Ошибка доступа к камере/микрофону: " + err);
   }
 })();
 
+// чат + sdp/ice
 ws.onmessage = async (event) => {
   const msg = JSON.parse(event.data);
 
-  if (msg.chat) {
+  if (msg.type === "chat") {
     const div = document.createElement("div");
     div.className = "msg-other";
-    div.textContent = "Ученик: " + msg.chat;
+    div.textContent = "Ученик: " + msg.text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+    return;
+  }
+
+  if (msg.type === "file") {
+    const div = document.createElement("div");
+    div.className = "msg-other msg-file";
+    const a = document.createElement("a");
+    a.href = msg.data;
+    a.download = msg.name;
+    a.textContent = "Файл от ученика: " + msg.name + ` (${Math.round(msg.size/1024)} КБ)`;
+    div.appendChild(a);
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
     return;
@@ -208,7 +304,8 @@ ws.onmessage = async (event) => {
 function sendMsg() {
   const text = msgInput.value.trim();
   if (!text) return;
-  ws.send(JSON.stringify({ chat: text }));
+  const payload = { type: "chat", from: "teacher", text };
+  ws.send(JSON.stringify(payload));
   const div = document.createElement("div");
   div.className = "msg-me";
   div.textContent = "Вы: " + text;
@@ -216,6 +313,56 @@ function sendMsg() {
   chatBox.scrollTop = chatBox.scrollHeight;
   msgInput.value = "";
 }
+
+fileInput.addEventListener("change", () => {
+  const file = fileInput.files[0];
+  if (!file) return;
+  if (file.size > 20 * 1024 * 1024) {
+    alert("Файл больше 20 МБ");
+    fileInput.value = "";
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    const payload = {
+      type: "file",
+      from: "teacher",
+      name: file.name,
+      size: file.size,
+      mime: file.type,
+      data: reader.result
+    };
+    ws.send(JSON.stringify(payload));
+
+    const div = document.createElement("div");
+    div.className = "msg-me msg-file";
+    const a = document.createElement("a");
+    a.href = reader.result;
+    a.download = file.name;
+    a.textContent = "Вы отправили файл: " + file.name + ` (${Math.round(file.size/1024)} КБ)`;
+    div.appendChild(a);
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+
+    fileInput.value = "";
+  };
+  reader.readAsDataURL(file);
+});
+
+// выключение микрофона/камеры
+toggleMicBtn.addEventListener("click", () => {
+  if (!localStream) return;
+  localStream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
+  const anyEnabled = localStream.getAudioTracks().some(t => t.enabled);
+  toggleMicBtn.textContent = anyEnabled ? "🔊" : "🔇";
+});
+
+toggleCamBtn.addEventListener("click", () => {
+  if (!localStream) return;
+  localStream.getVideoTracks().forEach(t => t.enabled = !t.enabled);
+  const anyEnabled = localStream.getVideoTracks().some(t => t.enabled);
+  toggleCamBtn.textContent = anyEnabled ? "🎥" : "🚫";
+});
 </script>
 </body>
 </html>
