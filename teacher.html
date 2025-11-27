@@ -158,6 +158,35 @@
     color: #6b7280;
     margin-top: 4px;
   }
+  @media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .wrapper {
+    flex-direction: column;   /* ставим блоки вертикально */
+  }
+
+  .col {
+    padding: 10px;
+  }
+
+  .video-inner {
+    max-width: 100%;          /* растягиваем на ширину телефона */
+    aspect-ratio: 9 / 16;     /* вертикальный формат */
+  }
+
+  #chat {
+    height: 320px;            /* фикс высота чата, чтобы было удобно */
+  }
+}
+
 </style>
 </head>
 <body>
