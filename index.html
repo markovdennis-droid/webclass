@@ -1,73 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <title>WebClass • онлайн-уроки 1:1</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            margin: 0;
-            font-family: system-ui, sans-serif;
-            background: radial-gradient(circle at top, #4f46e5 0, #0f172a 55%, #020617 100%);
-            color: #e5e7eb;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+  <meta charset="UTF-8">
+  <title>WebClass — онлайн-уроки</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        .card {
-            background: rgba(15, 23, 42, 0.8);
-            padding: 32px;
-            border-radius: 24px;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-        }
+    body {
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+      background: radial-gradient(circle at top, #3b82f6, #050816);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #e5e7eb;
+    }
 
-        h1 {
-            font-size: 28px;
-            margin-bottom: 12px;
-        }
+    .card {
+      background: rgba(9, 12, 28, 0.96);
+      border-radius: 24px;
+      padding: 28px 32px 30px;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
 
-        p {
-            font-size: 15px;
-            color: #cbd5f6;
-            line-height: 1.5;
-            margin-bottom: 32px;
-        }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 8px;
+    }
 
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
-            border-radius: 999px;
-            color: white;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 500;
-            box-shadow: 0 8px 24px rgba(99,102,241,0.6);
-            transition: 0.15s ease;
-        }
+    .text {
+      font-size: 14px;
+      color: #cbd5f5;
+      line-height: 1.5;
+      margin-bottom: 22px;
+    }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 32px rgba(99,102,241,0.8);
-        }
-    </style>
+    button {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 12px 24px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #6366f1, #a855f7);
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      box-shadow: 0 14px 40px rgba(129, 140, 248, 0.85);
+      transition: transform .06s ease, box-shadow .1s ease;
+      width: 100%;
+      max-width: 220px;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 8px 22px rgba(129, 140, 248, 0.7);
+    }
+  </style>
 </head>
 <body>
-<div class="card">
+  <div class="card">
     <h1>WebClass</h1>
-    <p>
-        Платформа для онлайн-уроков <b>учитель → ученик</b>.<br>
-        Ученик заходит по ссылке, которую создаёт учитель.<br><br>
-        Сейчас выполняется тестовая версия.
-    </p>
+    <div class="text">
+      Платформа для онлайн-уроков.<br>
+      Учитель создаёт комнату и даёт ученику её код.
+    </div>
+    <button onclick="goLogin()">Вход</button>
+  </div>
 
-    <a class="btn" href="login.html">Вход для учителей</a>
-</div>
+  <script>
+    function goLogin() {
+      window.location.href = "login.html";
+    }
+  </script>
 </body>
 </html>
