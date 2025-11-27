@@ -5,6 +5,8 @@
   <title>WebClass — вход</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
@@ -14,26 +16,31 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      padding: 16px;
     }
+
     .card {
       background: #ffffff;
-      border-radius: 18px;
-      padding: 24px 28px 28px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-      max-width: 420px;
+      border-radius: 22px;
+      padding: 24px 26px 26px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+      max-width: 430px;
       width: 100%;
     }
+
     h1 {
       margin: 0 0 4px;
       font-size: 22px;
       text-align: center;
     }
+
     .subtitle {
       text-align: center;
       font-size: 13px;
-      color: #666;
-      margin-bottom: 18px;
+      color: #6b7280;
+      margin-bottom: 16px;
     }
+
     .tabs {
       display: flex;
       margin-bottom: 16px;
@@ -56,29 +63,55 @@
       font-weight: 600;
       box-shadow: 0 6px 16px rgba(59, 130, 246, 0.6);
     }
+
+    .subtabs {
+      display: flex;
+      margin-bottom: 12px;
+      background: #eef2ff;
+      border-radius: 999px;
+      padding: 2px;
+    }
+    .subtab {
+      flex: 1;
+      text-align: center;
+      padding: 6px 4px;
+      font-size: 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      user-select: none;
+      color: #4b5563;
+    }
+    .subtab.active {
+      background: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+    }
+
     label {
       display: block;
       font-size: 13px;
       margin-bottom: 4px;
-      color: #333;
+      color: #374151;
     }
+
     input {
       width: 100%;
       box-sizing: border-box;
-      padding: 10px 12px;
+      padding: 9px 11px;
       border-radius: 10px;
       border: 1px solid #d0d4e0;
       outline: none;
       font-size: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     input:focus {
       border-color: #3b82f6;
       box-shadow: 0 0 0 1px rgba(59, 130, 246, .35);
     }
+
     button {
       width: 100%;
-      padding: 11px 12px;
+      padding: 10px 12px;
       border-radius: 999px;
       border: none;
       cursor: pointer;
@@ -96,14 +129,30 @@
       transform: translateY(1px);
       box-shadow: 0 5px 12px rgba(59, 130, 246, .45);
     }
+
     .hint {
       font-size: 12px;
-      color: #777;
-      margin-top: 8px;
-      line-height: 1.4;
+      color: #6b7280;
+      margin-top: 6px;
+      line-height: 1.5;
     }
     .section { display: none; }
     .section.active { display: block; }
+
+    .small-row {
+      display: flex;
+      gap: 8px;
+    }
+    .small-row > div {
+      flex: 1;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        border-radius: 18px;
+        padding: 20px 18px 22px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -111,40 +160,97 @@
     <h1>WebClass</h1>
     <div class="subtitle">Выберите роль и войдите в комнату</div>
 
+    <!-- Вкладки: учитель / ученик -->
     <div class="tabs">
       <div id="tab-teacher" class="tab active">Я учитель</div>
       <div id="tab-student" class="tab">Я ученик</div>
     </div>
 
-    <!-- Учитель -->
+    <!-- БЛОК УЧИТЕЛЯ -->
     <div id="section-teacher" class="section active">
-      <label for="teacher-name">Ваше имя</label>
-      <input id="teacher-name" placeholder="Например: Денис">
 
-      <button class="btn-main" onclick="enterAsTeacher()">Начать урок</button>
-      <div class="hint">
-        Для вас создадим новую комнату (например <b>room_ab12cd34</b>), код
-        которой вы скажете ученику.
+      <!-- Подвкладки: вход / регистрация -->
+      <div class="subtabs">
+        <div id="subtab-teacher-login" class="subtab active">Вход</div>
+        <div id="subtab-teacher-reg" class="subtab">Регистрация</div>
+      </div>
+
+      <!-- ВХОД УЧИТЕЛЯ -->
+      <div id="teacher-login-form">
+        <label for="teacher-email-login">Электронная почта</label>
+        <input id="teacher-email-login" type="email" placeholder="you@example.com">
+
+        <label for="teacher-pass-login">Пароль или код доступа</label>
+        <input id="teacher-pass-login" type="password" placeholder="Введите пароль">
+
+        <button class="btn-main" onclick="teacherLogin()">
+          Войти как учитель
+        </button>
+        <div class="hint">
+          Для реальных пользователей здесь будет вход в личный кабинет по логину и паролю.
+          Пока что, для тестов, после нажатия мы сразу создаём комнату и переходим к уроку.
+        </div>
+      </div>
+
+      <!-- РЕГИСТРАЦИЯ УЧИТЕЛЯ -->
+      <div id="teacher-reg-form" style="display:none;">
+        <div class="small-row">
+          <div>
+            <label for="teacher-firstname">Имя</label>
+            <input id="teacher-firstname" placeholder="Иван">
+          </div>
+          <div>
+            <label for="teacher-lastname">Фамилия</label>
+            <input id="teacher-lastname" placeholder="Иванов">
+          </div>
+        </div>
+
+        <div class="small-row">
+          <div>
+            <label for="teacher-birthyear">Год рождения</label>
+            <input id="teacher-birthyear" placeholder="1985">
+          </div>
+          <div>
+            <label for="teacher-city">Город проживания</label>
+            <input id="teacher-city" placeholder="Москва">
+          </div>
+        </div>
+
+        <label for="teacher-email-reg">Электронная почта</label>
+        <input id="teacher-email-reg" type="email" placeholder="you@example.com">
+
+        <button class="btn-main" onclick="teacherRegister()">
+          Зарегистрироваться
+        </button>
+        <div class="hint" id="teacher-reg-hint">
+          Мы отправим на указанную почту код подтверждения. После подтверждения вы сможете
+          входить в WebClass по логину и паролю.
+          <br><br>
+          <b>Сейчас (в демо)</b> регистрация работает как форма-заготовка: данные никуда не
+          сохраняются, а после нажатия мы просто откроем тестовый кабинет учителя.
+        </div>
       </div>
     </div>
 
-    <!-- Ученик -->
+    <!-- БЛОК УЧЕНИКА -->
     <div id="section-student" class="section">
       <label for="student-name">Ваше имя</label>
       <input id="student-name" placeholder="Например: Ваня">
 
-      <label for="room-code">Код комнаты</label>
-      <input id="room-code" placeholder="Например: room_ab12cd34">
+      <label for="student-code">Код доступа от учителя</label>
+      <input id="student-code" placeholder="Например: room_ab12cd34 или пароль">
 
-      <button class="btn-main" onclick="enterAsStudent()">Войти в класс</button>
+      <button class="btn-main" onclick="enterAsStudent()">
+        Войти как ученик
+      </button>
       <div class="hint">
-        Код комнаты говорит учитель. Он видит его в своём кабинете:
-        строка <b>Комната: room_…</b>.
+        Учитель отправит вам код комнаты или пароль. Введите его здесь, чтобы подключиться к уроку.
       </div>
     </div>
   </div>
 
   <script>
+    // Переключение "Я учитель / Я ученик"
     const tabTeacher = document.getElementById('tab-teacher');
     const tabStudent = document.getElementById('tab-student');
     const secTeacher = document.getElementById('section-teacher');
@@ -164,37 +270,108 @@
       secTeacher.classList.remove('active');
     };
 
+    // Подвкладки учителя: Вход / Регистрация
+    const subLogin = document.getElementById('subtab-teacher-login');
+    const subReg   = document.getElementById('subtab-teacher-reg');
+    const loginBox = document.getElementById('teacher-login-form');
+    const regBox   = document.getElementById('teacher-reg-form');
+
+    subLogin.onclick = () => {
+      subLogin.classList.add('active');
+      subReg.classList.remove('active');
+      loginBox.style.display = 'block';
+      regBox.style.display   = 'none';
+    };
+
+    subReg.onclick = () => {
+      subReg.classList.add('active');
+      subLogin.classList.remove('active');
+      loginBox.style.display = 'none';
+      regBox.style.display   = 'block';
+    };
+
+    // Вспомогательная функция: случайный ID комнаты
     function randomRoomId() {
       return 'room_' + Math.random().toString(36).slice(2, 10);
     }
 
-    function enterAsTeacher() {
-      const name = document.getElementById('teacher-name').value.trim();
-      if (!name) {
-        alert('Введите ваше имя');
+    // === ВХОД УЧИТЕЛЯ (пока — демо) ===
+    function teacherLogin() {
+      const email = document.getElementById('teacher-email-login').value.trim();
+      const pass  = document.getElementById('teacher-pass-login').value.trim();
+
+      if (!email || !pass) {
+        alert('Введите e-mail и пароль/код доступа');
         return;
       }
+
+      // TODO: здесь должен быть запрос на backend:
+      // fetch('/api/teacher/login', { method: 'POST', body: JSON.stringify({ email, password: pass }) })
+      //   .then(...)
+
+      // Пока: используем e-mail как имя учителя (до @) и создаём комнату
+      const name = email.split('@')[0] || 'Учитель';
       const room = randomRoomId();
-      const url = 'teacher.html?name=' + encodeURIComponent(name) +
-                  '&room=' + encodeURIComponent(room);
+
+      const url =
+        'teacher.html?name=' + encodeURIComponent(name) +
+        '&room=' + encodeURIComponent(room);
+
       window.location.href = url;
     }
 
+    // === РЕГИСТРАЦИЯ УЧИТЕЛЯ (пока — макет) ===
+    function teacherRegister() {
+      const firstname = document.getElementById('teacher-firstname').value.trim();
+      const lastname  = document.getElementById('teacher-lastname').value.trim();
+      const birthyear = document.getElementById('teacher-birthyear').value.trim();
+      const city      = document.getElementById('teacher-city').value.trim();
+      const email     = document.getElementById('teacher-email-reg').value.trim();
+
+      if (!firstname || !lastname || !birthyear || !city || !email) {
+        alert('Заполните все поля регистрации');
+        return;
+      }
+
+      // TODO: здесь в будущем отправляем данные на backend,
+      // создаём запись учителя и высылаем код подтверждения на email.
+      //
+      // fetch('/api/teacher/register', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ firstname, lastname, birthyear, city, email })
+      // }).then(...)
+
+      alert('В демо-версии регистрация условная.\nМы просто откроем кабинет учителя.');
+
+      const name = firstname + ' ' + lastname;
+      const room = randomRoomId();
+      const url =
+        'teacher.html?name=' + encodeURIComponent(name) +
+        '&room=' + encodeURIComponent(room);
+
+      window.location.href = url;
+    }
+
+    // === УЧЕНИК ===
     function enterAsStudent() {
       const studentName = document.getElementById('student-name').value.trim();
-      const roomCode    = document.getElementById('room-code').value.trim();
+      const code        = document.getElementById('student-code').value.trim();
 
-      if (!studentName) {
-        alert('Введите ваше имя');
-        return;
-      }
-      if (!roomCode) {
-        alert('Введите код комнаты');
+      if (!studentName || !code) {
+        alert('Введите ваше имя и код доступа от учителя');
         return;
       }
 
-      const url = 'student.html?room=' + encodeURIComponent(roomCode) +
-                  '&teacher=' + encodeURIComponent('Учитель');
+      // Сейчас считаем, что "код доступа" = код комнаты (room_xxx)
+      // TODO: позже можно сделать проверку кода на backend.
+      const room = code; // прямо используем как room-id
+
+      const url =
+        'student.html?room=' + encodeURIComponent(room) +
+        '&teacher=' + encodeURIComponent('Учитель') +
+        '&name=' + encodeURIComponent(studentName);
+
       window.location.href = url;
     }
   </script>
