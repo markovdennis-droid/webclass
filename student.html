@@ -489,7 +489,7 @@ let pcStudent = null;
 
 function createWebSocketStudent() {
   const proto = window.location.protocol === "https:" ? "wss" : "ws";
-  const wsUrl = `wss://webclass-lzx3.onrender.com/ws?room=${encodeURIComponent(room)}&role=student`;
+  const wsUrl = `wss://webclass-backend-g3uh.onrender.com/ws?room=${encodeURIComponent(room)}&role=teacher`;
   wsStudent = new WebSocket(wsUrl);
 
   wsStudent.onopen = () => {
